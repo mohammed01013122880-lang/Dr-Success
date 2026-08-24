@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr Success Academy | Your way to A+</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+
+  <style>
+    /* المتغيرات الأساسية للثيمات */
+    :root {
+      --bg: #0b1329;
+      --header-bg: rgba(15, 23, 42, 0.85);
+      --card-bg: #1e293b;
+      --card-hover: #27354f;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #38bdf8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --input-bg: #0f172a;
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --header-bg: rgba(255, 255, 255, 0.9);
+      --card-bg: #ffffff;
+      --card-hover: #f8fafc;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #0284c7;
+      --success: #10b981;
+      --danger: #ef4444;
+      --input-bg: #f8fafc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; transition: background-color 0.25s ease, border-color 0.25s ease; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.8rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .brand-text h1 { font-size: 1.15rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
+    .brand-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+    .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      background: var(--primary); color: #fff; text-decoration: none; padding: 0.5rem 1rem;
+      border-radius: 0.6rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-admin { background: rgba(148, 163, 184, 0.15); color: var(--text); border: 1px solid var(--border); }
+    .btn-admin:hover { background: rgba(148, 163, 184, 0.25); }
+    .btn-theme { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 0.6rem; cursor: pointer; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: rgba(148, 163, 184, 0.15); }
+    .btn-success { background: var(--success); }
+    .btn-danger { background: var(--danger); }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; width: 100%; flex: 1; }
+
+    /* بانر التنبيهات */
+    .announcement-box {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(56, 189, 248, 0.1));
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .announcement-box i { font-size: 1.3rem; color: var(--accent); }
+    .announcement-text { font-size: 0.9rem; line-height: 1.4; }
+
+    /* شريط البحث والفلترة */
+    .search-wrapper { margin-bottom: 1.25rem; position: relative; }
+    .search-wrapper i { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .search-input {
+      width: 100%; padding: 0.75rem 2.8rem 0.75rem 1rem; border-radius: 0.75rem;
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text);
+      font-size: 0.9rem; outline: none;
+    }
+    .search-input:focus { border-color: var(--primary); }
+
+    /* التبويبات */
+    .tabs-nav {
+      display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem;
+    }
+    .tab-btn {
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted);
+      padding: 0.55rem 1.2rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem;
+      cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* مشغل الفيديو الذكي */
+    .player-section {
+      display: none; background: #000; border-radius: 1rem; overflow: hidden;
+      margin-bottom: 2rem; position: relative; border: 1px solid var(--border);
+    }
+    .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; }
+    .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .watermark {
+      position: absolute; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem;
+      font-weight: bold; pointer-events: none; user-select: none; z-index: 10;
+      top: 15%; left: 15%; animation: floatMark 14s infinite alternate ease-in-out;
+    }
+    @keyframes floatMark {
+      0% { top: 10%; left: 10%; }
+      50% { top: 75%; left: 70%; }
+      100% { top: 40%; left: 40%; }
+    }
+
+    /* كروت المحتوى */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem;
+      padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .card:hover { transform: translateY(-3px); background: var(--card-hover); }
+    .card-top { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.8rem; }
+    .card-icon {
+      width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .icon-video { background: rgba(37, 99, 235, 0.15); color: #60a5fa; }
+    .icon-pdf { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .icon-exam { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    
+    .card-title { font-size: 0.95rem; font-weight: 700; line-height: 1.4; }
+    .card-badge { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.2rem; font-weight: 600; }
+    .card-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+
+    .del-btn {
+      position: absolute; top: 0.6rem; left: 0.6rem; background: transparent; border: none;
+      color: var(--danger); cursor: pointer; font-size: 0.9rem; display: none;
+    }
+    .admin-active .del-btn { display: block; }
+
+    /* الأزرار العائمة للتواصل */
+    .floating-support {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; z-index: 40;
+    }
+    .float-btn {
+      width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.3rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .float-btn:hover { transform: scale(1.1); }
+    .btn-wa { background: #25d366; }
+    .btn-tg { background: #229ed9; }
+
+    /* Modal */
+    .modal {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-content {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem;
+      width: 100%; max-width: 480px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; color: var(--text);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 0.35rem; color: var(--text-muted); font-weight: 600; }
+    .form-control {
+      width: 100%; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: var(--input-bg);
+      border: 1px solid var(--border); color: var(--text); font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div class="brand-text">
+        <h1>Dr Success Academy</h1>
+        <span>Your way to A+</span>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-theme" onclick="toggleTheme()" title="تغيير الثيم"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
+      <button class="btn btn-admin" onclick="openAdminModal()"><i class="fa-solid fa-shield-halved"></i> المحاضر</button>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <div class="announcement-box">
+      <i class="fa-solid fa-bullhorn"></i>
+      <div class="announcement-text">
+        <strong>أهلاً بكم في المنصة الرسمية لـ Dr Success Academy!</strong>
+        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:2px;">تم تحديث الملازم وحفظ إمكانية المشاهدة بدون إنترنت للدروس المسجلة.</p>
+      </div>
+    </div>
+
+    <div class="player-section" id="playerSection">
+      <div class="video-wrapper">
+        <video id="mainVideoPlayer" controls controlsList="nodownload"></video>
+        <div class="watermark">Dr Success Student • 2026</div>
+      </div>
+      <div style="padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <span id="nowPlayingTitle" style="font-size: 0.95rem; font-weight: 700;">اسم المحاضرة</span>
+        <button class="btn btn-outline" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+      </div>
+    </div>
+
+    <div class="search-wrapper">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="ابحث باسم المحاضرة أو المذكرة أو الفصل..." oninput="handleSearch()">
+    </div>
+
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
+      <button class="tab-btn" onclick="switchTab('pdf', this)"><i class="fa-solid fa-book-bookmark"></i> ملزمة الكورس</button>
+      <button class="tab-btn" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
+      <button class="tab-btn" onclick="switchTab('offline', this)"><i class="fa-solid fa-cloud-arrow-down"></i> التنزيلات (أوفلاين)</button>
+    </div>
+
+    <div class="grid" id="contentGrid"></div>
+  </div>
+
+  <div class="floating-support">
+    <a href="https://wa.me/" target="_blank" class="float-btn btn-wa" title="تواصل عبر واتساب"><i class="fa-brands fa-whatsapp"></i></a>
+    <a href="https://t.me/" target="_blank" class="float-btn btn-tg" title="قناة التليجرام"><i class="fa-brands fa-telegram"></i></a>
+  </div>
+
+  <div class="modal" id="adminModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalHeading">لوحة إدارة المحتوى</h3>
+        <button onclick="closeModal()" style="background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;">&times;</button>
+      </div>
+      
+      <div id="authBox">
+        <div class="form-group">
+          <label>رمز المحاضر السري:</label>
+          <input type="password" id="adminPassword" class="form-control" placeholder="أدخل الرمز (الافتراضي: 1234)">
+        </div>
+        <button class="btn btn-success" style="width: 100%;" onclick="loginAdmin()">دخول</button>
+      </div>
+
+      <div id="controlBox" style="display: none;">
+        <div class="form-group">
+          <label>نوع المحتوى:</label>
+          <select id="contentType" class="form-control" onchange="toggleFormInputs()">
+            <option value="lesson">محاضرة ومذكرة (فيديو / PDF)</option>
+            <option value="exam">بنك أسئلة / امتحان</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>عنوان المحتوى:</label>
+          <input type="text" id="contentTitle" class="form-control" placeholder="مثال: مراجعة نهائية - الباب الأول">
+        </div>
+        <div class="form-group" id="chapterGroup">
+          <label>اسم الشابتر / الوحدة:</label>
+          <input type="text" id="contentChapter" class="form-control" placeholder="مثال: الفصل الأول">
+        </div>
+        <div class="form-group" id="videoUrlGroup">
+          <label>رابط الفيديو المباشر (Direct MP4 URL):</label>
+          <input type="url" id="contentVideo" class="form-control" placeholder="https://...">
+        </div>
+        <div class="form-group" id="pdfUrlGroup">
+          <label>رابط ملزمة الكورس (PDF / Drive):</label>
+          <input type="url" id="contentPdf" class="form-control" placeholder="https://...">
+        </div>
+        <div class="form-group" id="examUrlGroup" style="display: none;">
+          <label>رابط الامتحان / بنك الأسئلة (Google Forms / Link):</label>
+          <input type="url" id="contentExam" class="form-control" placeholder="https://...">
+        </div>
+
+        <button class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="publishContent()">
+          <i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر على المنصة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ربط قاعدة بيانات Supabase
+    const SUPABASE_URL = 'https://rikyazfymdrcyvkjcfsw.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpa3lhemZ5bWRyY3l2a2pjZnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njc4MTYsImV4cCI6MjEwMzE0MzgxNn0.O69zMBVrwlyldCfa9IcVxag3GL5IpZ4zEgsyicY6TiI';
+    
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    localforage.config({ name: 'DrSuccessOfflineVault', storeName: 'media_blobs' });
+
+    let lessonsData = [];
+    let examsData = [];
+    let currentFilter = 'videos';
+    let searchQuery = '';
+    let isAdmin = false;
+
+    // جلب البيانات من السيرفر
+    async function loadData() {
+      try {
+        const { data: lessons } = await db.from('lessons').select('*').order('id', { ascending: false });
+        const { data: exams } = await db.from('exams').select('*').order('id', { ascending: false });
+        lessonsData = lessons || [];
+        examsData = exams || [];
+        renderCards();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function renderCards() {
+      const grid = document.getElementById('contentGrid');
+      grid.innerHTML = '';
+
+      // فلترة الامتحانات وبنوك الأسئلة
+      if (currentFilter === 'exams') {
+        const filteredExams = examsData.filter(e => e.title.toLowerCase().includes(searchQuery));
+        if (filteredExams.length === 0) {
+          grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:2rem;">لا توجد اختبارات أو بنوك أسئلة مطابقة.</p>';
+          return;
+        }
+        filteredExams.forEach(exam => {
+          grid.innerHTML += `
+            <div class="card">
+              ${isAdmin ? `<button class="del-btn" onclick="deleteExam(${exam.id})"><i class="fa-solid fa-trash"></i></button>` : ''}
+              <div>
+                <div class="card-top">
+                  <div class="card-icon icon-exam"><i class="fa-solid fa-stopwatch"></i></div>
+                  <div>
+                    <div class="card-title">${exam.title}</div>
+                    <span class="card-badge">بنك أسئلة / تقييم فوري</span>
+                  </div>
+                </div>
+              </div>
+              <a href="${exam.exam_url}" target="_blank" class="btn btn-success"><i class="fa-solid fa-pen-nib"></i> ابدأ التقييم الآن</a>
+            </div>
+          `;
+        });
+        return;
+      }
+
+      // فلترة الدروس والمذكرات والأوفلاين
+      let filteredLessons = lessonsData.filter(l => 
+        l.title.toLowerCase().includes(searchQuery) || (l.chapter && l.chapter.toLowerCase().includes(searchQuery))
+      );
+
+      if (currentFilter === 'videos') filteredLessons = filteredLessons.filter(l => l.video_url);
+      if (currentFilter === 'pdf') filteredLessons = filteredLessons.filter(l => l.pdf_url);
+
+      if (filteredLessons.length === 0) {
+        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:2rem;">لا يوجد محتوى متاح حالياً في هذا القسم.</p>';
+        return;
+      }
+
+      for (const item of filteredLessons) {
+        const isOffline = item.video_url ? await localforage.getItem(`video_${item.id}`) : false;
+        if (currentFilter === 'offline' && !isOffline) continue;
+
+        grid.innerHTML += `
+          <div class="card">
+            ${isAdmin ? `<button class="del-btn" onclick="deleteLesson(${item.id})"><i class="fa-solid fa-trash"></i></button>` : ''}
+            <div>
+              <div class="card-top">
+                <div class="card-icon ${item.video_url ? 'icon-video' : 'icon-pdf'}">
+                  <i class="fa-solid ${item.video_url ? 'fa-play' : 'fa-file-pdf'}"></i>
+                </div>
+                <div>
+                  <div class="card-title">${item.title}</div>
+                  <span class="card-badge">${item.chapter || 'فصل عام'}</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              ${item.video_url ? `
+                <button class="btn" style="flex:1" onclick="playVideo('${item.id}', '${item.video_url}', '${item.title}')">
+                  <i class="fa-solid fa-play"></i> مشاهدة
+                </button>
+                <button class="btn btn-outline" title="حفظ أوفلاين" onclick="downloadVideoOffline('${item.id}', '${item.video_url}', this)">
+                  <i class="fa-solid ${isOffline ? 'fa-check text-green-500' : 'fa-download'}"></i>
+                </button>
+              ` : ''}
+              ${item.pdf_url ? `
+                <a href="${item.pdf_url}" target="_blank" class="btn btn-outline" style="${item.video_url ? '' : 'width:100%'}" title="فتح ملزمة الكورس">
+                  <i class="fa-solid fa-file-pdf"></i> ${item.video_url ? '' : 'فتح الملزمة'}
+                </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // تشغيل الفيديو الذكي
+    async function playVideo(id, onlineUrl, title) {
+      const playerSection = document.getElementById('playerSection');
+      const player = document.getElementById('mainVideoPlayer');
+      document.getElementById('nowPlayingTitle').innerText = title;
+
+      const cachedBlob = await localforage.getItem(`video_${id}`);
+      player.src = cachedBlob ? URL.createObjectURL(cachedBlob) : onlineUrl;
+
+      playerSection.style.display = 'block';
+      player.play();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closePlayer() {
+      const player = document.getElementById('mainVideoPlayer');
+      player.pause();
+      player.src = '';
+      document.getElementById('playerSection').style.display = 'none';
+    }
+
+    // تنزيل أوفلاين
+    async function downloadVideoOffline(id, url, btn) {
+      try {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        const response = await fetch(url);
+        const blob = await response.blob();
+        await localforage.setItem(`video_${id}`, blob);
+        btn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--success)"></i>';
+        alert('تم تنزيل المحاضرة بنجاح وتعمل الآن أوفلاين بدون إنترنت!');
+      } catch (err) {
+        alert('حدث خطأ أثناء التنزيل.');
+        btn.innerHTML = '<i class="fa-solid fa-download"></i>';
+      }
+    }
+
+    // تبديل الثيم
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const target = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', target);
+      document.getElementById('themeIcon').className = target === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      localStorage.setItem('dr_success_theme', target);
+    }
+    
+    // قراءة الثيم المحفوظ
+    if(localStorage.getItem('dr_success_theme') === 'light') toggleTheme();
+
+    // البحث والتبويبات
+    function switchTab(type, el) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      currentFilter = type;
+      renderCards();
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderCards();
+    }
+
+    // الإدارة
+    function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('adminModal').style.display = 'none'; }
+
+    function loginAdmin() {
+      if (document.getElementById('adminPassword').value === '1234') {
+        isAdmin = true;
+        document.body.classList.add('admin-active');
+        document.getElementById('authBox').style.display = 'none';
+        document.getElementById('controlBox').style.display = 'block';
+        renderCards();
+      } else {
+        alert('كلمة المرور غير صحيحة!');
+      }
+    }
+
+    function toggleFormInputs() {
+      const type = document.getElementById('contentType').value;
+      const isExam = type === 'exam';
+      document.getElementById('chapterGroup').style.display = isExam ? 'none' : 'block';
+      document.getElementById('videoUrlGroup').style.display = isExam ? 'none' : 'block';
+      document.getElementById('pdfUrlGroup').style.display = isExam ? 'none' : 'block';
+      document.getElementById('examUrlGroup').style.display = isExam ? 'block' : 'none';
+    }
+
+    async function publishContent() {
+      const type = document.getElementById('contentType').value;
+      const title = document.getElementById('contentTitle').value;
+      if (!title) return alert('يرجى كتابة العنوان');
+
+      if (type === 'lesson') {
+        const chapter = document.getElementById('contentChapter').value;
+        const video_url = document.getElementById('contentVideo').value;
+        const pdf_url = document.getElementById('contentPdf').value;
+        await db.from('lessons').insert([{ title, chapter, video_url, pdf_url }]);
+      } else {
+        const exam_url = document.getElementById('contentExam').value;
+        await db.from('exams').insert([{ title, exam_url }]);
+      }
+
+      closeModal();
+      loadData();
+      alert('تم النشر بنجاح على المنصة!');
+    }
+
+    async function deleteLesson(id) {
+      if (confirm('هل أنت متأكد من حذف هذه المحاضرة؟')) {
+        await db.from('lessons').delete().eq('id', id);
+        loadData();
+      }
+    }
+
+    async function deleteExam(id) {
+      if (confirm('هل أنت متأكد من حذف هذا الامتحان؟')) {
+        await db.from('exams').delete().eq('id', id);
+        loadData();
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
