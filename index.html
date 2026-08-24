@@ -38,11 +38,14 @@
                 <i class="fa-solid fa-layer-group"></i> الكورسات
             </button>
             <div id="authButtons" class="flex items-center gap-2">
-                <button onclick="navigate('student-auth')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5">
-                    <i class="fa-solid fa-graduation-cap"></i> بوابة الطالب
+                <button onclick="openStudentAuth('register')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1">
+                    <i class="fa-solid fa-user-plus"></i> إنشاء حساب طالب
                 </button>
-                <button onclick="navigate('instructor-auth')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center gap-1.5">
-                    <i class="fa-solid fa-user-doctor"></i> لوحة المحاضر
+                <button onclick="openStudentAuth('login')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 flex items-center gap-1">
+                    <i class="fa-solid fa-right-to-bracket"></i> دخول طالب
+                </button>
+                <button onclick="openDoctorAuth('login')" class="px-3.5 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center gap-1">
+                    <i class="fa-solid fa-user-doctor"></i> بوابة المحاضر
                 </button>
             </div>
             <div id="userProfileTag" class="hidden flex items-center gap-2">
@@ -55,9 +58,9 @@
     <!-- Main Container -->
     <main class="flex-1 flex overflow-hidden">
 
-        <!-- ================= 1. شاشة الطالب (دخول / حساب جديد) ================= -->
-        <section id="viewStudentAuth" class="w-full flex items-center justify-center p-6 overflow-y-auto">
-            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl shadow-cyan-950/40 relative">
+        <!-- ================= 1. شاشة الطالب (دخول / إنشاء حساب) ================= -->
+        <section id="viewStudentAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
+            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
                 
                 <div class="flex bg-[#090e1a] p-1 rounded-2xl mb-6 border border-slate-800 text-xs font-bold">
                     <button id="tabStudentLogin" onclick="toggleStudentAuth('login')" class="flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow">
@@ -68,11 +71,11 @@
                     </button>
                 </div>
 
-                <!-- نموذج تسجيل دخول الطالب -->
+                <!-- تسجيل دخول طالب -->
                 <form id="formStudentLogin" onsubmit="handleStudentLogin(event)" class="space-y-4">
                     <div class="text-center mb-4">
-                        <h2 class="text-xl font-black text-white">مرحباً بك مجدداً</h2>
-                        <p class="text-xs text-slate-400 mt-1">سجل دخولك لمتابعة محاضراتك المفعلة</p>
+                        <h2 class="text-xl font-black text-white">تسجيل دخول الطالب</h2>
+                        <p class="text-xs text-slate-400 mt-1">سجل دخولك للوصول إلى محاضراتك وبنوك الأسئلة</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
@@ -82,16 +85,16 @@
                         <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
                         <input type="password" id="loginStudentPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
                     </div>
-                    <button type="submit" id="btnLoginSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-cyan-600/30 text-xs">
-                        تسجيل الدخول ومتابعة المنهج 🚀
+                    <button type="submit" id="btnLoginSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
+                        دخول المنصة 🚀
                     </button>
                 </form>
 
-                <!-- نموذج تسجيل حساب طالب جديد -->
+                <!-- إنشاء حساب طالب جديد -->
                 <form id="formStudentRegister" onsubmit="handleStudentRegister(event)" class="space-y-3.5 hidden">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-black text-white">إنشاء حساب طالب جديد</h2>
-                        <p class="text-xs text-slate-400 mt-1">بياناتك تحفظ مباشرة في قاعدة بيانات الأكاديمية</p>
+                        <p class="text-xs text-slate-400 mt-1">سجل بياناتك للانضمام إلى منصة Dr Success</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
@@ -115,13 +118,13 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-300 mb-1">الجامعة</label>
                             <select id="regUniv" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-semibold">
-                                <option value="كفر الشيخ الحكومية">جامعة كفر الشيخ الحكومية</option>
-                                <option value="كفر الشيخ الأهلية">جامعة كفر الشيخ الأهلية</option>
+                                <option value="كفر الشيخ الحكومية">كفر الشيخ الحكومية</option>
+                                <option value="كفر الشيخ الأهلية">كفر الشيخ الأهلية</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-300 mb-1">الكلية</label>
-                            <input type="text" value="كلية طب الأسنان" readonly class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-cyan-400 font-bold cursor-not-allowed">
+                            <input type="text" value="طب الأسنان" readonly class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-cyan-400 font-bold cursor-not-allowed">
                         </div>
                     </div>
                     <div>
@@ -132,75 +135,135 @@
                             <option value="الفرقة الثالثة">الفرقة الثالثة</option>
                         </select>
                     </div>
-                    <button type="submit" id="btnRegSubmit" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-cyan-600/30 text-xs mt-2">
-                        إنشاء الحساب ودخول المنصة 🚀
+                    <button type="submit" id="btnRegSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30 mt-2">
+                        إنشاء الحساب ودخول الكورسات 🚀
                     </button>
                 </form>
-
             </div>
         </section>
 
-        <!-- ================= 2. شاشة المحاضر (دخول) ================= -->
+        <!-- ================= 2. شاشة المحاضر (دخول / طلب انضمام دكتور جديد) ================= -->
         <section id="viewInstructorAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
-            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl">
-                <div class="text-center mb-6">
-                    <div class="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-purple-500/20">
-                        <i class="fa-solid fa-user-shield"></i>
-                    </div>
-                    <h2 class="text-xl font-black text-white">بوابة المحاضرين</h2>
-                    <p class="text-xs text-slate-400 mt-1">سجل دخولك لإدارة الطلاب والمحتوى وتفعيل الاشتراكات</p>
+            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+                
+                <div class="flex bg-[#090e1a] p-1 rounded-2xl mb-6 border border-slate-800 text-xs font-bold">
+                    <button id="tabDocLogin" onclick="toggleDoctorAuth('login')" class="flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow">
+                        تسجيل دخول المحاضر
+                    </button>
+                    <button id="tabDocRegister" onclick="toggleDoctorAuth('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">
+                        إنشاء / طلب حساب دكتور
+                    </button>
                 </div>
 
+                <!-- دخول دكتور معتمد / Owner -->
                 <form id="formDoctorLogin" onsubmit="handleDoctorLogin(event)" class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-black text-white">تسجيل دخول المحاضر</h2>
+                        <p class="text-xs text-slate-400 mt-1">خاص بالدكاترة والـ Owner لإدارة الاشتراكات والمحتوى</p>
+                    </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني المعتمد</label>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
                         <input type="email" id="docLoginEmail" required placeholder="doctor@drsuccess.academy" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
                         <input type="password" id="docLoginPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
                     </div>
-                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-purple-600/30 text-xs">
+                    <button type="submit" id="btnDocLoginSubmit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-purple-600/30 text-xs">
                         دخول لوحة التحكم والاعتمادات
                     </button>
                 </form>
+
+                <!-- إنشاء حساب دكتور جديد (يتطلب موافقة Owner) -->
+                <form id="formDoctorRegister" onsubmit="handleDoctorRegister(event)" class="space-y-3.5 hidden">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-black text-white">تسجيل حساب محاضر جديد</h2>
+                        <p class="text-xs text-amber-400 mt-1">⚠️ يتطلب الحساب موافقة د. محمد رجب (Owner) قبل التفعيل</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">الاسم واللقب</label>
+                        <input type="text" id="newDocName" required placeholder="مثال: د. أحمد الطاهر" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">المادة المخصصة</label>
+                            <select id="newDocSubject" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500 font-semibold">
+                                <option value="dental_anatomy">Dental Anatomy</option>
+                                <option value="anatomy">General Anatomy</option>
+                                <option value="histology">Histology</option>
+                                <option value="biochemistry">Biochemistry</option>
+                                <option value="microbiology">Microbiology</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">رقم الهاتف</label>
+                            <input type="tel" id="newDocPhone" required placeholder="010XXXXXXXX" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+                            <input type="email" id="newDocEmail" required placeholder="doc@academy.com" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+                            <input type="password" id="newDocPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                    <button type="submit" id="btnNewDocSubmit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg text-xs mt-2">
+                        إرسال طلب الحساب للاعتماد
+                    </button>
+                </form>
+
             </div>
         </section>
 
-        <!-- ================= 3. شبكة الكروت البصرية للمواد ================= -->
-        <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+        <!-- ================= 3. شاشة الكورسات والصفحة الرئيسية ================= -->
+        <section id="viewCoursesGrid" class="w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
             <div class="max-w-7xl mx-auto space-y-8">
                 
-                <!-- بانر الباقة الشاملة -->
+                <!-- بانر ترحيبي مع أزرار مباشرة للدخول والتسجيل -->
                 <div class="bg-gradient-to-r from-blue-900/60 via-indigo-900/50 to-cyan-900/60 border border-cyan-500/40 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div class="space-y-2 text-center md:text-right">
+                    <div class="space-y-3 text-center md:text-right">
                         <div class="inline-flex items-center gap-2 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-full text-xs font-black">
-                            <i class="fa-solid fa-crown text-amber-400"></i> العرض الشامل للترم
+                            <i class="fa-solid fa-crown text-amber-400"></i> منصة د. محمد رجب الرسمية
                         </div>
-                        <h2 class="text-2xl lg:text-3xl font-black text-white">باقة جميع مواد طب الأسنان (5 مواد كاملة)</h2>
-                        <p class="text-xs text-slate-300 max-w-xl">وصول شامل للمحاضرات المسجلة، المذكرات، وبنوك الأسئلة لجميع المواد مع توفير 375 جنيه.</p>
+                        <h2 class="text-2xl lg:text-3xl font-black text-white">Dr Success Academy — طب أسنان كفر الشيخ</h2>
+                        <p class="text-xs text-slate-300 max-w-xl">شرح المناهج الطبية، المذكرات التفاعلية، بنوك الأسئلة والكويزات الذكية لجميع مواد الترم.</p>
+                        
+                        <!-- أزرار التسجيل المباشرة في البانر -->
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+                            <button onclick="openStudentAuth('register')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/30 transition">
+                                <i class="fa-solid fa-user-plus ml-1"></i> تسجيل كطالب جديد
+                            </button>
+                            <button onclick="openDoctorAuth('register')" class="bg-purple-600 hover:bg-purple-500 text-white font-black px-5 py-2.5 rounded-xl text-xs shadow-lg shadow-purple-600/30 transition">
+                                <i class="fa-solid fa-user-tie ml-1"></i> تسجيل كمحاضر جديد
+                            </button>
+                        </div>
                     </div>
-                    <div class="bg-[#090e1a]/80 border border-slate-700 p-5 rounded-2xl text-center min-w-[200px] backdrop-blur-md">
-                        <span class="text-xs line-through text-slate-400 block">2000 ج.م</span>
-                        <span class="text-3xl font-black text-cyan-400 block my-1">1625 ج.م</span>
-                        <button onclick="triggerCheckout('all')" class="mt-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 px-4 rounded-xl text-xs transition shadow-lg shadow-cyan-600/30">
-                            اشتراك الباقة كاملة ⚡
+
+                    <!-- كارت الباقة الشاملة -->
+                    <div class="bg-[#090e1a]/90 border border-slate-700 p-5 rounded-2xl text-center min-w-[220px] backdrop-blur-md">
+                        <span class="text-[11px] text-cyan-400 font-bold block mb-1">عرض جميع الـ 5 مواد</span>
+                        <span class="text-xs line-through text-slate-500 block">2000 ج.م</span>
+                        <span class="text-3xl font-black text-white block my-1">1625 <span class="text-xs text-cyan-400">ج.م</span></span>
+                        <button onclick="triggerCheckout('all')" class="mt-2 w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-2.5 px-4 rounded-xl text-xs transition shadow-lg">
+                            اشترك في الباقة كاملة ⚡
                         </button>
                     </div>
                 </div>
 
                 <div>
                     <h3 class="text-xl font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-shapes text-cyan-400"></i> مواد الترم الدراسي
+                        <i class="fa-solid fa-shapes text-cyan-400"></i> المواد الدراسية المتاحة (400 ج.م للمادة)
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">اختر المادة للاستعراض أو الاشتراك المنفرد بسعر 400 ج.م</p>
                 </div>
 
                 <div id="cardsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
         </section>
 
-        <!-- ================= 4. واجهة استعراض المادة والشريط الجانبي ================= -->
+        <!-- ================= 4. واجهة استعراض المادة ================= -->
         <section id="viewStudentPlatform" class="hidden w-full flex flex-1 overflow-hidden">
             <aside class="w-88 bg-[#0f172a] border-l border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl">
                 <div class="p-4 border-b border-slate-800 bg-[#111a2e] flex items-center justify-between">
@@ -246,18 +309,25 @@
             </section>
         </section>
 
-        <!-- ================= 5. لوحة تحكم المحاضر الحقيقية ================= -->
+        <!-- ================= 5. لوحة تحكم المحاضر / Owner ================= -->
         <section id="viewInstructorDash" class="hidden w-full flex-1 p-8 overflow-y-auto custom-scrollbar">
             <div class="max-w-6xl mx-auto space-y-6">
                 <div class="flex items-center justify-between bg-[#111a2e] p-6 rounded-3xl border border-slate-800">
-                    <h2 class="text-xl font-black text-white flex items-center gap-2">
-                        <span>لوحة تفعيل الاشتراكات (Live Database)</span>
-                        <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
-                    </h2>
-                    <button onclick="handleLogout()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl">خروج</button>
+                    <div>
+                        <h2 class="text-xl font-black text-white flex items-center gap-2">
+                            <span id="dashTitle">لوحة الإدارة</span>
+                            <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1" id="dashSubtitle">متابعة واعتماد وتفعيل الاشتراكات</p>
+                    </div>
+                    <button onclick="handleLogout()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl font-bold">خروج</button>
                 </div>
 
+                <!-- جدول اشتراكات الطلاب -->
                 <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                    <div class="p-4 bg-[#0f172a] border-b border-slate-800 font-bold text-xs text-cyan-400 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt"></i> طلبات اشتراك الطلاب المعلقة
+                    </div>
                     <table class="w-full text-right text-xs">
                         <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
                             <tr>
@@ -265,13 +335,32 @@
                                 <th class="p-4">الجامعة / الهاتف</th>
                                 <th class="p-4">المادة</th>
                                 <th class="p-4">المبلغ</th>
-                                <th class="p-4">المحول منه</th>
-                                <th class="p-4 text-center">الإجراء</th>
+                                <th class="p-4">رقم المحول</th>
+                                <th class="p-4 text-center">التفعيل</th>
                             </tr>
                         </thead>
                         <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
                     </table>
                 </div>
+
+                <!-- جدول اعتماد الدكاترة الجدد (للأونر فقط) -->
+                <div id="adminDoctorsSection" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl mt-8">
+                    <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300 flex items-center gap-2">
+                        <i class="fa-solid fa-user-shield"></i> طلبات انضمام الدكاترة الجدد (تحت مراجعة د. محمد رجب)
+                    </div>
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                            <tr>
+                                <th class="p-4">المحاضر</th>
+                                <th class="p-4">المادة المطلوبة</th>
+                                <th class="p-4">الهاتف</th>
+                                <th class="p-4 text-center">الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctorsApprovalTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+                    </table>
+                </div>
+
             </div>
         </section>
 
@@ -329,9 +418,8 @@
         </div>
     </div>
 
-    <!-- JavaScript & Supabase Live Connection -->
+    <!-- JavaScript Core & Supabase Integration -->
     <script>
-        // إعداد Supabase المباشر
         const SUPABASE_URL = "https://rikyazfymdrcyvkjcfsw.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpa3lhemZ5bWRyY3l2a2pjZnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njc4MTYsImV4cCI6MjEwMzE0MzgxNn0.O69zMBVrwlyldCfa9IcVxag3GL5IpZ4zEgsyicY6TiI";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -341,6 +429,7 @@
                 id: 'dental_anatomy',
                 title: 'Dental Anatomy',
                 doctor: 'Dr. Ahmed El-Taher',
+                doctorEmail: 'taher@drsuccess.academy',
                 price: 400,
                 icon: '🦷',
                 tag: 'Tooth Morphology & Carving',
@@ -357,6 +446,7 @@
                 id: 'anatomy',
                 title: 'General Anatomy',
                 doctor: 'Dr. Mohamed Fawzy',
+                doctorEmail: 'fawzy@drsuccess.academy',
                 price: 400,
                 icon: '🫀',
                 tag: 'Head & Neck Anatomy',
@@ -373,6 +463,7 @@
                 id: 'histology',
                 title: 'Histology',
                 doctor: 'Dr. Mohamed El-Gammal',
+                doctorEmail: 'gammal@drsuccess.academy',
                 price: 400,
                 icon: '🔬',
                 tag: 'Oral & General Tissues',
@@ -389,6 +480,7 @@
                 id: 'biochemistry',
                 title: 'Biochemistry',
                 doctor: 'Dr. Mohamed Ragab',
+                doctorEmail: 'mohammed01013122880@gmail.com',
                 price: 400,
                 icon: '🧪',
                 tag: 'Clinical Chemistry & Enzymes',
@@ -405,6 +497,7 @@
                 id: 'microbiology',
                 title: 'Microbiology',
                 doctor: 'Dr. Mohamed Ragab',
+                doctorEmail: 'mohammed01013122880@gmail.com',
                 price: 400,
                 icon: '🦠',
                 tag: 'Oral Flora & Sterilization',
@@ -424,7 +517,6 @@
         let currentSubjectKey = 'dental_anatomy';
         let activeModalKey = 'dental_anatomy';
 
-        // تهيئة الجلسة عند فتح الصفحة
         async function initAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
@@ -442,7 +534,11 @@
 
             if (profile) {
                 currentUser = { id: userId, email: email, ...profile };
-                await loadUserEnrollments(userId);
+                if (profile.role === 'student') {
+                    await loadUserEnrollments(userId);
+                }
+            } else if (email === 'mohammed01013122880@gmail.com') {
+                currentUser = { id: userId, email: email, role: 'super_admin', full_name: 'د. محمد رجب (Owner)', is_approved: true };
             }
             updateUserUI();
         }
@@ -483,6 +579,16 @@
             updateUserUI();
         }
 
+        function openStudentAuth(mode) {
+            navigate('student-auth');
+            toggleStudentAuth(mode);
+        }
+
+        function openDoctorAuth(mode) {
+            navigate('instructor-auth');
+            toggleDoctorAuth(mode);
+        }
+
         function toggleStudentAuth(mode) {
             const isLogin = mode === 'login';
             document.getElementById('formStudentLogin').classList.toggle('hidden', !isLogin);
@@ -491,12 +597,19 @@
             document.getElementById('tabStudentRegister').className = !isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
         }
 
-        // إنشاء حساب طالب فعلي في Supabase
+        function toggleDoctorAuth(mode) {
+            const isLogin = mode === 'login';
+            document.getElementById('formDoctorLogin').classList.toggle('hidden', !isLogin);
+            document.getElementById('formDoctorRegister').classList.toggle('hidden', isLogin);
+            document.getElementById('tabDocLogin').className = isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
+            document.getElementById('tabDocRegister').className = !isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
+        }
+
+        // إنشاء حساب طالب
         async function handleStudentRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('btnRegSubmit');
             btn.disabled = true;
-            btn.innerText = "جاري إنشاء الحساب...";
 
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPass').value;
@@ -506,80 +619,236 @@
             const year = document.getElementById('regYear').value;
 
             try {
-                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password
-                });
-
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
                 if (authError) throw authError;
 
                 if (authData.user) {
-                    const { error: profileError } = await supabaseClient
-                        .from('profiles')
-                        .insert([{
-                            id: authData.user.id,
-                            full_name: fullName,
-                            phone: phone,
-                            university: university,
-                            faculty: 'طب الأسنان',
-                            study_year: year,
-                            role: 'student'
-                        }]);
-
-                    if (profileError) throw profileError;
+                    await supabaseClient.from('profiles').insert([{
+                        id: authData.user.id,
+                        full_name: fullName,
+                        phone: phone,
+                        university: university,
+                        faculty: 'طب الأسنان',
+                        study_year: year,
+                        role: 'student',
+                        is_approved: true
+                    }]);
 
                     await loadUserProfile(authData.user.id, email);
-                    alert("تم إنشاء حسابك بنجاح!");
+                    alert("تم إنشاء حساب الطالب بنجاح!");
                     navigate('courses-grid');
                 }
             } catch (err) {
-                alert("خطأ أثناء إنشاء الحساب: " + (err.message || err));
+                alert("خطأ في إنشاء الحساب: " + (err.message || err));
             } finally {
                 btn.disabled = false;
-                btn.innerText = "إنشاء الحساب ودخول المنصة 🚀";
             }
         }
 
-        // تسجيل دخول الطالب الفعلي
+        // تسجيل دخول الطالب
         async function handleStudentLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('btnLoginSubmit');
             btn.disabled = true;
-            btn.innerText = "جاري التحقق...";
 
             const email = document.getElementById('loginStudentEmail').value;
             const password = document.getElementById('loginStudentPass').value;
 
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-
                 await loadUserProfile(data.user.id, email);
                 navigate('courses-grid');
             } catch (err) {
-                alert("فشل تسجيل الدخول: " + (err.message || "تأكد من البريد وكلمة المرور"));
+                alert("خطأ: " + err.message);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "تسجيل الدخول ومتابعة المنهج 🚀";
             }
         }
 
-        // تسجيل دخول المحاضر
-        function handleDoctorLogin(e) {
+        // تسجيل دكتور جديد
+        async function handleDoctorRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnNewDocSubmit');
+            btn.disabled = true;
+
+            const name = document.getElementById('newDocName').value;
+            const subject = document.getElementById('newDocSubject').value;
+            const phone = document.getElementById('newDocPhone').value;
+            const email = document.getElementById('newDocEmail').value;
+            const pass = document.getElementById('newDocPass').value;
+
+            try {
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password: pass });
+                if (authError) throw authError;
+
+                if (authData.user) {
+                    await supabaseClient.from('profiles').insert([{
+                        id: authData.user.id,
+                        full_name: name,
+                        phone: phone,
+                        university: 'كفر الشيخ',
+                        role: 'doctor',
+                        assigned_subject: subject,
+                        is_approved: false
+                    }]);
+
+                    alert("تم إنشاء طلب حساب المحاضر بنجاح! سيتم اعتماده من د. محمد رجب.");
+                    toggleDoctorAuth('login');
+                }
+            } catch (err) {
+                alert("خطأ: " + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // تسجيل دخول دكتور / Owner
+        async function handleDoctorLogin(e) {
             e.preventDefault();
             const email = document.getElementById('docLoginEmail').value;
-            let name = "د. محمد رجب";
-            if (email.includes('fawzy')) name = "د. محمد فوزي";
-            else if (email.includes('gammal')) name = "د. محمد الجمال";
-            else if (email.includes('taher')) name = "د. أحمد الطاهر";
+            const pass = document.getElementById('docLoginPass').value;
 
-            currentUser = { role: 'doctor', name: name, email: email };
-            document.getElementById('docTag').innerText = name;
-            navigate('instructor-dash');
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+                if (error) throw error;
+
+                const isOwner = email === 'mohammed01013122880@gmail.com';
+
+                const { data: profile } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (!isOwner && (!profile || (profile.role !== 'doctor' && profile.role !== 'super_admin'))) {
+                    throw new Error("هذا الحساب ليس مسجلاً كمحاضر.");
+                }
+
+                if (!isOwner && profile && !profile.is_approved && profile.role !== 'super_admin') {
+                    throw new Error("حسابك قيد المراجعة لدى د. محمد رجب.");
+                }
+
+                currentUser = { 
+                    id: data.user.id, 
+                    email: email, 
+                    role: isOwner ? 'super_admin' : (profile ? profile.role : 'doctor'),
+                    full_name: isOwner ? 'د. محمد رجب (Owner)' : (profile ? profile.full_name : 'دكتور'),
+                    assigned_subject: profile ? profile.assigned_subject : null
+                };
+
+                navigate('instructor-dash');
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        // تحميل لوحة المحاضر والأونر
+        async function loadInstructorDashboard() {
+            if (!currentUser) return;
+
+            const isOwner = currentUser.email === 'mohammed01013122880@gmail.com' || currentUser.role === 'super_admin';
+            
+            document.getElementById('docTag').innerText = currentUser.full_name || currentUser.email;
+            document.getElementById('dashTitle').innerText = isOwner ? "لوحة الإدارة الشاملة (Owner & Super Admin)" : `لوحة مادة: ${currentUser.assigned_subject || ''}`;
+            document.getElementById('dashSubtitle').innerText = isOwner ? "متابعة جميع المواد واعتماد المحاضرين الجدد" : "عرض طلبات الطلاب الخاصة بمادتك";
+
+            const tbody = document.getElementById('dashTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">جاري تحميل البيانات...</td></tr>';
+
+            let query = supabaseClient
+                .from('enrollments')
+                .select('*, profiles:user_id(full_name, university, phone)')
+                .eq('status', 'pending');
+
+            if (!isOwner && currentUser.assigned_subject) {
+                query = query.eq('subject_id', currentUser.assigned_subject);
+            }
+
+            const { data: enrollments, error } = await query;
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-rose-400">خطأ: ${error.message}</td></tr>`;
+                return;
+            }
+
+            if (!enrollments || enrollments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-slate-500">لا توجد طلبات معلقة حالياً</td></tr>';
+            } else {
+                tbody.innerHTML = '';
+                enrollments.forEach(o => {
+                    const studentName = o.profiles ? o.profiles.full_name : 'طالب';
+                    const univ = o.profiles ? o.profiles.university : 'كفر الشيخ';
+                    const phone = o.profiles ? o.profiles.phone : '';
+                    const subjectName = o.subject_id === 'all' ? 'الباقة الشاملة (5 مواد)' : (ACADEMY_DATA[o.subject_id] ? ACADEMY_DATA[o.subject_id].title : o.subject_id);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-4 font-bold text-white">${studentName}</td>
+                        <td class="p-4">${univ} <span class="text-[10px] text-slate-400 block">${phone}</span></td>
+                        <td class="p-4 font-bold text-amber-300">${subjectName}</td>
+                        <td class="p-4 font-bold text-cyan-400">${o.amount} ج.م</td>
+                        <td class="p-4 font-mono text-[11px] text-slate-400">${o.sender_number}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="approveEnrollment(${o.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل الحساب ✅</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            if (isOwner) {
+                document.getElementById('adminDoctorsSection').classList.remove('hidden');
+                loadPendingDoctors();
+            } else {
+                document.getElementById('adminDoctorsSection').classList.add('hidden');
+            }
+        }
+
+        async function loadPendingDoctors() {
+            const tbody = document.getElementById('doctorsApprovalTableBody');
+            const { data: doctors } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('role', 'doctor')
+                .eq('is_approved', false);
+
+            if (!doctors || doctors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            doctors.forEach(doc => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-white">${doc.full_name}</td>
+                    <td class="p-4 text-purple-300 font-bold">${doc.assigned_subject || 'غير محدد'}</td>
+                    <td class="p-4 text-slate-400 font-mono">${doc.phone}</td>
+                    <td class="p-4 text-center">
+                        <button onclick="approveDoctor('${doc.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function approveDoctor(docId) {
+            const { error } = await supabaseClient.from('profiles').update({ is_approved: true }).eq('id', docId);
+            if (error) alert(error.message);
+            else {
+                alert('تم اعتماد المحاضر بنجاح!');
+                loadPendingDoctors();
+            }
+        }
+
+        async function approveEnrollment(id) {
+            const { error } = await supabaseClient.from('enrollments').update({ status: 'active' }).eq('id', id);
+            if (error) alert(error.message);
+            else {
+                alert('تم تفعيل الكورس للطالب بنجاح!');
+                loadInstructorDashboard();
+            }
         }
 
         function updateUserUI() {
@@ -588,7 +857,7 @@
             if (currentUser) {
                 authButtons.classList.add('hidden');
                 profileTag.classList.remove('hidden');
-                document.getElementById('userNameBadge').innerText = `${currentUser.full_name || currentUser.name} (${currentUser.role === 'doctor' ? 'محاضر' : 'طالب'})`;
+                document.getElementById('userNameBadge').innerText = `${currentUser.full_name || currentUser.name || currentUser.email}`;
             } else {
                 authButtons.classList.remove('hidden');
                 profileTag.classList.add('hidden');
@@ -719,8 +988,8 @@
 
         function triggerCheckout(key) {
             if (!currentUser) {
-                alert('يرجى تسجيل الدخول أو إنشاء حساب طالب أولاً لإتمام الاشتراك.');
-                navigate('student-auth');
+                alert('يرجى تسجيل الدخول أو إنشاء حساب طالب أولاً.');
+                openStudentAuth('login');
                 return;
             }
             activeModalKey = key;
@@ -736,12 +1005,10 @@
 
         function closeModal() { document.getElementById('modalCheckout').classList.add('hidden'); }
 
-        // إرسال طلب الاشتراك وحفظه في جدول enrollments في Supabase
         async function handleSendPayment(e) {
             e.preventDefault();
             const btn = document.getElementById('btnPaymentSubmit');
             btn.disabled = true;
-            btn.innerText = "جاري إرسال الطلب...";
 
             const sender = document.getElementById('paySender').value;
             const isAll = activeModalKey === 'all';
@@ -759,75 +1026,15 @@
                     }]);
 
                 if (error) throw error;
-
-                alert('تم إرسال طلب الاشتراك بنجاح إلى قاعدة البيانات! سيتم التفعيل فور مراجعة المحاضر.');
+                alert('تم إرسال الطلب بنجاح! سيتم التفعيل فور التحقق.');
                 closeModal();
             } catch (err) {
-                alert('خطأ أثناء إرسال الطلب: ' + (err.message || err));
+                alert('خطأ: ' + err.message);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "إرسال للمحاضر للتفعيل ⚡";
             }
         }
 
-        // جلب الطلبات المعلقة من Supabase للوحة المحاضر
-        async function loadInstructorDashboard() {
-            const tbody = document.getElementById('dashTableBody');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">جاري تحميل البيانات من السيرفر...</td></tr>';
-
-            const { data: enrollments, error } = await supabaseClient
-                .from('enrollments')
-                .select('*, profiles:user_id(full_name, university, phone)')
-                .eq('status', 'pending');
-
-            if (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-rose-400">خطأ في جلب البيانات: ${error.message}</td></tr>`;
-                return;
-            }
-
-            if (!enrollments || enrollments.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-slate-500">لا توجد طلبات معلقة حالياً</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = '';
-            enrollments.forEach(o => {
-                const studentName = o.profiles ? o.profiles.full_name : 'طالب';
-                const univ = o.profiles ? o.profiles.university : 'كفر الشيخ';
-                const phone = o.profiles ? o.profiles.phone : '';
-                const subjectName = o.subject_id === 'all' ? 'الباقة الشاملة' : (ACADEMY_DATA[o.subject_id] ? ACADEMY_DATA[o.subject_id].title : o.subject_id);
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-4 font-bold text-white">${studentName}</td>
-                    <td class="p-4">${univ} <span class="text-[10px] text-slate-400 block">${phone}</span></td>
-                    <td class="p-4">${subjectName}</td>
-                    <td class="p-4 font-bold text-cyan-400">${o.amount} ج.م</td>
-                    <td class="p-4 font-mono text-[11px] text-slate-400">${o.sender_number}</td>
-                    <td class="p-4 text-center">
-                        <button onclick="approveEnrollment(${o.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل الحساب</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // تفعيل الكورس للطالب مباشرة وتحديث حالته في Supabase
-        async function approveEnrollment(enrollmentId) {
-            const { error } = await supabaseClient
-                .from('enrollments')
-                .update({ status: 'active' })
-                .eq('id', enrollmentId);
-
-            if (error) {
-                alert('فشل التفعيل: ' + error.message);
-            } else {
-                alert('تم تفعيل الكورس للطالب بنجاح وتحديث قاعدة البيانات!');
-                loadInstructorDashboard();
-            }
-        }
-
-        // بدء التشغيل
         initAuth();
     </script>
 </body>
