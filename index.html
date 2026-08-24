@@ -192,7 +192,7 @@
             <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
             <input type="password" id="loginStudentPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
           </div>
-          <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
+          <button type="submit" id="btnStudentLoginSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
             الدخول للمنصة 🚀
           </button>
         </form>
@@ -239,7 +239,7 @@
             <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white" placeholder="010XXXXXXXX">
           </div>
 
-          <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
+          <button type="submit" id="btnStudentRegisterSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
             إنشاء الحساب وبدء المذاكرة 🚀
           </button>
         </form>
@@ -263,7 +263,7 @@
             <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
             <input type="password" id="docLoginPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white">
           </div>
-          <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg text-xs">
+          <button type="submit" id="btnDoctorLoginSubmit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg text-xs">
             دخول لوحة التحكم والاعتمادات
           </button>
         </form>
@@ -299,7 +299,7 @@
               <input type="password" id="newDocPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
           </div>
-          <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition text-xs mt-2">
+          <button type="submit" id="btnDoctorRegisterSubmit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition text-xs mt-2">
             إرسال طلب الانضمام للمالك ⚡
           </button>
         </form>
@@ -387,10 +387,8 @@
           </div>
         </div>
 
-        <!-- استوديو PDF التفاعلي المتكامل للتابلت والقلم -->
+        <!-- استوديو PDF التفاعلي المتكامل -->
         <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
-          
-          <!-- شريط تحكم وأدوات القلم -->
           <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-xl">
             <div class="flex items-center gap-2">
               <span class="font-bold text-cyan-400 max-w-[150px] truncate" id="pdfFileName">المذكرة</span>
@@ -402,7 +400,6 @@
               </div>
             </div>
 
-            <!-- أدوات التدوين والأقلام للتابلت -->
             <div class="flex flex-wrap items-center gap-2">
               <button onclick="setToolMode('pen')" id="toolPenBtn" class="bg-cyan-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
                 <i class="fa-solid fa-pen"></i> قلم
@@ -427,7 +424,6 @@
             </div>
           </div>
 
-          <!-- منطقة عرض صفحات الـ PDF مع طبقة الرسم -->
           <div id="pdfCanvasContainer" class="relative w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-auto flex justify-center p-2 min-h-[550px] shadow-2xl">
             <div id="canvasWrapper" class="relative inline-block">
               <canvas id="pdfCanvas" class="rounded-lg shadow-xl block"></canvas>
@@ -711,16 +707,17 @@
 
     function navigate(view) {
       ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewDownloads', 'viewStudentPlatform', 'viewInstructorDash'].forEach(id => {
-        document.getElementById(id).classList.add('hidden');
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
       });
 
-      if (view === 'landing') document.getElementById('viewLanding').classList.remove('hidden');
-      if (view === 'student-auth') document.getElementById('viewStudentAuth').classList.remove('hidden');
-      if (view === 'instructor-auth') document.getElementById('viewInstructorAuth').classList.remove('hidden');
-      if (view === 'courses-grid') { document.getElementById('viewCoursesGrid').classList.remove('hidden'); renderCoursesGrid(); }
-      if (view === 'downloads-view') { document.getElementById('viewDownloads').classList.remove('hidden'); renderDownloadsView(); }
-      if (view === 'course-view') { document.getElementById('viewStudentPlatform').classList.remove('hidden'); renderCoursePlatform(); }
-      if (view === 'instructor-dash') { document.getElementById('viewInstructorDash').classList.remove('hidden'); loadInstructorDashboard(); }
+      if (view === 'landing') document.getElementById('viewLanding')?.classList.remove('hidden');
+      if (view === 'student-auth') document.getElementById('viewStudentAuth')?.classList.remove('hidden');
+      if (view === 'instructor-auth') document.getElementById('viewInstructorAuth')?.classList.remove('hidden');
+      if (view === 'courses-grid') { document.getElementById('viewCoursesGrid')?.classList.remove('hidden'); renderCoursesGrid(); }
+      if (view === 'downloads-view') { document.getElementById('viewDownloads')?.classList.remove('hidden'); renderDownloadsView(); }
+      if (view === 'course-view') { document.getElementById('viewStudentPlatform')?.classList.remove('hidden'); renderCoursePlatform(); }
+      if (view === 'instructor-dash') { document.getElementById('viewInstructorDash')?.classList.remove('hidden'); loadInstructorDashboard(); }
       updateUserUI();
     }
 
@@ -760,14 +757,25 @@
       }
     }
 
+    // تسجيل حساب طالب جديد وتوجيهه فوراً
     async function handleStudentRegister(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnStudentRegisterSubmit');
+      const originalText = btn.innerHTML;
+
       const email = document.getElementById('regEmail').value.trim();
       const password = document.getElementById('regPass').value;
-      const fullName = document.getElementById('regName').value;
-      const phone = document.getElementById('regPhone').value;
+      const fullName = document.getElementById('regName').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
       const university = document.getElementById('regUniversity').value;
       const faculty = document.getElementById('regFaculty').value;
+
+      if (!email || !password || !fullName || !phone) {
+        return alert('يرجى ملء جميع الحقول المطلوبة.');
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري إنشاء الحساب...';
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
@@ -785,21 +793,33 @@
           created_at: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        await promiseWithTimeout(db.collection('profiles').doc(cred.user.uid).set(userData), 6000);
+        await promiseWithTimeout(db.collection('profiles').doc(cred.user.uid).set(userData), 8000);
 
         currentUser = { id: cred.user.uid, ...userData };
         localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+        
+        // إغلاق شاشة التسجيل والتوجيه لصفحة المواد فوراً
         updateUserUI();
-
-        alert('تم إنشاء حسابك بنجاح!');
         navigate('courses-grid');
-      } catch (err) { alert('خطأ أثناء التسجيل: ' + err.message); }
+        alert('🎉 تم إنشاء حسابك بنجاح! مرحباً بك يا دكتور.');
+      } catch (err) {
+        alert('❌ خطأ أثناء التسجيل: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
     async function handleStudentLogin(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnStudentLoginSubmit');
+      const originalText = btn.innerHTML;
+
       const email = document.getElementById('loginStudentEmail').value.trim();
       const password = document.getElementById('loginStudentPass').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الدخول...';
 
       try {
         const cred = await auth.signInWithEmailAndPassword(email, password);
@@ -811,16 +831,27 @@
         }), 4000).catch(() => {});
 
         navigate('courses-grid');
-      } catch (err) { alert('خطأ أثناء الدخول: ' + err.message); }
+      } catch (err) {
+        alert('خطأ أثناء الدخول: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
     async function handleDoctorRegister(e) {
-      e.preventDefault();
-      const name = document.getElementById('newDocName').value;
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnDoctorRegisterSubmit');
+      const originalText = btn.innerHTML;
+
+      const name = document.getElementById('newDocName').value.trim();
       const subject = document.getElementById('newDocSubject').value;
-      const phone = document.getElementById('newDocPhone').value;
+      const phone = document.getElementById('newDocPhone').value.trim();
       const email = document.getElementById('newDocEmail').value.trim();
       const pass = document.getElementById('newDocPass').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإرسال...';
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
@@ -832,17 +863,28 @@
           role: 'doctor',
           is_approved: false,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
-        }), 6000);
-        alert('تم إرسال طلب الانضمام وسيتم مراجعته واعتماده من المالك!');
+        }), 8000);
+        alert('✅ تم إرسال طلب الانضمام وسيتم مراجعته واعتماده من المالك!');
         openDoctorTab('login');
-      } catch (err) { alert('خطأ: ' + err.message); }
+      } catch (err) {
+        alert('خطأ: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
     async function handleDoctorLogin(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnDoctorLoginSubmit');
+      const originalText = btn.innerHTML;
+
       const email = document.getElementById('docLoginEmail').value.trim();
       const pass = document.getElementById('docLoginPass').value;
       const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
 
       try {
         const cred = await auth.signInWithEmailAndPassword(email, pass);
@@ -854,15 +896,20 @@
         } else {
           navigate('instructor-dash');
         }
-      } catch (err) { alert('خطأ: ' + err.message); }
+      } catch (err) {
+        alert('خطأ: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
     function renderCoursesGrid() {
       const container = document.getElementById('cardsGridContainer');
+      if (!container) return;
       container.innerHTML = '';
 
       Object.values(ACADEMY_DATA).forEach(course => {
-        const isUnlocked = userUnlockedSubjects.includes(course.id) || userUnlockedSubjects.includes('all');
         const card = document.createElement('div');
         card.className = "course-card bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-xl p-5 flex flex-col justify-between";
         card.innerHTML = `
@@ -996,9 +1043,7 @@
       alert('تم مسح المحفوظات.');
     }
 
-    // ========================================================
-    // محرك استوديو الـ PDF المطور للأجهزة اللوحية وأقلام التدوين
-    // ========================================================
+    // استوديو PDF التفاعلي
     async function openPdfStudio(doc) {
       document.getElementById('videoContainerWrapper').classList.add('hidden');
       document.getElementById('pdfStudioContainer').classList.remove('hidden');
@@ -1007,7 +1052,6 @@
 
       try {
         let pdfTargetUrl = doc.pdf_url;
-        // تجاوز مشاكل الـ CORS لروابط الـ PDF
         if (pdfTargetUrl.startsWith('http') && !pdfTargetUrl.includes(window.location.hostname)) {
           pdfTargetUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(pdfTargetUrl)}`;
         }
@@ -1023,8 +1067,6 @@
         pdfPageNum = 1;
         renderPdfPage(pdfPageNum);
       } catch(e) {
-        console.error("PDF loading error:", e);
-        // تجربة التحميل بالرابط المباشر
         try {
           const directTask = pdfjsLib.getDocument(doc.pdf_url);
           pdfDoc = await directTask.promise;
@@ -1039,8 +1081,6 @@
 
     async function renderPdfPage(num) {
       if (!pdfDoc) return;
-      
-      // حفظ شخبطة الصفحة الحالية قبل الانتقال
       saveCurrentPageDrawing();
 
       const page = await pdfDoc.getPage(num);
@@ -1059,18 +1099,15 @@
       drawCanvas.width = viewport.width;
       drawCtx = drawCanvas.getContext('2d');
 
-      // تهيئة طبقة الرسم التفاعلي
       initTabletDrawingLayer(drawCanvas);
 
       await page.render({ canvasContext: pdfCtx, viewport: viewport }).promise;
       document.getElementById('pageNum').innerText = num;
 
-      // استرجاع شخبطة الصفحة إذا كانت موجودة مسبقاً
       restorePageDrawing(num);
     }
 
     function initTabletDrawingLayer(canvas) {
-      // دعم أحداث القلم واللمس والماوس (Pointer Events)
       canvas.onpointerdown = (e) => {
         isDrawing = true;
         canvas.setPointerCapture(e.pointerId);
@@ -1080,7 +1117,6 @@
 
         drawCtx.beginPath();
         drawCtx.moveTo(x, y);
-
         applyToolStyle();
       };
 
@@ -1120,7 +1156,7 @@
         drawCtx.lineWidth = penWidth;
       } else if (currentTool === 'highlighter') {
         drawCtx.globalCompositeOperation = 'source-over';
-        drawCtx.strokeStyle = 'rgba(250, 204, 21, 0.4)'; // أصفر شفاف تظليلي
+        drawCtx.strokeStyle = 'rgba(250, 204, 21, 0.4)';
         drawCtx.lineWidth = 18;
       }
     }
