@@ -453,7 +453,7 @@
                 </select>
               </div>
               <input type="url" id="lectureVideoUrl" placeholder="رابط الفيديو (Direct MP4 / YouTube)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20">نشر المحاضرة الآن 🚀</button>
+              <button type="submit" id="btnUploadLectureSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20">نشر المحاضرة الآن 🚀</button>
             </form>
           </div>
 
@@ -473,7 +473,7 @@
                 <option value="true">👁️ مجانية للجميع</option>
               </select>
               <input type="url" id="pdfDocUrl" placeholder="رابط الـ PDF المباشر" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/20">إضافة المذكرة للمادة ⚡</button>
+              <button type="submit" id="btnUploadPdfSubmit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/20">إضافة المذكرة للمادة ⚡</button>
             </form>
           </div>
         </div>
@@ -925,6 +925,7 @@
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
+    // 1. سجل الطلاب مع زر فك قفل الجهاز (Reset Device)
     async function loadAllFirebaseUsers() {
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">جاري جلب السجلات من Firebase...</td></tr>';
@@ -986,6 +987,7 @@
       link.click();
     }
 
+    // 2. إدارة طلبات التحويل المالي
     async function loadPendingEnrollments() {
       const tbody = document.getElementById('enrollmentsTableBody');
       tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">جاري جلب طلبات التحويل...</td></tr>';
@@ -1019,6 +1021,7 @@
       loadPendingEnrollments();
     }
 
+    // 3. إدارة واعتماد المحاضرين
     async function loadPendingDoctors() {
       const tbody = document.getElementById('doctorsApprovalTableBody');
       tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">جاري جلب طلبات المحاضرين...</td></tr>';
@@ -1051,33 +1054,89 @@
       loadPendingDoctors();
     }
 
+    // نشر محاضرة فيديو (مع معالجة الأخطاء والتنبيهات المباشرة)
     async function handleUploadLecture(e) {
-      e.preventDefault();
-      await db.collection('lectures').add({
-        subject_id: document.getElementById('uploadSubjectSelect').value,
-        title: document.getElementById('lectureTitle').value,
-        duration: document.getElementById('lectureDuration').value,
-        video_url: document.getElementById('lectureVideoUrl').value,
-        is_free: document.getElementById('lectureType').value === 'true',
-        created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert('تم نشر المحاضرة بنجاح على Firebase!');
-      document.getElementById('lectureTitle').value = '';
-      document.getElementById('lectureVideoUrl').value = '';
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnUploadLectureSubmit');
+      const originalText = btn.innerHTML;
+
+      const sub = document.getElementById('uploadSubjectSelect').value;
+      const title = document.getElementById('lectureTitle').value.trim();
+      const duration = document.getElementById('lectureDuration').value.trim();
+      const url = document.getElementById('lectureVideoUrl').value.trim();
+      const isFree = document.getElementById('lectureType').value === 'true';
+
+      if (!title || !url) {
+        alert('يرجى ملء جميع الحقول المطلوبة');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
+
+      try {
+        await db.collection('lectures').add({
+          subject_id: sub,
+          title: title,
+          duration: duration || 'غير محدد',
+          video_url: url,
+          is_free: isFree,
+          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('✅ تم نشر المحاضرة بنجاح على المنصة!');
+        document.getElementById('lectureTitle').value = '';
+        document.getElementById('lectureDuration').value = '';
+        document.getElementById('lectureVideoUrl').value = '';
+        loadGlobalStats();
+      } catch (err) {
+        console.error("Upload Lecture Error:", err);
+        alert('❌ حدث خطأ أثناء النشر: ' + err.message + '\n\nتأكد من فتح صلاحيات قواعد Firestore (Rules) إلى allow read, write: if true;');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
+    // رفع مذكرة شرح PDF (مع معالجة الأخطاء والتنبيهات المباشرة)
     async function handleUploadPdf(e) {
-      e.preventDefault();
-      await db.collection('lectures').add({
-        subject_id: document.getElementById('pdfSubjectSelect').value,
-        title: document.getElementById('pdfDocTitle').value,
-        pdf_url: document.getElementById('pdfDocUrl').value,
-        is_free: document.getElementById('pdfDocType').value === 'true',
-        created_at: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert('تم رفع المذكرة بنجاح!');
-      document.getElementById('pdfDocTitle').value = '';
-      document.getElementById('pdfDocUrl').value = '';
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnUploadPdfSubmit');
+      const originalText = btn.innerHTML;
+
+      const sub = document.getElementById('pdfSubjectSelect').value;
+      const title = document.getElementById('pdfDocTitle').value.trim();
+      const url = document.getElementById('pdfDocUrl').value.trim();
+      const isFree = document.getElementById('pdfDocType').value === 'true';
+
+      if (!title || !url) {
+        alert('يرجى ملء جميع الحقول المطلوبة');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإضافة...';
+
+      try {
+        await db.collection('lectures').add({
+          subject_id: sub,
+          title: title,
+          pdf_url: url,
+          is_free: isFree,
+          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        alert('✅ تم إضافة مذكرة الـ PDF بنجاح وأصبحت متاحة للطلاب!');
+        document.getElementById('pdfDocTitle').value = '';
+        document.getElementById('pdfDocUrl').value = '';
+        loadGlobalStats();
+      } catch (err) {
+        console.error("Upload PDF Error:", err);
+        alert('❌ حدث خطأ أثناء إضافة المذكرة: ' + err.message + '\n\nتأكد من فتح صلاحيات قواعد Firestore (Rules) إلى allow read, write: if true;');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
     }
 
     function updateUserUI() {
