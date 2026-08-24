@@ -22,7 +22,6 @@
     <!-- Top Navigation Bar -->
     <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-6 py-3.5 flex justify-between items-center backdrop-blur-md">
         <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('landing')">
-            <!-- الشعار / اللوجو -->
             <div class="relative flex items-center justify-center">
                 <img src="./logo.png" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/mohamedragabmarzouk/assets/main/logo.png'; this.style.display='none'; document.getElementById('fallbackLogo').style.display='flex';" class="w-10 h-10 rounded-2xl object-cover shadow-lg shadow-cyan-500/20" alt="Logo">
                 <div id="fallbackLogo" class="hidden w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 items-center justify-center text-white shadow-lg shadow-cyan-500/25 text-lg font-black">
@@ -46,12 +45,10 @@
             </button>
             
             <div id="authButtons" class="flex items-center gap-2">
-                <!-- زر بوابة الطلاب الموحد -->
                 <button onclick="navigate('student-auth')" class="px-4 py-2 rounded-xl text-xs font-black transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 hover:bg-cyan-500 flex items-center gap-1.5">
                     <i class="fa-solid fa-graduation-cap"></i> بوابة الطلاب
                 </button>
 
-                <!-- زر بوابة المحاضرين الموحد -->
                 <button onclick="navigate('instructor-auth')" class="px-4 py-2 rounded-xl text-xs font-black transition bg-purple-600 text-white shadow-lg shadow-purple-600/30 hover:bg-purple-500 flex items-center gap-1.5">
                     <i class="fa-solid fa-chalkboard-user"></i> بوابة المحاضرين
                 </button>
@@ -75,7 +72,7 @@
                 <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
                     <div class="space-y-4 text-center md:text-right max-w-2xl">
                         <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
-                            <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية الأولى
+                            <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية
                         </div>
                         <h2 class="text-3xl lg:text-5xl font-black text-white leading-tight">
                             طريقك نحو الامتياز مع <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Dr Success Academy</span>
@@ -96,20 +93,20 @@
                     <!-- Hero Stats Box -->
                     <div class="grid grid-cols-2 gap-4 w-full md:w-auto min-w-[280px]">
                         <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
-                            <div class="text-2xl font-black text-cyan-400">+1,450</div>
+                            <div class="text-2xl font-black text-cyan-400" id="statLandingStudents">0</div>
                             <div class="text-xs text-slate-400 mt-1 font-bold">طالب مشترك</div>
                         </div>
                         <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
-                            <div class="text-2xl font-black text-blue-400">5 مواد</div>
-                            <div class="text-xs text-slate-400 mt-1 font-bold">تغطية شاملة للمنهج</div>
+                            <div class="text-2xl font-black text-blue-400" id="statLandingSubjects">0</div>
+                            <div class="text-xs text-slate-400 mt-1 font-bold">المواد المتاحة</div>
                         </div>
                         <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
-                            <div class="text-2xl font-black text-purple-400">+120</div>
+                            <div class="text-2xl font-black text-purple-400" id="statLandingLectures">0</div>
                             <div class="text-xs text-slate-400 mt-1 font-bold">ساعة شرح HD</div>
                         </div>
                         <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
-                            <div class="text-2xl font-black text-emerald-400">98%</div>
-                            <div class="text-xs text-slate-400 mt-1 font-bold">نسبة الامتياز والتفوق</div>
+                            <div class="text-2xl font-black text-emerald-400" id="statLandingSuccess">0%</div>
+                            <div class="text-xs text-slate-400 mt-1 font-bold">نسبة التقييم</div>
                         </div>
                     </div>
                 </div>
@@ -143,7 +140,7 @@
                 <div class="space-y-6">
                     <div>
                         <h3 class="text-xl font-black text-white flex items-center gap-2">
-                            <i class="fa-solid fa-comment-dots text-cyan-400"></i> آراء وتقييمات طلاب الدفعات السابقة
+                            <i class="fa-solid fa-comment-dots text-cyan-400"></i> آراء وتقييمات الطلاب
                         </h3>
                         <p class="text-xs text-slate-400 mt-1">تجارب حقيقية لطلاب كلية طب الأسنان مع Dr Success Academy</p>
                     </div>
@@ -175,7 +172,7 @@
             </div>
         </section>
 
-        <!-- ================= 2. بوابة الطلاب (الدخول كطالب / طالب جديد) ================= -->
+        <!-- ================= 2. بوابة الطلاب ================= -->
         <section id="viewStudentAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
             <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
                 
@@ -215,7 +212,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
-                        <input type="text" id="regName" required placeholder="مثال: أحمد محمد علي" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                        <input type="text" id="regName" required placeholder="مثال: محمد أحمد علي" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -259,7 +256,7 @@
             </div>
         </section>
 
-        <!-- ================= 3. بوابة المحاضرين (دخول كمحاضر / طلب انضمام كمحاضر) ================= -->
+        <!-- ================= 3. بوابة المحاضرين ================= -->
         <section id="viewInstructorAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
             <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
                 
@@ -276,11 +273,11 @@
                 <form id="formDoctorLogin" onsubmit="handleDoctorLogin(event)" class="space-y-4">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-black text-white">دخول كمحاضر</h2>
-                        <p class="text-xs text-slate-400 mt-1">خاص بالدكاترة والـ Super Admin لإدارة المناهج والاشتراكات</p>
+                        <p class="text-xs text-slate-400 mt-1">خاص بالدكاترة المعتمدين وإدارة المنصة</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني المعتمد</label>
-                        <input type="email" id="docLoginEmail" required placeholder="doctor@drsuccess.academy" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        <input type="email" id="docLoginEmail" required placeholder="mohammed01013122880@gmail.com" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
@@ -295,11 +292,11 @@
                 <form id="formDoctorRegister" onsubmit="handleDoctorRegister(event)" class="space-y-3.5 hidden">
                     <div class="text-center mb-4">
                         <h2 class="text-xl font-black text-white">طلب انضمام كمحاضر</h2>
-                        <p class="text-xs text-amber-400 mt-1">⚠️ يتطلب الحساب اعتماد الإدارة (د. محمد رجب) وتعيين المادة</p>
+                        <p class="text-xs text-amber-400 mt-1">⚠️ يتطلب الحساب اعتماد وموافقة إدارة المنصة قبل التفعيل</p>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1">الاسم واللقب الأكاديمي</label>
-                        <input type="text" id="newDocName" required placeholder="مثال: د. أحمد الطاهر" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        <input type="text" id="newDocName" required placeholder="مثال: د. محمد أحمد" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -445,12 +442,12 @@
                             <span id="statActiveCount" class="text-2xl font-black text-emerald-400 mt-1 block">0</span>
                         </div>
                         <div class="bg-[#090e1a] border border-slate-800 p-4 rounded-2xl">
-                            <span class="text-[11px] text-slate-400 block font-bold">إجمالي المحاضرات</span>
-                            <span id="statLectureCount" class="text-2xl font-black text-cyan-400 mt-1 block">15</span>
+                            <span class="text-[11px] text-slate-400 block font-bold">المحاضرات المنشورة</span>
+                            <span id="statLectureCount" class="text-2xl font-black text-cyan-400 mt-1 block">0</span>
                         </div>
                         <div class="bg-[#090e1a] border border-slate-800 p-4 rounded-2xl">
-                            <span class="text-[11px] text-slate-400 block font-bold">المحاضرين المسجلين</span>
-                            <span id="statDoctorCount" class="text-2xl font-black text-purple-400 mt-1 block">4</span>
+                            <span class="text-[11px] text-slate-400 block font-bold">المحاضرين المعتمدين</span>
+                            <span id="statDoctorCount" class="text-2xl font-black text-purple-400 mt-1 block">0</span>
                         </div>
                     </div>
                 </div>
@@ -573,13 +570,13 @@
                     </table>
                 </div>
 
-                <!-- تبويب 3: اعتماد وتعيين المحاضرين (خاص بالأونر) -->
+                <!-- تبويب 3: اعتماد وتعيين المحاضرين (خاص بالأونر د. محمد رجب) -->
                 <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
                     <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300 flex items-center justify-between">
                         <span class="flex items-center gap-2">
                             <i class="fa-solid fa-user-shield"></i> طلبات انضمام المحاضرين وتعيين المواد (خاص بـ د. محمد رجب)
                         </span>
-                        <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2.5 py-0.5 rounded-full">Super Admin</span>
+                        <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2.5 py-0.5 rounded-full">Owner Super Admin</span>
                     </div>
                     <table class="w-full text-right text-xs">
                         <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
@@ -657,6 +654,8 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpa3lhemZ5bWRyY3l2a2pjZnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njc4MTYsImV4cCI6MjEwMzE0MzgxNn0.O69zMBVrwlyldCfa9IcVxag3GL5IpZ4zEgsyicY6TiI";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        const OWNER_EMAIL = "mohammed01013122880@gmail.com";
+
         const ACADEMY_DATA = {
             dental_anatomy: {
                 id: 'dental_anatomy',
@@ -713,7 +712,7 @@
                 id: 'biochemistry',
                 title: 'Biochemistry',
                 doctor: 'Dr. Mohamed Ragab',
-                doctorEmail: 'mohammed01013122880@gmail.com',
+                doctorEmail: OWNER_EMAIL,
                 price: 400,
                 icon: '🧪',
                 tag: 'Clinical Chemistry & Enzymes',
@@ -730,7 +729,7 @@
                 id: 'microbiology',
                 title: 'Microbiology',
                 doctor: 'Dr. Mohamed Ragab',
-                doctorEmail: 'mohammed01013122880@gmail.com',
+                doctorEmail: OWNER_EMAIL,
                 price: 400,
                 icon: '🦠',
                 tag: 'Oral Flora & Sterilization',
@@ -759,6 +758,8 @@
         }
 
         async function loadUserProfile(userId, email) {
+            const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
             const { data: profile } = await supabaseClient
                 .from('profiles')
                 .select('*')
@@ -766,11 +767,18 @@
                 .single();
 
             if (profile) {
-                currentUser = { id: userId, email: email, ...profile };
-                if (profile.role === 'student') {
+                currentUser = { 
+                    id: userId, 
+                    email: email, 
+                    role: isOwner ? 'super_admin' : profile.role,
+                    full_name: isOwner ? 'د. محمد رجب (Owner)' : profile.full_name,
+                    is_approved: isOwner ? true : profile.is_approved,
+                    assigned_subject: profile.assigned_subject
+                };
+                if (currentUser.role === 'student') {
                     await loadUserEnrollments(userId);
                 }
-            } else if (email === 'mohammed01013122880@gmail.com') {
+            } else if (isOwner) {
                 currentUser = { id: userId, email: email, role: 'super_admin', full_name: 'د. محمد رجب (Owner)', is_approved: true };
             }
             updateUserUI();
@@ -839,7 +847,7 @@
             const btn = document.getElementById('btnRegSubmit');
             btn.disabled = true;
 
-            const email = document.getElementById('regEmail').value;
+            const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPass').value;
             const fullName = document.getElementById('regName').value;
             const phone = document.getElementById('regPhone').value;
@@ -851,7 +859,7 @@
                 if (authError) throw authError;
 
                 if (authData.user) {
-                    await supabaseClient.from('profiles').insert([{
+                    await supabaseClient.from('profiles').upsert([{
                         id: authData.user.id,
                         full_name: fullName,
                         phone: phone,
@@ -859,7 +867,8 @@
                         faculty: 'طب الأسنان',
                         study_year: year,
                         role: 'student',
-                        is_approved: true
+                        is_approved: true,
+                        email: email
                     }]);
 
                     await loadUserProfile(authData.user.id, email);
@@ -879,7 +888,7 @@
             const btn = document.getElementById('btnLoginSubmit');
             btn.disabled = true;
 
-            const email = document.getElementById('loginStudentEmail').value;
+            const email = document.getElementById('loginStudentEmail').value.trim();
             const password = document.getElementById('loginStudentPass').value;
 
             try {
@@ -894,7 +903,7 @@
             }
         }
 
-        // طلب انضمام كمحاضر
+        // طلب انضمام كمحاضر (يظل معلقاً حتى موافقة الأونر)
         async function handleDoctorRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('btnNewDocSubmit');
@@ -903,7 +912,7 @@
             const name = document.getElementById('newDocName').value;
             const subject = document.getElementById('newDocSubject').value;
             const phone = document.getElementById('newDocPhone').value;
-            const email = document.getElementById('newDocEmail').value;
+            const email = document.getElementById('newDocEmail').value.trim();
             const pass = document.getElementById('newDocPass').value;
 
             try {
@@ -911,17 +920,18 @@
                 if (authError) throw authError;
 
                 if (authData.user) {
-                    await supabaseClient.from('profiles').insert([{
+                    await supabaseClient.from('profiles').upsert([{
                         id: authData.user.id,
                         full_name: name,
                         phone: phone,
                         university: 'كفر الشيخ',
                         role: 'doctor',
                         assigned_subject: subject,
-                        is_approved: false
+                        is_approved: false, // لا يدخل إلا بعد اعتمادك
+                        email: email
                     }]);
 
-                    alert("تم إرسال طلب الانضمام بنجاح! سيتم مراجعته وتعيينك للمادة من قبل د. محمد رجب (Owner).");
+                    alert("تم إرسال طلب الانضمام بنجاح! سيتم مراجعته وتعيينك للمادة من قبل إدارة المنصة.");
                     openDoctorTab('login');
                 }
             } catch (err) {
@@ -931,47 +941,75 @@
             }
         }
 
-        // دخول كمحاضر / Owner
+        // دخول كمحاضر / Owner مع التحقق الصارم من الموافقة
         async function handleDoctorLogin(e) {
             e.preventDefault();
-            const email = document.getElementById('docLoginEmail').value;
+            const btn = document.getElementById('btnDocLoginSubmit');
+            btn.disabled = true;
+
+            const email = document.getElementById('docLoginEmail').value.trim();
             const pass = document.getElementById('docLoginPass').value;
+            const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
 
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-                if (error) throw error;
+                let authRes = await supabaseClient.auth.signInWithPassword({ email, password: pass });
 
-                const isOwner = email === 'mohammed01013122880@gmail.com';
+                // تهيئة حساب الأونر تلقائياً في السيرفر إن لم يكن قد أنشئ مسبقاً
+                if (authRes.error && isOwner) {
+                    const signUpRes = await supabaseClient.auth.signUp({ email, password: pass });
+                    if (!signUpRes.error && signUpRes.data.user) {
+                        authRes = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+                    }
+                }
+
+                if (authRes.error) throw authRes.error;
+
+                const user = authRes.data.user;
+
+                if (isOwner) {
+                    await supabaseClient.from('profiles').upsert([{
+                        id: user.id,
+                        full_name: 'د. محمد رجب (المالك)',
+                        phone: '01013122880',
+                        university: 'كفر الشيخ',
+                        role: 'super_admin',
+                        is_approved: true,
+                        email: email
+                    }]);
+                }
 
                 const { data: profile } = await supabaseClient
                     .from('profiles')
                     .select('*')
-                    .eq('id', data.user.id)
+                    .eq('id', user.id)
                     .single();
 
-                if (!isOwner && (!profile || (profile.role !== 'doctor' && profile.role !== 'super_admin'))) {
-                    throw new Error("هذا الحساب ليس مسجلاً كمحاضر.");
-                }
-
-                if (!isOwner && profile && !profile.is_approved && profile.role !== 'super_admin') {
-                    throw new Error("حسابك قيد المراجعة والاعتماد لدى د. محمد رجب (Owner).");
+                // شرط أمان: رفض أي حساب محاضر غير معتمد
+                if (!isOwner) {
+                    if (!profile || (profile.role !== 'doctor' && profile.role !== 'super_admin')) {
+                        throw new Error("هذا الحساب ليس مسجلاً كمحاضر.");
+                    }
+                    if (!profile.is_approved) {
+                        throw new Error("حسابك قيد المراجعة والاعتماد لدى إدارة المنصة.");
+                    }
                 }
 
                 currentUser = { 
-                    id: data.user.id, 
+                    id: user.id, 
                     email: email, 
-                    role: isOwner ? 'super_admin' : (profile ? profile.role : 'doctor'),
-                    full_name: isOwner ? 'د. محمد رجب (Owner)' : (profile ? profile.full_name : 'دكتور'),
+                    role: isOwner ? 'super_admin' : profile.role,
+                    full_name: isOwner ? 'د. محمد رجب (المالك)' : profile.full_name,
                     assigned_subject: profile ? profile.assigned_subject : null
                 };
 
                 navigate('instructor-dash');
             } catch (err) {
-                alert(err.message);
+                alert("خطأ: " + err.message);
+            } finally {
+                btn.disabled = false;
             }
         }
 
-        // تبديل تبويبات لوحة التحكم
         function switchDashTab(tabName) {
             document.getElementById('dashSectionUpload').classList.add('hidden');
             document.getElementById('dashSectionEnrollments').classList.add('hidden');
@@ -995,7 +1033,6 @@
             }
         }
 
-        // إضافة محاضرة جديدة للمادة
         function handleUploadLecture(e) {
             e.preventDefault();
             const subKey = document.getElementById('uploadSubjectSelect').value;
@@ -1015,7 +1052,6 @@
             }
         }
 
-        // إضافة مذكرة أو كويز
         function handleUploadResource(e) {
             e.preventDefault();
             const subKey = document.getElementById('resSubjectSelect').value;
@@ -1043,16 +1079,18 @@
 
         async function loadInstructorDashboard() {
             if (!currentUser) return;
-            const isOwner = currentUser.email === 'mohammed01013122880@gmail.com' || currentUser.role === 'super_admin';
+            const isOwner = currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase() || currentUser.role === 'super_admin';
             document.getElementById('docTag').innerText = currentUser.full_name || currentUser.email;
-            document.getElementById('dashTitle').innerText = isOwner ? "لوحة الإدارة الشاملة (Owner & Super Admin)" : `لوحة مادة: ${currentUser.assigned_subject || ''}`;
+            document.getElementById('dashTitle').innerText = isOwner ? "لوحة الإدارة المركزية (Super Admin)" : `لوحة مادة: ${currentUser.assigned_subject || ''}`;
             document.getElementById('dashSubtitle').innerText = isOwner ? "متابعة وإدارة كافة المواد، الاشتراكات، والمحاضرين" : `الطلاب المشتركون في مادتك (${currentUser.assigned_subject || ''})`;
 
-            // تحديث الإحصائيات
             const { count: pendingC } = await supabaseClient.from('enrollments').select('*', { count: 'exact', head: true }).eq('status', 'pending');
             const { count: activeC } = await supabaseClient.from('enrollments').select('*', { count: 'exact', head: true }).eq('status', 'active');
+            const { count: docC } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'doctor').eq('is_approved', true);
+
             document.getElementById('statPendingCount').innerText = pendingC || 0;
             document.getElementById('statActiveCount').innerText = activeC || 0;
+            document.getElementById('statDoctorCount').innerText = docC || 0;
 
             switchDashTab('tab-upload');
         }
@@ -1061,7 +1099,7 @@
             const tbody = document.getElementById('dashTableBody');
             tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">جاري جلب الاشتراكات...</td></tr>';
 
-            const isOwner = currentUser && (currentUser.email === 'mohammed01013122880@gmail.com' || currentUser.role === 'super_admin');
+            const isOwner = currentUser && (currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase() || currentUser.role === 'super_admin');
             let query = supabaseClient.from('enrollments').select('*, profiles:user_id(full_name, university, phone)').eq('status', 'pending');
 
             if (!isOwner && currentUser.assigned_subject) {
