@@ -3,40 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr Success Academy | منصة طب الأسنان</title>
+    <title>Dr Success Academy | كورسات طب الأسنان</title>
     <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Tajawal', sans-serif; background-color: #080c14; }
+        .course-card:hover { transform: translateY(-6px); }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        .card-glow:hover { box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.3); }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-6 py-3 flex justify-between items-center backdrop-blur-md">
-        <div class="flex items-center gap-3">
-            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 text-xl font-black">
-                <i class="fa-solid fa-tooth text-cyan-100"></i>
+    <!-- Navbar -->
+    <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-6 py-3.5 flex justify-between items-center backdrop-blur-md">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('courses-grid')">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-cyan-500/25 text-lg font-black">
+                <i class="fa-solid fa-tooth"></i>
             </div>
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="font-black text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400">
-                        DR SUCCESS ACADEMY
-                    </h1>
-                    <span class="text-[10px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-2 py-0.5 rounded-full font-bold">DENTISTRY</span>
-                </div>
+                <h1 class="font-black text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
+                    DR SUCCESS ACADEMY
+                </h1>
                 <p class="text-[11px] text-slate-400">كلية طب الأسنان — جامعة كفر الشيخ (حكومي & أهلية)</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3">
-            <button id="btnStudentNav" onclick="navigate('student-home')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5">
-                <i class="fa-solid fa-graduation-cap"></i> بوابة المنهج
+            <button id="btnCoursesGrid" onclick="navigate('courses-grid')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5">
+                <i class="fa-solid fa-layer-group"></i> الكورسات المتاحة
             </button>
             <button id="btnInstructorNav" onclick="navigate('instructor-login')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center gap-1.5">
                 <i class="fa-solid fa-user-doctor"></i> لوحة المحاضر
@@ -45,22 +42,21 @@
         </div>
     </header>
 
-    <!-- Main Application Stage -->
+    <!-- Main Container -->
     <main class="flex-1 flex overflow-hidden">
 
-        <!-- ================= 1. شاشة تسجيل حساب الطالب ================= -->
+        <!-- ================= 1. تسجيل الطالب ================= -->
         <section id="viewStudentRegister" class="w-full flex items-center justify-center p-6 overflow-y-auto">
-            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl shadow-cyan-950/40 relative overflow-hidden">
-                <div class="absolute -top-12 -right-12 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl"></div>
-                <div class="text-center mb-6 relative z-10">
-                    <div class="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-cyan-500/20 shadow-inner">
+            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl shadow-cyan-950/40 relative">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-cyan-500/20">
                         <i class="fa-solid fa-address-card"></i>
                     </div>
                     <h2 class="text-2xl font-black text-white">تسجيل حساب طالب جديد</h2>
-                    <p class="text-xs text-slate-400 mt-1">سجل بياناتك للوصول الفوري للمحاضرات المجانية وبنوك الأسئلة</p>
+                    <p class="text-xs text-slate-400 mt-1">سجل بياناتك لاستعراض الكورسات والمعاينات المجانية</p>
                 </div>
 
-                <form onsubmit="handleRegister(event)" class="space-y-4 relative z-10">
+                <form onsubmit="handleRegister(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-300 mb-1.5">الاسم ثلاثي</label>
                         <input type="text" id="regName" required placeholder="مثال: أحمد محمد علي" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
@@ -104,38 +100,65 @@
             </div>
         </section>
 
-        <!-- ================= 2. واجهة الطالب التفاعلية ================= -->
-        <section id="viewStudentPlatform" class="hidden w-full flex flex-1 overflow-hidden">
-            
-            <!-- الشريط الجانبي العمودي (Sidebar) -->
-            <aside class="w-88 bg-[#0f172a] border-l border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl">
-                <!-- اختيار المادة بالكروت المصغرة -->
-                <div class="p-4 border-b border-slate-800 bg-[#111a2e]">
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400 block mb-2">اختر المادة الدراسية</span>
-                    <select id="courseSelect" onchange="onSelectSubject(this.value)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-cyan-500 cursor-pointer">
-                        <option value="dental_anatomy">🦷 Dental Anatomy — د. أحمد الطاهر</option>
-                        <option value="anatomy">🫀 General Anatomy — د. محمد فوزي</option>
-                        <option value="histology">🔬 Histology — د. محمد الجمال</option>
-                        <option value="biochemistry">🧪 Biochemistry — د. محمد رجب</option>
-                        <option value="microbiology">🦠 Microbiology — د. محمد رجب</option>
-                    </select>
+        <!-- ================= 2. شبكة الكروت البصرية للكورسات (Canva-Style Cards) ================= -->
+        <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+            <div class="max-w-7xl mx-auto space-y-8">
+                
+                <!-- بانر الباقة الشاملة العلوي -->
+                <div class="bg-gradient-to-r from-blue-900/60 via-indigo-900/50 to-cyan-900/60 border border-cyan-500/40 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-2 text-center md:text-right">
+                        <div class="inline-flex items-center gap-2 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-full text-xs font-black">
+                            <i class="fa-solid fa-crown text-amber-400"></i> العرض الشامل للترم
+                        </div>
+                        <h2 class="text-2xl lg:text-3xl font-black text-white">باقة جميع مواد طب الأسنان (5 مواد كاملة)</h2>
+                        <p class="text-xs text-slate-300 max-w-xl">احصل على وصول كامل وشامل لكافة المحاضرات المسجلة، المذكرات، وبنوك الأسئلة لجميع المواد ووفر 375 جنيه.</p>
+                    </div>
+                    <div class="bg-[#090e1a]/80 border border-slate-700 p-5 rounded-2xl text-center min-w-[200px] backdrop-blur-md">
+                        <span class="text-xs line-through text-slate-400 block">2000 ج.م</span>
+                        <span class="text-3xl font-black text-cyan-400 block my-1">1625 ج.م</span>
+                        <button onclick="triggerCheckout('all')" class="mt-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 px-4 rounded-xl text-xs transition shadow-lg shadow-cyan-600/30">
+                            اشتراك الباقة كاملة ⚡
+                        </button>
+                    </div>
                 </div>
 
-                <!-- الفهرس العمودي (المحاضرات، المذكرات، الكويزات) -->
+                <!-- عنوان شبكة الكروت -->
+                <div>
+                    <h3 class="text-xl font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-shapes text-cyan-400"></i> مواد الترم الدراسي
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">اختر المادة للاستعراض أو الاشتراك المنفرد بسعر 400 ج.م</p>
+                </div>
+
+                <!-- شبكة الكروت البصرية -->
+                <div id="cardsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- تتولد الكروت برمجياً -->
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= 3. شاشة المنهج والشريط الجانبي للمادة المختارة ================= -->
+        <section id="viewStudentPlatform" class="hidden w-full flex flex-1 overflow-hidden">
+            <aside class="w-88 bg-[#0f172a] border-l border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl">
+                <div class="p-4 border-b border-slate-800 bg-[#111a2e] flex items-center justify-between">
+                    <button onclick="navigate('courses-grid')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 font-bold">
+                        <i class="fa-solid fa-arrow-right"></i> كل المواد
+                    </button>
+                    <span id="subjectBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">400 ج.م</span>
+                </div>
+
                 <div class="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar">
                     <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-black text-slate-300 flex items-center gap-1.5">
-                                <i class="fa-solid fa-play-circle text-cyan-400"></i> المحاضرات
-                            </span>
-                            <span id="subjectBadge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">400 ج.م</span>
-                        </div>
+                        <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
+                            <i class="fa-solid fa-play-circle text-cyan-400"></i> المحاضرات
+                        </span>
                         <div id="lectureList" class="space-y-2"></div>
                     </div>
 
                     <div>
                         <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
-                            <i class="fa-solid fa-file-pdf text-blue-400"></i> مذكرات الشرح & PDF
+                            <i class="fa-solid fa-file-pdf text-blue-400"></i> المذكرات & PDF
                         </span>
                         <div id="notesList" class="space-y-2"></div>
                     </div>
@@ -147,66 +170,31 @@
                         <div id="quizList" class="space-y-2"></div>
                     </div>
                 </div>
-
-                <!-- كارت عرض الباقة الشاملة (Full Offer Card) -->
-                <div class="p-4 border-t border-slate-800 bg-[#0c1220]">
-                    <div class="bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border border-cyan-500/40 rounded-2xl p-3.5 text-center shadow-lg relative overflow-hidden">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] bg-cyan-500 text-slate-950 font-black px-2 py-0.5 rounded-full">خصم خاص</span>
-                            <span class="text-[10px] text-slate-400 font-bold">5 مواد كاملة</span>
-                        </div>
-                        <p class="text-xs font-black text-white">باقة الترم الشاملة</p>
-                        <div class="flex items-center justify-center gap-2 my-1.5">
-                            <span class="text-xs line-through text-slate-500">2000 ج.م</span>
-                            <span class="text-base font-black text-cyan-400">1625 ج.م</span>
-                        </div>
-                        <button onclick="triggerCheckout('all')" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-extrabold py-2 rounded-xl transition shadow-md shadow-cyan-600/30">
-                            اشترك في الباقة كاملة ⚡
-                        </button>
-                    </div>
-                </div>
             </aside>
 
-            <!-- ساحة العرض الرئيسية (Main Screen) -->
             <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-6 custom-scrollbar">
-                
-                <!-- كارت المادة البصري الفخم مع الصورة الطبية -->
-                <div id="heroCard" class="relative rounded-3xl overflow-hidden border border-slate-800 mb-6 shadow-2xl min-h-[220px] flex flex-col justify-end p-6 group">
-                    <!-- يملأ برمجياً بالخلفية والمعلومات الطبية -->
-                </div>
+                <div id="heroCard" class="relative rounded-3xl overflow-hidden border border-slate-800 mb-6 shadow-2xl min-h-[200px] flex flex-col justify-end p-6"></div>
 
-                <!-- مشغل المحتوى الذكي -->
                 <div class="flex-1 bg-[#0f172a] border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center relative">
-                    <div id="screenPlayer" class="w-full max-w-4xl aspect-video bg-black rounded-2xl border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl group cursor-pointer">
-                        <div class="w-16 h-16 bg-cyan-500/20 group-hover:bg-cyan-500/40 text-cyan-400 rounded-full flex items-center justify-center text-2xl transition transform group-hover:scale-110 shadow-lg shadow-cyan-500/30">
+                    <div id="screenPlayer" class="w-full max-w-4xl aspect-video bg-black rounded-2xl border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl">
+                        <div class="w-16 h-16 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-2xl shadow-lg">
                             <i class="fa-solid fa-play mr-1"></i>
                         </div>
-                        <p class="text-white font-extrabold text-base mt-3" id="currentScreenTitle">المحاضرة الأولى: مقدمة المنهج</p>
-                        <span class="text-xs text-slate-400 mt-1">مشغل محاضرات محمي بدقة 1080p Full HD</span>
-                    </div>
-
-                    <div class="w-full max-w-4xl flex items-center justify-between mt-4 text-xs text-slate-400 px-2">
-                        <span id="screenSubInfo" class="font-bold text-cyan-400"></span>
-                        <div class="flex gap-2">
-                            <button onclick="alert('جاري فتح كويز المحاضرة التفاعلي')" class="px-3.5 py-1.5 bg-cyan-950 text-cyan-300 border border-cyan-500/40 rounded-xl hover:bg-cyan-900 font-bold">
-                                <i class="fa-solid fa-bolt ml-1"></i> ابدأ كويز المحاضرة
-                            </button>
-                        </div>
+                        <p class="text-white font-extrabold text-base mt-3" id="currentScreenTitle">المحاضرة الأولى (معاينة مجانية)</p>
                     </div>
                 </div>
-
             </section>
         </section>
 
-        <!-- ================= 3. شاشة دخول المحاضر ================= -->
+        <!-- ================= 4. بوابة المحاضر ولوحة الإدارة ================= -->
         <section id="viewInstructorLogin" class="hidden w-full flex items-center justify-center p-6">
             <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl">
                 <div class="text-center mb-6">
                     <div class="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-purple-500/20">
                         <i class="fa-solid fa-user-shield"></i>
                     </div>
-                    <h2 class="text-xl font-black text-white">بوابة المحاضر والإدارة</h2>
-                    <p class="text-xs text-slate-400 mt-1">تسجيل دخول الدكاترة لمراجعة وتفعيل اشتراكات الطلاب</p>
+                    <h2 class="text-xl font-black text-white">بوابة دخول المحاضر</h2>
+                    <p class="text-xs text-slate-400 mt-1">لتفعيل اشتراكات الطلاب يدوياً بعد مراجعة الإيصالات</p>
                 </div>
 
                 <form onsubmit="handleDoctorLogin(event)" class="space-y-4">
@@ -219,65 +207,37 @@
                         <input type="password" id="docPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
                     </div>
 
-                    <div class="bg-[#090e1a] p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400 space-y-1">
-                        <p class="font-bold text-purple-300">حسابات تجريبية سريعة:</p>
-                        <p>د. محمد رجب: <code class="text-cyan-300">ragab@drsuccess.academy</code></p>
-                        <p>د. محمد فوزي: <code class="text-cyan-300">fawzy@drsuccess.academy</code></p>
-                        <p>د. محمد الجمال: <code class="text-cyan-300">gammal@drsuccess.academy</code></p>
-                        <p>د. أحمد الطاهر: <code class="text-cyan-300">taher@drsuccess.academy</code></p>
-                    </div>
-
                     <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-purple-600/30 text-xs">
-                        دخول لوحة التحكم
+                        دخول لوحة الاعتمادات
                     </button>
                 </form>
             </div>
         </section>
 
-        <!-- ================= 4. لوحة تحكم المحاضر (Dashboard) ================= -->
+        <!-- لوحة التحكم -->
         <section id="viewInstructorDash" class="hidden w-full flex-1 p-8 overflow-y-auto custom-scrollbar">
             <div class="max-w-6xl mx-auto space-y-6">
-                <div class="flex items-center justify-between bg-[#111a2e] p-6 rounded-3xl border border-slate-800 shadow-xl">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold">
-                            <i class="fa-solid fa-stamp"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h2 class="text-xl font-black text-white">إدارة وتفعيل طلبات الاشتراك</h2>
-                                <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-0.5">تفعيل فوري للكورسات للطلاب بعد التحقق من السداد</p>
-                        </div>
-                    </div>
-                    <button onclick="navigate('instructor-login')" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl hover:bg-rose-500/20 font-bold">
-                        خروج
-                    </button>
+                <div class="flex items-center justify-between bg-[#111a2e] p-6 rounded-3xl border border-slate-800">
+                    <h2 class="text-xl font-black text-white flex items-center gap-2">
+                        <span>لوحة تفعيل الاشتراكات</span>
+                        <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
+                    </h2>
+                    <button onclick="navigate('instructor-login')" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl">خروج</button>
                 </div>
 
-                <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-                    <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-[#0f172a]">
-                        <h3 class="font-extrabold text-sm text-white flex items-center gap-2">
-                            <span>طلبات الدفع المعلقة</span>
-                            <span id="pendingBadge" class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2.5 py-0.5 rounded-full">2 طلب</span>
-                        </h3>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-right text-xs">
-                            <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
-                                <tr>
-                                    <th class="p-4">بيانات الطالب</th>
-                                    <th class="p-4">الجامعة والكلية</th>
-                                    <th class="p-4">المادة المطلوبة</th>
-                                    <th class="p-4">المبلغ</th>
-                                    <th class="p-4">الحساب المُحوّل منه</th>
-                                    <th class="p-4 text-center">الإجراء</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
-                        </table>
-                    </div>
+                <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                            <tr>
+                                <th class="p-4">الطالب</th>
+                                <th class="p-4">الجامعة</th>
+                                <th class="p-4">المادة</th>
+                                <th class="p-4">المبلغ</th>
+                                <th class="p-4 text-center">الإجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -290,7 +250,7 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="font-black text-sm text-white flex items-center gap-2">
                     <i class="fa-solid fa-lock text-cyan-400"></i>
-                    <span>تأكيد الاشتراك عبر Dr Success</span>
+                    <span>تأكيد الاشتراك والدفع</span>
                 </h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
             </div>
@@ -301,30 +261,26 @@
                     <span id="checkoutTitle" class="font-black text-white"></span>
                 </div>
                 <div class="flex justify-between text-xs">
-                    <span class="text-slate-400">المبلغ الإجمالي:</span>
+                    <span class="text-slate-400">المبلغ:</span>
                     <span id="checkoutPrice" class="font-black text-cyan-400 text-sm"></span>
                 </div>
             </div>
 
             <div class="space-y-2">
                 <p class="text-[11px] text-slate-300 font-bold">بيانات التحويل المباشر:</p>
-                <div class="bg-[#090e1a] border border-slate-800 p-3 rounded-xl flex justify-between items-center">
+                <div class="bg-[#090e1a] border border-slate-800 p-3 rounded-xl flex justify-between items-center text-xs">
                     <div>
                         <p class="text-[10px] text-slate-400">إنستاباي (InstaPay)</p>
-                        <p class="text-xs font-mono font-bold text-cyan-300">success.academy@instapay</p>
+                        <p class="font-mono font-bold text-cyan-300">success.academy@instapay</p>
                     </div>
-                    <button onclick="navigator.clipboard.writeText('success.academy@instapay'); alert('تم نسخ الحساب!')" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-200 border border-slate-700 font-bold">
-                        نسخ
-                    </button>
+                    <button onclick="navigator.clipboard.writeText('success.academy@instapay'); alert('تم النسخ!')" class="bg-slate-800 px-3 py-1.5 rounded-lg text-slate-200 border border-slate-700">نسخ</button>
                 </div>
-                <div class="bg-[#090e1a] border border-slate-800 p-3 rounded-xl flex justify-between items-center">
+                <div class="bg-[#090e1a] border border-slate-800 p-3 rounded-xl flex justify-between items-center text-xs">
                     <div>
                         <p class="text-[10px] text-slate-400">فودافون كاش (Vodafone Cash)</p>
-                        <p class="text-xs font-mono font-bold text-cyan-300">010XXXXXXXX</p>
+                        <p class="font-mono font-bold text-cyan-300">010XXXXXXXX</p>
                     </div>
-                    <button onclick="navigator.clipboard.writeText('010XXXXXXXX'); alert('تم نسخ الرقم!')" class="text-[11px] bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-slate-200 border border-slate-700 font-bold">
-                        نسخ
-                    </button>
+                    <button onclick="navigator.clipboard.writeText('010XXXXXXXX'); alert('تم النسخ!')" class="bg-slate-800 px-3 py-1.5 rounded-lg text-slate-200 border border-slate-700">نسخ</button>
                 </div>
             </div>
 
@@ -333,16 +289,15 @@
                     <label class="block text-[11px] font-bold text-slate-300 mb-1">رقم المحفظة / اسم حساب المحول</label>
                     <input type="text" id="paySender" required placeholder="010XXXXXXXX أو اسم الحساب" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
                 </div>
-                <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
-                    تأكيد وإرسال للمحاضر للتفعيل ⚡
+                <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs">
+                    إرسال للمحاضر للتفعيل ⚡
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- JavaScript Data & Logic -->
+    <!-- JS Logic -->
     <script>
-        // قاعدة بيانات المواد مع الصور الطبية عالية الدقة
         const ACADEMY_DATA = {
             dental_anatomy: {
                 id: 'dental_anatomy',
@@ -351,21 +306,14 @@
                 price: 400,
                 icon: '🦷',
                 tag: 'Tooth Morphology & Carving',
-                image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1000&q=80',
-                desc: 'شرح مفصل لجميع تضاريس الأسنان، الأسطح والمصطلحات التشريحية، مع فيديوهات عملية متخصصة للـ Carving.',
+                image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80',
+                desc: 'تضاريس الأسنان، الأسطح والمصطلحات التشريحية، وفيديوهات الكارفينج العملية.',
                 lectures: [
                     { title: 'Lecture 1: Intro to Dental Nomenclature', time: '40 دقيقة', free: true },
-                    { title: 'Lecture 2: Maxillary Central & Lateral Incisors', time: '55 دقيقة', free: false },
-                    { title: 'Lecture 3: Mandibular Incisors Detailed', time: '48 دقيقة', free: false }
+                    { title: 'Lecture 2: Maxillary Incisors Detailed', time: '55 دقيقة', free: false }
                 ],
-                notes: [
-                    { title: 'ملخص مصطلحات وتضاريس الأسنان PDF', free: true },
-                    { title: 'أطلس الكارفينج والشرح العملي الملون', free: false }
-                ],
-                quizzes: [
-                    { title: 'كويز تمهيدي تفاعلي (10 أسئلة)', free: true },
-                    { title: 'بنك أسئلة الـ Incisors الشامل', free: false }
-                ]
+                notes: [{ title: 'ملخص مصطلحات الأسنان PDF', free: true }],
+                quizzes: [{ title: 'كويز تمهيدي تفاعلي', free: true }]
             },
             anatomy: {
                 id: 'anatomy',
@@ -374,21 +322,14 @@
                 price: 400,
                 icon: '🫀',
                 tag: 'Head & Neck Anatomy',
-                image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=1000&q=80',
-                desc: 'تشريح دقيق لمنطقة الرأس والعنق، عظام الجمجمة، العضلات المحركة للفكين، وتفرعات الأعصاب القحفية.',
+                image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=800&q=80',
+                desc: 'تشريح منطقة الرأس والعنق، عظام الجمجمة، العضلات والأعصاب القحفية.',
                 lectures: [
                     { title: 'Lecture 1: General Skull Landmarks', time: '45 دقيقة', free: true },
-                    { title: 'Lecture 2: Muscles of Mastication & TMJ', time: '60 دقيقة', free: false },
-                    { title: 'Lecture 3: Trigeminal & Facial Nerves', time: '52 دقيقة', free: false }
+                    { title: 'Lecture 2: Muscles of Mastication', time: '60 دقيقة', free: false }
                 ],
-                notes: [
-                    { title: 'جداول عظام الرأس والعضلات PDF', free: true },
-                    { title: 'تفريغ محاضرات د. فوزي الكاملة', free: false }
-                ],
-                quizzes: [
-                    { title: 'كويز الجمجمة وعظام الفك', free: true },
-                    { title: 'امتحان Head & Neck التجريبي', free: false }
-                ]
+                notes: [{ title: 'جداول عظام الرأس والعضلات PDF', free: true }],
+                quizzes: [{ title: 'كويز عظام الجمجمة', free: true }]
             },
             histology: {
                 id: 'histology',
@@ -397,21 +338,14 @@
                 price: 400,
                 icon: '🔬',
                 tag: 'Oral & General Tissues',
-                image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=1000&q=80',
-                desc: 'دراسة أنسجة الفم والخلايا الحية، مراحل تكوين المينا والعاج، وتحليل الشرائح المجهرية بدقة فائقة.',
+                image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80',
+                desc: 'علم أنسجة وخلايا الفم، تكوين المينا والعاج، وتحليل الشرائح المجهرية.',
                 lectures: [
                     { title: 'Lecture 1: Cell Biology & Cytology', time: '42 دقيقة', free: true },
-                    { title: 'Lecture 2: Epithelium & Salivary Glands', time: '50 دقيقة', free: false },
-                    { title: 'Lecture 3: Connective Tissue Proper', time: '55 دقيقة', free: false }
+                    { title: 'Lecture 2: Epithelium & Glands', time: '50 دقيقة', free: false }
                 ],
-                notes: [
-                    { title: 'ملخص الأنسجة الطلائية والضامة PDF', free: true },
-                    { title: 'أطلس شرائح العملي المجهري لطب الأسنان', free: false }
-                ],
-                quizzes: [
-                    { title: 'كويز فحص الخلايا السريع', free: true },
-                    { title: 'بنك أسئلة الأنسجة والتعرف على الشرائح', free: false }
-                ]
+                notes: [{ title: 'أطلس شرائح العملي المجهري PDF', free: true }],
+                quizzes: [{ title: 'كويز فحص الخلايا السريع', free: true }]
             },
             biochemistry: {
                 id: 'biochemistry',
@@ -420,21 +354,14 @@
                 price: 400,
                 icon: '🧪',
                 tag: 'Clinical Chemistry & Enzymes',
-                image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=1000&q=80',
-                desc: 'الكيمياء الحيوية الإكلينيكية، حركية الإنزيمات، أيض الطاقة وتطبيقاتها البيوكيميائية في مجال طب الأسنان.',
+                image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
+                desc: 'الكيمياء الحيوية الإكلينيكية، الإنزيمات، وتفاعلات الطاقة وتطبيقاتها.',
                 lectures: [
-                    { title: 'Lecture 1: Bioenergetics & ATP Synthase', time: '45 دقيقة', free: true },
-                    { title: 'Lecture 2: Enzymes: Kinetics & Inhibition', time: '58 دقيقة', free: false },
-                    { title: 'Lecture 3: Carbohydrate Metabolism (Glycolysis)', time: '62 دقيقة', free: false }
+                    { title: 'Lecture 1: Bioenergetics & ATP', time: '45 دقيقة', free: true },
+                    { title: 'Lecture 2: Enzymes Kinetics', time: '58 دقيقة', free: false }
                 ],
-                notes: [
-                    { title: 'مخطط الإنزيمات والتفاعلات الكيميائية PDF', free: true },
-                    { title: 'تفريغات وخرائط أيض الكربوهيدرات والدهون', free: false }
-                ],
-                quizzes: [
-                    { title: 'كويز الإنزيمات وحسابات الطاقة', free: true },
-                    { title: 'امتحان البايو التراكمي الشامل', free: false }
-                ]
+                notes: [{ title: 'مخطط الإنزيمات والتفاعلات PDF', free: true }],
+                quizzes: [{ title: 'كويز حسابات الطاقة والإنزيمات', free: true }]
             },
             microbiology: {
                 id: 'microbiology',
@@ -443,63 +370,44 @@
                 price: 400,
                 icon: '🦠',
                 tag: 'Oral Flora & Sterilization',
-                image: 'https://images.unsplash.com/photo-1583912267670-6575ad472688?auto=format&fit=crop&w=1000&q=80',
-                desc: 'علم الأحياء الدقيقة، بكتيريا تجويف الفم، آليات مكافحة العدوى والبروتوكول الطبي للتعقيم في العيادات.',
+                image: 'https://images.unsplash.com/photo-1583912267670-6575ad472688?auto=format&fit=crop&w=800&q=80',
+                desc: 'بكتيريا تجويف الفم، آليات مكافحة العدوى والتعقيم لعيادات الأسنان.',
                 lectures: [
                     { title: 'Lecture 1: Bacterial Morphology & Gram Stain', time: '40 دقيقة', free: true },
-                    { title: 'Lecture 2: Sterilization Methods in Dental Clinics', time: '52 دقيقة', free: false },
-                    { title: 'Lecture 3: Normal Oral Flora & Caries Bacteria', time: '58 دقيقة', free: false }
+                    { title: 'Lecture 2: Sterilization in Dental Clinics', time: '52 دقيقة', free: false }
                 ],
-                notes: [
-                    { title: 'جدول مقارنة البكتيريا والصبغات PDF', free: true },
-                    { title: 'دليل التعقيم ومكافحة العدوى الكامل', free: false }
-                ],
-                quizzes: [
-                    { title: 'كويز تصنيف البكتيريا والصبغات', free: true },
-                    { title: 'بنك أسئلة الميكروبيولوجي الشامل', free: false }
-                ]
+                notes: [{ title: 'جدول مقارنة البكتيريا والصبغات PDF', free: true }],
+                quizzes: [{ title: 'كويز تصنيف البكتيريا والصبغات', free: true }]
             }
         };
 
         let studentUser = {
             name: 'طالب طب أسنان',
-            email: 'student@dent.kfs.edu',
-            phone: '010XXXXXXXX',
             univ: 'كفر الشيخ الحكومية',
-            year: 'الفرقة الأولى',
             unlocked: []
         };
 
-        let pendingOrders = [
-            { id: 101, name: 'أحمد محمود', phone: '01012345678', univ: 'كفر الشيخ الحكومية', year: 'الفرقة الأولى', itemKey: 'all', itemTitle: 'الباقة الشاملة (5 مواد)', amount: 1625, sender: '01012345678', status: 'pending' },
-            { id: 102, name: 'سارة إبراهيم', phone: '01298765432', univ: 'كفر الشيخ الأهلية', year: 'الفرقة الأولى', itemKey: 'dental_anatomy', itemTitle: 'Dental Anatomy', amount: 400, sender: 'sara@instapay', status: 'pending' }
-        ];
-
+        let pendingOrders = [];
         let currentSubjectKey = 'dental_anatomy';
         let activeModalKey = 'dental_anatomy';
 
         function navigate(view) {
             document.getElementById('viewStudentRegister').classList.add('hidden');
+            document.getElementById('viewCoursesGrid').classList.add('hidden');
             document.getElementById('viewStudentPlatform').classList.add('hidden');
             document.getElementById('viewInstructorLogin').classList.add('hidden');
             document.getElementById('viewInstructorDash').classList.add('hidden');
 
-            document.getElementById('btnStudentNav').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center gap-1.5";
-            document.getElementById('btnInstructorNav').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center gap-1.5";
-
-            if (view === 'student-reg') {
-                document.getElementById('viewStudentRegister').classList.remove('hidden');
-                document.getElementById('btnStudentNav').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5";
-            } else if (view === 'student-home') {
+            if (view === 'courses-grid') {
+                document.getElementById('viewCoursesGrid').classList.remove('hidden');
+                renderCoursesGrid();
+            } else if (view === 'course-view') {
                 document.getElementById('viewStudentPlatform').classList.remove('hidden');
-                document.getElementById('btnStudentNav').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5";
-                renderCourseView();
+                renderCoursePlatform();
             } else if (view === 'instructor-login') {
                 document.getElementById('viewInstructorLogin').classList.remove('hidden');
-                document.getElementById('btnInstructorNav').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center gap-1.5";
             } else if (view === 'instructor-dash') {
                 document.getElementById('viewInstructorDash').classList.remove('hidden');
-                document.getElementById('btnInstructorNav').className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center gap-1.5";
                 renderInstructorDash();
             }
         }
@@ -507,226 +415,200 @@
         function handleRegister(e) {
             e.preventDefault();
             studentUser.name = document.getElementById('regName').value;
-            studentUser.email = document.getElementById('regEmail').value;
-            studentUser.phone = document.getElementById('regPhone').value;
             studentUser.univ = document.getElementById('regUniv').value;
-            studentUser.year = document.getElementById('regYear').value;
 
             document.getElementById('userProfileTag').classList.remove('hidden');
             document.getElementById('userProfileTag').innerHTML = `<i class="fa-solid fa-user-graduate ml-1"></i> ${studentUser.name} (${studentUser.univ})`;
 
-            navigate('student-home');
+            navigate('courses-grid');
         }
 
-        function handleDoctorLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('docEmail').value;
-            let name = "د. محمد رجب";
-            if (email.includes('fawzy')) name = "د. محمد فوزي";
-            else if (email.includes('gammal')) name = "د. محمد الجمال";
-            else if (email.includes('taher')) name = "د. أحمد الطاهر";
+        // رسم كروت الكورسات البصرية الشبيهة بكانفا
+        function renderCoursesGrid() {
+            const container = document.getElementById('cardsGridContainer');
+            container.innerHTML = '';
 
-            document.getElementById('docTag').innerText = name;
-            navigate('instructor-dash');
+            Object.values(ACADEMY_DATA).forEach(course => {
+                const isUnlocked = studentUser.unlocked.includes(course.id) || studentUser.unlocked.includes('all');
+                const card = document.createElement('div');
+                card.className = "course-card bg-[#111a2e] border border-slate-800 hover:border-cyan-500/50 rounded-3xl overflow-hidden shadow-xl transition duration-300 flex flex-col justify-between group";
+
+                card.innerHTML = `
+                    <div>
+                        <!-- صورة المادة العلوية مع التدرج والأيقونة -->
+                        <div class="relative h-44 w-full overflow-hidden">
+                            <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#111a2e] via-transparent to-black/40"></div>
+                            <span class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md border border-slate-700 text-cyan-300 text-[11px] font-black px-2.5 py-1 rounded-xl">
+                                ${course.icon} ${course.tag}
+                            </span>
+                            <span class="absolute bottom-3 right-3 text-2xl font-black text-white drop-shadow-md">
+                                ${course.title}
+                            </span>
+                        </div>
+
+                        <!-- تفاصيل المحاضر والمحتوى -->
+                        <div class="p-5 space-y-3">
+                            <div class="flex items-center gap-2 text-cyan-400 font-extrabold text-xs">
+                                <i class="fa-solid fa-chalkboard-user"></i>
+                                <span>${course.doctor}</span>
+                            </div>
+                            <p class="text-xs text-slate-300 line-clamp-2 leading-relaxed">
+                                ${course.desc}
+                            </p>
+                            <div class="flex items-center gap-3 text-[11px] text-slate-400 pt-1">
+                                <span><i class="fa-solid fa-play text-cyan-500 ml-1"></i> ${course.lectures.length} محاضرات</span>
+                                <span><i class="fa-solid fa-file-pdf text-blue-500 ml-1"></i> مذكرات الشرح</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- أزرار الإجراء السريع والسعر -->
+                    <div class="p-5 pt-0 flex items-center justify-between border-t border-slate-800/80 mt-2">
+                        <div>
+                            <span class="text-[10px] text-slate-400 block">قيمة الاشتراك</span>
+                            <span class="text-sm font-black text-cyan-400">400 ج.م</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openCourseView('${course.id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition border border-slate-700">
+                                استعراض 👁️
+                            </button>
+                            ${!isUnlocked ? `
+                                <button onclick="triggerCheckout('${course.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black px-3 py-2 rounded-xl transition shadow">
+                                    اشتراك ⚡
+                                </button>
+                            ` : `
+                                <span class="bg-emerald-950/80 text-emerald-300 text-[11px] font-black px-3 py-2 rounded-xl border border-emerald-500/30">
+                                    مفعل ✅
+                                </span>
+                            `}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function onSelectSubject(key) {
+        function openCourseView(key) {
             currentSubjectKey = key;
-            renderCourseView();
+            navigate('course-view');
         }
 
-        function renderCourseView() {
+        function renderCoursePlatform() {
             const data = ACADEMY_DATA[currentSubjectKey];
             const isUnlocked = studentUser.unlocked.includes(currentSubjectKey) || studentUser.unlocked.includes('all');
 
-            // Hero Card البصري الفخم مع الصورة والتدرج
-            const heroCard = document.getElementById('heroCard');
-            heroCard.style.backgroundImage = `linear-gradient(to top, rgba(9, 14, 26, 0.95) 15%, rgba(9, 14, 26, 0.6) 100%), url('${data.image}')`;
-            heroCard.style.backgroundSize = 'cover';
-            heroCard.style.backgroundPosition = 'center';
-
-            heroCard.innerHTML = `
-                <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+            const hero = document.getElementById('heroCard');
+            hero.style.backgroundImage = `linear-gradient(to top, rgba(9, 14, 26, 0.95) 15%, rgba(9, 14, 26, 0.5) 100%), url('${data.image}')`;
+            hero.style.backgroundSize = 'cover';
+            hero.innerHTML = `
+                <div class="relative z-10 flex items-center justify-between">
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-2xl">${data.icon}</span>
-                            <span class="text-[11px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-0.5 rounded-full font-bold">
-                                ${data.tag}
-                            </span>
-                            <span class="text-[11px] font-bold px-3 py-0.5 rounded-full ${isUnlocked ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'}">
-                                ${isUnlocked ? 'مفعل بالكامل ✅' : '400 ج.م'}
-                            </span>
-                        </div>
-                        <h2 class="text-3xl font-black text-white tracking-wide">${data.title}</h2>
-                        <p class="text-xs text-cyan-300 font-extrabold mt-1.5 flex items-center gap-1.5">
-                            <i class="fa-solid fa-chalkboard-user"></i> المحاضر: ${data.doctor}
-                        </p>
-                        <p class="text-xs text-slate-300 mt-2 max-w-2xl leading-relaxed">${data.desc}</p>
+                        <h2 class="text-2xl font-black text-white">${data.title}</h2>
+                        <p class="text-xs text-cyan-300 font-bold mt-1">${data.doctor} • ${data.tag}</p>
                     </div>
-
-                    <div class="flex-shrink-0">
-                        ${!isUnlocked ? `
-                            <button onclick="triggerCheckout('${data.id}')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black px-6 py-3.5 rounded-2xl transition text-xs shadow-xl shadow-cyan-600/40 flex items-center gap-2">
-                                <i class="fa-solid fa-unlock"></i> اشترك في المادة (400 ج.م)
-                            </button>
-                        ` : `
-                            <div class="bg-emerald-950/80 border border-emerald-500/40 px-5 py-3 rounded-2xl text-emerald-300 text-xs font-black flex items-center gap-2 backdrop-blur-md">
-                                <i class="fa-solid fa-circle-check text-base"></i> المادة مفعلة بالكامل بحسابك
-                            </div>
-                        `}
-                    </div>
+                    ${!isUnlocked ? `
+                        <button onclick="triggerCheckout('${data.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-5 py-2.5 rounded-xl text-xs">
+                            اشتراك (400 ج.م)
+                        </button>
+                    ` : '<span class="text-emerald-400 text-xs font-black">مفعل بحسابك ✅</span>'}
                 </div>
             `;
 
             // المحاضرات
-            const lecContainer = document.getElementById('lectureList');
-            lecContainer.innerHTML = '';
-            data.lectures.forEach(lec => {
-                const available = lec.free || isUnlocked;
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-xl border text-xs flex items-center justify-between cursor-pointer transition ${available ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500 text-slate-200' : 'bg-[#111a2e]/40 border-slate-800 text-slate-500'}`;
-                div.onclick = () => {
-                    if (available) {
-                        document.getElementById('currentScreenTitle').innerText = lec.title;
-                    } else {
-                        triggerCheckout(data.id);
-                    }
-                };
-                div.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <i class="fa-solid ${available ? (lec.free ? 'fa-play text-emerald-400' : 'fa-play text-cyan-400') : 'fa-lock text-amber-400'}"></i>
-                        <div>
-                            <p class="font-bold">${lec.title}</p>
-                            <span class="text-[10px] text-slate-500">${lec.time}</span>
-                        </div>
-                    </div>
-                    ${lec.free ? '<span class="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold">معاينة مجانية</span>' : (!available ? '<span class="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold">🔒 مغلق</span>' : '')}
-                `;
-                lecContainer.appendChild(div);
+            const lecBox = document.getElementById('lectureList');
+            lecBox.innerHTML = '';
+            data.lectures.forEach(l => {
+                const can = l.free || isUnlocked;
+                const d = document.createElement('div');
+                d.className = `p-3 rounded-xl border text-xs flex justify-between cursor-pointer ${can ? 'bg-[#111a2e] border-slate-800' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+                d.innerHTML = `<span>${l.title}</span> ${can ? '<i class="fa-solid fa-play text-cyan-400"></i>' : '<i class="fa-solid fa-lock text-amber-400"></i>'}`;
+                lecBox.appendChild(d);
             });
 
             // المذكرات
-            const noteContainer = document.getElementById('notesList');
-            noteContainer.innerHTML = '';
-            data.notes.forEach(note => {
-                const available = note.free || isUnlocked;
-                const div = document.createElement('div');
-                div.className = `p-2.5 rounded-xl border text-xs flex items-center justify-between ${available ? 'bg-[#111a2e] border-slate-800 text-slate-200' : 'bg-[#111a2e]/40 border-slate-800 text-slate-500'}`;
-                div.innerHTML = `
-                    <span>${note.title}</span>
-                    ${available ? '<i class="fa-solid fa-download text-cyan-400 cursor-pointer"></i>' : '<i class="fa-solid fa-lock text-amber-400"></i>'}
-                `;
-                noteContainer.appendChild(div);
+            const noteBox = document.getElementById('notesList');
+            noteBox.innerHTML = '';
+            data.notes.forEach(n => {
+                const d = document.createElement('div');
+                d.className = 'p-2.5 rounded-xl border border-slate-800 text-xs flex justify-between bg-[#111a2e]';
+                d.innerHTML = `<span>${n.title}</span> <i class="fa-solid fa-download text-blue-400"></i>`;
+                noteBox.appendChild(d);
             });
 
             // الكويزات
-            const quizContainer = document.getElementById('quizList');
-            quizContainer.innerHTML = '';
-            data.quizzes.forEach(quiz => {
-                const available = quiz.free || isUnlocked;
-                const div = document.createElement('div');
-                div.className = `p-2.5 rounded-xl border text-xs flex items-center justify-between ${available ? 'bg-[#111a2e] border-slate-800 text-slate-200' : 'bg-[#111a2e]/40 border-slate-800 text-slate-500'}`;
-                div.innerHTML = `
-                    <span>${quiz.title}</span>
-                    ${available ? '<i class="fa-solid fa-arrow-left text-purple-400 cursor-pointer"></i>' : '<i class="fa-solid fa-lock text-amber-400"></i>'}
-                `;
-                quizContainer.appendChild(div);
+            const quizBox = document.getElementById('quizList');
+            quizBox.innerHTML = '';
+            data.quizzes.forEach(q => {
+                const d = document.createElement('div');
+                d.className = 'p-2.5 rounded-xl border border-slate-800 text-xs flex justify-between bg-[#111a2e]';
+                d.innerHTML = `<span>${q.title}</span> <i class="fa-solid fa-arrow-left text-purple-400"></i>`;
+                quizBox.appendChild(d);
             });
-
-            document.getElementById('screenSubInfo').innerText = `${data.title} — ${data.doctor}`;
         }
 
         function triggerCheckout(key) {
             activeModalKey = key;
             if (key === 'all') {
-                document.getElementById('checkoutTitle').innerText = 'الباقة الشاملة (جميع الـ 5 مواد)';
-                document.getElementById('checkoutPrice').innerText = '1625 ج.م (بدلاً من 2000 ج.م)';
+                document.getElementById('checkoutTitle').innerText = 'باقة الترم الشاملة (5 مواد)';
+                document.getElementById('checkoutPrice').innerText = '1625 ج.م';
             } else {
-                const item = ACADEMY_DATA[key];
-                document.getElementById('checkoutTitle').innerText = `${item.title} — ${item.doctor}`;
+                document.getElementById('checkoutTitle').innerText = ACADEMY_DATA[key].title + ' — ' + ACADEMY_DATA[key].doctor;
                 document.getElementById('checkoutPrice').innerText = '400 ج.م';
             }
             document.getElementById('modalCheckout').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('modalCheckout').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('modalCheckout').classList.add('hidden'); }
 
         function handleSendPayment(e) {
             e.preventDefault();
-            const sender = document.getElementById('paySender').value;
-            const isAll = activeModalKey === 'all';
-
             pendingOrders.push({
                 id: Date.now(),
                 name: studentUser.name || 'طالب جديد',
-                phone: studentUser.phone || '010XXXXXXXX',
                 univ: studentUser.univ || 'كفر الشيخ',
-                year: studentUser.year || 'الفرقة الأولى',
                 itemKey: activeModalKey,
-                itemTitle: isAll ? 'الباقة الشاملة (5 مواد)' : ACADEMY_DATA[activeModalKey].title,
-                amount: isAll ? 1625 : 400,
-                sender: sender,
-                status: 'pending'
+                itemTitle: activeModalKey === 'all' ? 'الباقة الشاملة' : ACADEMY_DATA[activeModalKey].title,
+                amount: activeModalKey === 'all' ? 1625 : 400
             });
-
-            alert('تم إرسال طلب التفعيل بنجاح! سيتم فك القفل فور مراجعة المحاضر للإيصال.');
+            alert('تم استلام الطلب! سيتم التفعيل فور التحقق.');
             closeModal();
         }
 
-        function renderInstructorDash() {
-            const table = document.getElementById('dashTableBody');
-            table.innerHTML = '';
-            const pending = pendingOrders.filter(o => o.status === 'pending');
-            document.getElementById('pendingBadge').innerText = `${pending.length} طلب معلق`;
+        function handleDoctorLogin(e) {
+            e.preventDefault();
+            navigate('instructor-dash');
+        }
 
-            pendingOrders.forEach(ord => {
+        function renderInstructorDash() {
+            const tbody = document.getElementById('dashTableBody');
+            tbody.innerHTML = '';
+            pendingOrders.forEach(o => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
-                    <td class="p-4">
-                        <div class="font-bold text-white">${ord.name}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${ord.phone}</div>
-                    </td>
-                    <td class="p-4">
-                        <div>${ord.univ}</div>
-                        <div class="text-[10px] text-cyan-400 font-bold">${ord.year}</div>
-                    </td>
-                    <td class="p-4 font-bold ${ord.itemKey === 'all' ? 'text-amber-300' : 'text-slate-200'}">
-                        ${ord.itemTitle}
-                    </td>
-                    <td class="p-4 font-black text-cyan-400">${ord.amount} ج.م</td>
-                    <td class="p-4 font-mono text-[11px] text-slate-400">${ord.sender}</td>
+                    <td class="p-4 font-bold text-white">${o.name}</td>
+                    <td class="p-4">${o.univ}</td>
+                    <td class="p-4">${o.itemTitle}</td>
+                    <td class="p-4 font-bold text-cyan-400">${o.amount} ج.م</td>
                     <td class="p-4 text-center">
-                        ${ord.status === 'pending' ? `
-                            <button onclick="approveOrder(${ord.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[11px] px-3.5 py-1.5 rounded-xl transition shadow">
-                                <i class="fa-solid fa-check ml-1"></i> تفعيل المحتوى
-                            </button>
-                        ` : `
-                            <span class="text-[11px] text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-xl font-bold">تم التفعيل ✅</span>
-                        `}
+                        <button onclick="approveOrder(${o.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل</button>
                     </td>
                 `;
-                table.appendChild(tr);
+                tbody.appendChild(tr);
             });
         }
 
         function approveOrder(id) {
             const ord = pendingOrders.find(o => o.id === id);
-            if (ord) {
-                ord.status = 'approved';
-                if (!studentUser.unlocked.includes(ord.itemKey)) {
-                    studentUser.unlocked.push(ord.itemKey);
-                }
-                renderInstructorDash();
-                renderCourseView();
-                alert(`تم تفعيل (${ord.itemTitle}) بنجاح للطالب ${ord.name}!`);
+            if(ord) {
+                studentUser.unlocked.push(ord.itemKey);
+                alert(`تم تفعيل الكورس للطالب ${ord.name}`);
+                navigate('courses-grid');
             }
         }
 
-        // تشغيل أولي للشاشة
-        navigate('student-reg');
+        // تشغيل أولي على شاشة التسجيل
+        document.getElementById('viewStudentRegister').classList.remove('hidden');
     </script>
 </body>
 </html>
