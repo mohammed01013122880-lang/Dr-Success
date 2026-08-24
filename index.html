@@ -429,7 +429,7 @@
       </section>
     </section>
 
-    <!-- 7. لوحة تحكم المالك والمحاضرين -->
+    <!-- 7. لوحة تحكم المالك والمحاضرين مع سجل الحسابات وتصدير Excel -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -440,7 +440,7 @@
                 <span id="dashTitle">لوحة التحكم المركزية</span>
                 <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
               </h2>
-              <p class="text-xs text-slate-400 mt-1">إدارة المحاضرات، المذكرات، وقبول الاشتراكات المالية</p>
+              <p class="text-xs text-slate-400 mt-1">إدارة المحاضرات، المذكرات، الحسابات المسجلة، وقبول الاشتراكات</p>
             </div>
             <button onclick="navigate('courses-grid')" class="text-xs bg-cyan-600/10 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-xl font-bold">
               معاينة كطالب 👁️
@@ -467,19 +467,23 @@
           </div>
         </div>
 
-        <div class="flex bg-[#090e1a] p-1.5 rounded-2xl border border-slate-800 text-xs font-bold gap-1">
-          <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-4 rounded-xl bg-purple-600 text-white shadow font-black">
-            رفع محاضرة ومحتوى جديد
+        <!-- أزرار تبويبات لوحة التحكم -->
+        <div class="flex flex-wrap bg-[#090e1a] p-1.5 rounded-2xl border border-slate-800 text-xs font-bold gap-1">
+          <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white shadow font-black whitespace-nowrap">
+            رفع محتوى جديد
           </button>
-          <button onclick="switchDashTab('tab-enrollments', this)" id="btnTabEnrollments" class="flex-1 py-2.5 px-4 rounded-xl text-slate-400 hover:text-white font-bold">
-            طلبات اشتراك الطلاب وتحويل الفلوس
+          <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            سجل الطلاب والحسابات (Excel) 📊
           </button>
-          <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="flex-1 py-2.5 px-4 rounded-xl text-slate-400 hover:text-white font-bold">
-            اعتماد المحاضرين الجدد (خاص بالمالك)
+          <button onclick="switchDashTab('tab-enrollments', this)" id="btnTabEnrollments" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            طلبات الاشتراكات والتحويل
+          </button>
+          <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            اعتماد المحاضرين (المالك)
           </button>
         </div>
 
-        <!-- رفع محتوى -->
+        <!-- تبويب 1: رفع محتوى -->
         <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
             <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm border-b border-slate-800 pb-3">
@@ -560,7 +564,42 @@
           </div>
         </div>
 
-        <!-- جدول طلبات اشتراك الطلاب -->
+        <!-- تبويب 2: سجل وتجميع الحسابات والطلاب مع تصدير Excel -->
+        <div id="dashSectionUsers" class="hidden space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-[#111a2e] p-4 rounded-2xl border border-slate-800 shadow-xl">
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="text" id="searchUserInput" oninput="filterUsersTable()" placeholder="ابحث باسم الطالب أو الإيميل أو الهاتف..." class="bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white w-64 focus:outline-none focus:border-cyan-500">
+              <select id="filterRoleSelect" onchange="filterUsersTable()" class="bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                <option value="all">كل الحسابات</option>
+                <option value="student">الطلاب فقط</option>
+                <option value="doctor">المحاضرين فقط</option>
+              </select>
+            </div>
+            <button onclick="exportUsersToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 transition">
+              <i class="fa-solid fa-file-excel"></i> تنزيل شيت Excel بالأسماء (CSV)
+            </button>
+          </div>
+
+          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-right text-xs">
+                <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                  <tr>
+                    <th class="p-4">الاسم</th>
+                    <th class="p-4">النوع</th>
+                    <th class="p-4">البريد الإلكتروني</th>
+                    <th class="p-4">الواتساب</th>
+                    <th class="p-4">الجامعة والكلية</th>
+                    <th class="p-4">المادة / الحالة</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- تبويب 3: جدول طلبات اشتراك الطلاب -->
         <div id="dashSectionEnrollments" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-[#0f172a] border-b border-slate-800 font-bold text-xs text-cyan-400">
             طلبات الطلاب الذين قاموا بالتحويل
@@ -583,7 +622,7 @@
           </div>
         </div>
 
-        <!-- جدول المحاضرين المعلقين -->
+        <!-- تبويب 4: جدول المحاضرين المعلقين -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين الجدد المعلقة للاعتماد (خاص بالمالك)
@@ -629,6 +668,7 @@
     let currentActiveLecture = null;
     let currentVideoElement = null;
     let currentSubjectLectures = [];
+    let allPlatformUsers = [];
 
     let pdfDoc = null;
     let pdfPageNum = 1;
@@ -935,33 +975,21 @@
       const iframe = document.getElementById('activeIframe');
 
       if (vid) {
-        if (vid.requestFullscreen) {
-          vid.requestFullscreen();
-        } else if (vid.webkitEnterFullscreen) {
-          vid.webkitEnterFullscreen();
-        } else if (vid.webkitRequestFullscreen) {
-          vid.webkitRequestFullscreen();
-        } else if (vid.msRequestFullscreen) {
-          vid.msRequestFullscreen();
-        }
+        if (vid.requestFullscreen) vid.requestFullscreen();
+        else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
+        else if (vid.webkitRequestFullscreen) vid.webkitRequestFullscreen();
+        else if (vid.msRequestFullscreen) vid.msRequestFullscreen();
         return;
       }
 
       const target = iframe || container;
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (target.requestFullscreen) {
-          target.requestFullscreen();
-        } else if (target.webkitRequestFullscreen) {
-          target.webkitRequestFullscreen();
-        } else if (target.msRequestFullscreen) {
-          target.msRequestFullscreen();
-        }
+        if (target.requestFullscreen) target.requestFullscreen();
+        else if (target.webkitRequestFullscreen) target.webkitRequestFullscreen();
+        else if (target.msRequestFullscreen) target.msRequestFullscreen();
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       }
     }
 
@@ -1030,7 +1058,6 @@
       document.getElementById('progressBarFill').style.width = `${percent}%`;
     }
 
-    // نظام التحميل والتخزين المحلي المطور
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) { alert('اختر محاضرة أولاً!'); return; }
       const btn = document.getElementById('btnDownloadOffline');
@@ -1038,7 +1065,6 @@
 
       try {
         const videoUrl = currentActiveLecture.video_url;
-
         const response = await fetch(videoUrl, { mode: 'cors' });
         if (!response.ok) throw new Error('فشل جلب ملف الفيديو');
         
@@ -1148,7 +1174,7 @@
         pdfPageNum = 1;
         renderPdfPage(pdfPageNum);
       } catch(e) {
-        alert('تعذر فتح ملف الـ PDF. تأكد من أن الرابط مباشر وينتهي بـ .pdf ومن تفعيل الـ CORS.');
+        alert('تعذر فتح ملف الـ PDF. تأكد من أن الرابط مباشر وينتهي بـ .pdf.');
       }
     }
 
@@ -1229,13 +1255,11 @@
       document.getElementById('platformSubjectTitle').innerText = data.title;
       const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
 
-      // جلب الفيديوهات فقط (التي تحتوي على video_url)
       const { data: dbLecs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey).not('video_url', 'is', null);
       currentSubjectLectures = dbLecs || [];
       renderLectureListUI();
       updateProgressDisplay();
 
-      // جلب المذكرات فقط (التي تحتوي على pdf_url)
       const { data: dbPdfs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey).not('pdf_url', 'is', null);
       const noteBox = document.getElementById('notesList');
       noteBox.innerHTML = '';
@@ -1318,18 +1342,101 @@
     }
 
     function switchDashTab(tab, btnElement) {
-      ['dashSectionUpload', 'dashSectionEnrollments', 'dashSectionDoctors'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      ['btnTabUpload', 'btnTabEnrollments', 'btnTabDoctors'].forEach(id => {
-        document.getElementById(id).className = 'flex-1 py-2.5 px-4 rounded-xl text-slate-400 hover:text-white font-bold';
+      ['dashSectionUpload', 'dashSectionUsers', 'dashSectionEnrollments', 'dashSectionDoctors'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      ['btnTabUpload', 'btnTabUsers', 'btnTabEnrollments', 'btnTabDoctors'].forEach(id => {
+        document.getElementById(id).className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap';
       });
 
       if (btnElement) {
-        btnElement.className = 'flex-1 py-2.5 px-4 rounded-xl bg-purple-600 text-white shadow font-black';
+        btnElement.className = 'flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white shadow font-black whitespace-nowrap';
       }
 
       if (tab === 'tab-upload') document.getElementById('dashSectionUpload').classList.remove('hidden');
+      if (tab === 'tab-users') { document.getElementById('dashSectionUsers').classList.remove('hidden'); loadAllUsersDirectory(); }
       if (tab === 'tab-enrollments') { document.getElementById('dashSectionEnrollments').classList.remove('hidden'); loadPendingEnrollments(); }
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
+    }
+
+    // جلب وتجميع كل الحسابات
+    async function loadAllUsersDirectory() {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">جاري تجميع بيانات المسجلين...</td></tr>';
+
+      const isOwner = currentUser && (currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase() || currentUser.role === 'super_admin');
+
+      let query = supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+      const { data: users, error } = await query;
+
+      if (error || !users) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-rose-400">حدث خطأ أثناء جلب البيانات</td></tr>';
+        return;
+      }
+
+      allPlatformUsers = users;
+      renderUsersTable(allPlatformUsers);
+    }
+
+    function renderUsersTable(list) {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-slate-500">لا توجد حسابات مطابقة</td></tr>';
+        return;
+      }
+
+      list.forEach(u => {
+        const isDoc = u.role === 'doctor';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-4 font-bold text-white">${u.full_name || '--'}</td>
+          <td class="p-4">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isDoc ? 'bg-purple-500/20 text-purple-300' : 'bg-cyan-500/20 text-cyan-300'}">
+              ${isDoc ? 'محاضر' : 'طالب'}
+            </span>
+          </td>
+          <td class="p-4 text-slate-400 font-mono">${u.email || '--'}</td>
+          <td class="p-4 text-cyan-300 font-mono">${u.phone || '--'}</td>
+          <td class="p-4 text-slate-300">${u.university ? `${u.university} (${u.faculty || ''})` : '--'}</td>
+          <td class="p-4 font-bold">${isDoc ? (u.assigned_subject || 'عام') : (u.is_approved ? 'نشط ✅' : 'معلق ⏳')}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterUsersTable() {
+      const q = (document.getElementById('searchUserInput').value || '').toLowerCase();
+      const role = document.getElementById('filterRoleSelect').value;
+
+      const filtered = allPlatformUsers.filter(u => {
+        const matchQuery = (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+                           (u.email && u.email.toLowerCase().includes(q)) ||
+                           (u.phone && u.phone.includes(q)) ||
+                           (u.university && u.university.toLowerCase().includes(q));
+        const matchRole = role === 'all' ? true : u.role === role;
+        return matchQuery && matchRole;
+      });
+
+      renderUsersTable(filtered);
+    }
+
+    // تصدير ملف إكسيل
+    function exportUsersToCSV() {
+      if (allPlatformUsers.length === 0) { alert('لا توجد بيانات لتصديرها'); return; }
+      
+      let csvContent = "\uFEFFالاسم,النوع,البريد الإلكتروني,الهاتف,الجامعة,الكلية,المادة_المسندة\n";
+      allPlatformUsers.forEach(u => {
+        csvContent += `"${u.full_name || ''}","${u.role === 'doctor' ? 'محاضر' : 'طالب'}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}","${u.assigned_subject || ''}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `dr_success_users_${Date.now()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     async function loadPendingEnrollments() {
