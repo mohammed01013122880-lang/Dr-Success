@@ -502,10 +502,10 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو المباشر (Bunny / Vimeo / سيرفر محمي / Drive)</label>
-                                <input type="url" id="lectureVideoUrl" required placeholder="https://..." class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+                                <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو المباشر (Bunny / Google Drive / Vimeo / YouTube)</label>
+                                <input type="url" id="lectureVideoUrl" required placeholder="https://drive.google.com/file/d/..." class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
                             </div>
-                            <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
+                            <button type="submit" id="btnUploadLecture" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
                                 نشر المحاضرة في المنهج 🚀
                             </button>
                         </form>
@@ -576,7 +576,7 @@
                         <span class="flex items-center gap-2">
                             <i class="fa-solid fa-user-shield"></i> طلبات انضمام المحاضرين وتعيين المواد (خاص بـ د. محمد رجب)
                         </span>
-                        <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2.5 py-0.5 rounded-full">Owner Super Admin</span>
+                        <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2.5 py-0.5 rounded-full">Super Admin</span>
                     </div>
                     <table class="w-full text-right text-xs">
                         <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
@@ -667,10 +667,7 @@
                 tag: 'Tooth Morphology & Carving',
                 image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80',
                 desc: 'تضاريس الأسنان، الأسطح والمصطلحات التشريحية، وفيديوهات الكارفينج العملية.',
-                lectures: [
-                    { title: 'Lecture 1: Intro to Dental Nomenclature', time: '40 دقيقة', free: true },
-                    { title: 'Lecture 2: Maxillary Incisors Detailed', time: '55 دقيقة', free: false }
-                ],
+                lectures: [],
                 notes: [{ title: 'ملخص مصطلحات الأسنان PDF', free: true }],
                 quizzes: [{ title: 'كويز تمهيدي تفاعلي', free: true }]
             },
@@ -684,10 +681,7 @@
                 tag: 'Head & Neck Anatomy',
                 image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=800&q=80',
                 desc: 'تشريح منطقة الرأس والعنق، عظام الجمجمة، العضلات والأعصاب القحفية.',
-                lectures: [
-                    { title: 'Lecture 1: General Skull Landmarks', time: '45 دقيقة', free: true },
-                    { title: 'Lecture 2: Muscles of Mastication', time: '60 دقيقة', free: false }
-                ],
+                lectures: [],
                 notes: [{ title: 'جداول عظام الرأس والعضلات PDF', free: true }],
                 quizzes: [{ title: 'كويز عظام الجمجمة', free: true }]
             },
@@ -701,10 +695,7 @@
                 tag: 'Oral & General Tissues',
                 image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80',
                 desc: 'علم أنسجة وخلايا الفم، تكوين المينا والعاج، وتحليل الشرائح المجهرية.',
-                lectures: [
-                    { title: 'Lecture 1: Cell Biology & Cytology', time: '42 دقيقة', free: true },
-                    { title: 'Lecture 2: Epithelium & Glands', time: '50 دقيقة', free: false }
-                ],
+                lectures: [],
                 notes: [{ title: 'أطلس شرائح العملي المجهري PDF', free: true }],
                 quizzes: [{ title: 'كويز فحص الخلايا السريع', free: true }]
             },
@@ -718,10 +709,7 @@
                 tag: 'Clinical Chemistry & Enzymes',
                 image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80',
                 desc: 'الكيمياء الحيوية الإكلينيكية، الإنزيمات، وتفاعلات الطاقة وتطبيقاتها.',
-                lectures: [
-                    { title: 'Lecture 1: Bioenergetics & ATP', time: '45 دقيقة', free: true },
-                    { title: 'Lecture 2: Enzymes Kinetics', time: '58 دقيقة', free: false }
-                ],
+                lectures: [],
                 notes: [{ title: 'مخطط الإنزيمات والتفاعلات PDF', free: true }],
                 quizzes: [{ title: 'كويز حسابات الطاقة والإنزيمات', free: true }]
             },
@@ -735,10 +723,7 @@
                 tag: 'Oral Flora & Sterilization',
                 image: 'https://images.unsplash.com/photo-1583912267670-6575ad472688?auto=format&fit=crop&w=800&q=80',
                 desc: 'بكتيريا تجويف الفم، آليات مكافحة العدوى والتعقيم لعيادات الأسنان.',
-                lectures: [
-                    { title: 'Lecture 1: Bacterial Morphology & Gram Stain', time: '40 دقيقة', free: true },
-                    { title: 'Lecture 2: Sterilization in Dental Clinics', time: '52 دقيقة', free: false }
-                ],
+                lectures: [],
                 notes: [{ title: 'جدول مقارنة البكتيريا والصبغات PDF', free: true }],
                 quizzes: [{ title: 'كويز تصنيف البكتيريا والصبغات', free: true }]
             }
@@ -749,12 +734,51 @@
         let currentSubjectKey = 'dental_anatomy';
         let activeModalKey = 'dental_anatomy';
 
+        // دالة تحويل رابط Google Drive للـ preview لتشغيل الفيديو داخل مشغل الموقع
+        function formatVideoUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com')) {
+                const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://drive.google.com/file/d/${match[1]}/preview`;
+                }
+            }
+            return url;
+        }
+
         async function initAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 await loadUserProfile(session.user.id, session.user.email);
             }
+            await fetchAllLecturesFromDatabase();
             navigate('landing');
+        }
+
+        // جلب المحاضرات المرفوعة حياً من Supabase
+        async function fetchAllLecturesFromDatabase() {
+            const { data: dbLectures } = await supabaseClient
+                .from('lectures')
+                .select('*')
+                .order('id', { ascending: true });
+
+            if (dbLectures && dbLectures.length > 0) {
+                dbLectures.forEach(lec => {
+                    if (ACADEMY_DATA[lec.subject_id]) {
+                        // تجنب التكرار
+                        const exists = ACADEMY_DATA[lec.subject_id].lectures.some(l => l.title === lec.title);
+                        if (!exists) {
+                            ACADEMY_DATA[lec.subject_id].lectures.push({
+                                id: lec.id,
+                                title: lec.title,
+                                time: lec.duration,
+                                video_url: lec.video_url,
+                                free: lec.is_free
+                            });
+                        }
+                    }
+                });
+            }
         }
 
         async function loadUserProfile(userId, email) {
@@ -771,7 +795,7 @@
                     id: userId, 
                     email: email, 
                     role: isOwner ? 'super_admin' : profile.role,
-                    full_name: isOwner ? 'د. محمد رجب (Owner)' : profile.full_name,
+                    full_name: isOwner ? 'د. محمد رجب (المالك)' : profile.full_name,
                     is_approved: isOwner ? true : profile.is_approved,
                     assigned_subject: profile.assigned_subject
                 };
@@ -779,7 +803,7 @@
                     await loadUserEnrollments(userId);
                 }
             } else if (isOwner) {
-                currentUser = { id: userId, email: email, role: 'super_admin', full_name: 'د. محمد رجب (Owner)', is_approved: true };
+                currentUser = { id: userId, email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)', is_approved: true };
             }
             updateUserUI();
         }
@@ -903,7 +927,7 @@
             }
         }
 
-        // طلب انضمام كمحاضر (يظل معلقاً حتى موافقة الأونر)
+        // طلب انضمام كمحاضر
         async function handleDoctorRegister(e) {
             e.preventDefault();
             const btn = document.getElementById('btnNewDocSubmit');
@@ -927,11 +951,11 @@
                         university: 'كفر الشيخ',
                         role: 'doctor',
                         assigned_subject: subject,
-                        is_approved: false, // لا يدخل إلا بعد اعتمادك
+                        is_approved: false,
                         email: email
                     }]);
 
-                    alert("تم إرسال طلب الانضمام بنجاح! سيتم مراجعته وتعيينك للمادة من قبل إدارة المنصة.");
+                    alert("تم إرسال طلب الانضمام بنجاح! سيتم مراجعته واعتماده من قبل إدارة المنصة.");
                     openDoctorTab('login');
                 }
             } catch (err) {
@@ -941,7 +965,7 @@
             }
         }
 
-        // دخول كمحاضر / Owner مع التحقق الصارم من الموافقة
+        // دخول كمحاضر / Owner
         async function handleDoctorLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('btnDocLoginSubmit');
@@ -954,7 +978,6 @@
             try {
                 let authRes = await supabaseClient.auth.signInWithPassword({ email, password: pass });
 
-                // تهيئة حساب الأونر تلقائياً في السيرفر إن لم يكن قد أنشئ مسبقاً
                 if (authRes.error && isOwner) {
                     const signUpRes = await supabaseClient.auth.signUp({ email, password: pass });
                     if (!signUpRes.error && signUpRes.data.user) {
@@ -984,7 +1007,6 @@
                     .eq('id', user.id)
                     .single();
 
-                // شرط أمان: رفض أي حساب محاضر غير معتمد
                 if (!isOwner) {
                     if (!profile || (profile.role !== 'doctor' && profile.role !== 'super_admin')) {
                         throw new Error("هذا الحساب ليس مسجلاً كمحاضر.");
@@ -1033,22 +1055,37 @@
             }
         }
 
-        function handleUploadLecture(e) {
+        // إضافة ونشر محاضرة حقيقية في جدول lectures في Supabase
+        async function handleUploadLecture(e) {
             e.preventDefault();
+            const btn = document.getElementById('btnUploadLecture');
+            btn.disabled = true;
+
             const subKey = document.getElementById('uploadSubjectSelect').value;
             const title = document.getElementById('lectureTitle').value;
             const duration = document.getElementById('lectureDuration').value;
+            const videoUrl = document.getElementById('lectureVideoUrl').value;
             const isFree = document.getElementById('lectureType').value === 'true';
 
-            if (ACADEMY_DATA[subKey]) {
-                ACADEMY_DATA[subKey].lectures.push({
+            try {
+                const { error } = await supabaseClient.from('lectures').insert([{
+                    subject_id: subKey,
                     title: title,
-                    time: duration,
-                    free: isFree
-                });
-                alert(`تم نشر المحاضرة (${title}) بنجاح في مادة ${ACADEMY_DATA[subKey].title}!`);
+                    duration: duration,
+                    video_url: videoUrl,
+                    is_free: isFree
+                }]);
+
+                if (error) throw error;
+
+                alert(`تم نشر المحاضرة (${title}) بنجاح وحفظها في قاعدة البيانات!`);
                 document.getElementById('lectureTitle').value = '';
                 document.getElementById('lectureVideoUrl').value = '';
+                await fetchAllLecturesFromDatabase();
+            } catch (err) {
+                alert("خطأ في نشر المحاضرة: " + err.message);
+            } finally {
+                btn.disabled = false;
             }
         }
 
@@ -1061,10 +1098,10 @@
             if (ACADEMY_DATA[subKey]) {
                 if (type === 'note') {
                     ACADEMY_DATA[subKey].notes.push({ title: title, free: false });
-                    alert(`تم حفظ ونشر المذكرة بنجاح في مادة ${ACADEMY_DATA[subKey].title}!`);
+                    alert(`تم نشر المذكرة بنجاح في مادة ${ACADEMY_DATA[subKey].title}!`);
                 } else {
                     ACADEMY_DATA[subKey].quizzes.push({ title: title, free: false });
-                    alert(`تم حفظ ونشر الكويز بنجاح في مادة ${ACADEMY_DATA[subKey].title}!`);
+                    alert(`تم نشر الكويز بنجاح في مادة ${ACADEMY_DATA[subKey].title}!`);
                 }
                 document.getElementById('resTitle').value = '';
                 document.getElementById('resUrl').value = '';
@@ -1086,10 +1123,12 @@
 
             const { count: pendingC } = await supabaseClient.from('enrollments').select('*', { count: 'exact', head: true }).eq('status', 'pending');
             const { count: activeC } = await supabaseClient.from('enrollments').select('*', { count: 'exact', head: true }).eq('status', 'active');
+            const { count: lecC } = await supabaseClient.from('lectures').select('*', { count: 'exact', head: true });
             const { count: docC } = await supabaseClient.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'doctor').eq('is_approved', true);
 
             document.getElementById('statPendingCount').innerText = pendingC || 0;
             document.getElementById('statActiveCount').innerText = activeC || 0;
+            document.getElementById('statLectureCount').innerText = lecC || 0;
             document.getElementById('statDoctorCount').innerText = docC || 0;
 
             switchDashTab('tab-upload');
@@ -1134,12 +1173,19 @@
             });
         }
 
+        // جلب المحاضرين المعلقين لعرضهم للأونر
         async function loadPendingDoctors() {
             const tbody = document.getElementById('doctorsApprovalTableBody');
-            const { data: doctors } = await supabaseClient.from('profiles').select('*').eq('role', 'doctor').eq('is_approved', false);
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4">جاري التحميل...</td></tr>';
 
-            if (!doctors || doctors.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-500">لا توجد طلبات انضمام دكاترة جديدة معلقة</td></tr>';
+            const { data: doctors, error } = await supabaseClient
+                .from('profiles')
+                .select('*')
+                .eq('role', 'doctor')
+                .eq('is_approved', false);
+
+            if (error || !doctors || doctors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center p-4 text-slate-500">لا توجد طلبات انضمام دكاترة جديدة معلقة حالياً</td></tr>';
                 return;
             }
 
@@ -1147,8 +1193,8 @@
             doctors.forEach(doc => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="p-4 font-bold text-white">${doc.full_name}</td>
-                    <td class="p-4 font-mono text-slate-400">${doc.phone}</td>
+                    <td class="p-4 font-bold text-white">${doc.full_name || 'محاضر'}</td>
+                    <td class="p-4 font-mono text-slate-400">${doc.phone || ''} <br><span class="text-[10px] text-slate-500">${doc.email || ''}</span></td>
                     <td class="p-4">
                         <select id="assignSub_${doc.id}" class="bg-[#090e1a] border border-slate-700 rounded-lg px-2 py-1 text-xs text-purple-300 font-bold">
                             <option value="dental_anatomy" ${doc.assigned_subject === 'dental_anatomy' ? 'selected' : ''}>Dental Anatomy</option>
@@ -1295,13 +1341,18 @@
 
             const lecBox = document.getElementById('lectureList');
             lecBox.innerHTML = '';
-            data.lectures.forEach(l => {
-                const can = l.free || isUnlocked;
-                const d = document.createElement('div');
-                d.className = `p-3 rounded-xl border text-xs flex justify-between cursor-pointer ${can ? 'bg-[#111a2e] border-slate-800' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
-                d.innerHTML = `<span>${l.title}</span> ${can ? '<i class="fa-solid fa-play text-cyan-400"></i>' : '<i class="fa-solid fa-lock text-amber-400"></i>'}`;
-                lecBox.appendChild(d);
-            });
+            if (data.lectures.length === 0) {
+                lecBox.innerHTML = '<p class="text-xs text-slate-500 p-2">لا توجد محاضرات منشورة حالياً</p>';
+            } else {
+                data.lectures.forEach(l => {
+                    const can = l.free || isUnlocked;
+                    const d = document.createElement('div');
+                    d.className = `p-3 rounded-xl border text-xs flex justify-between cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+                    d.onclick = () => { if (can) playLecture(l); else triggerCheckout(data.id); };
+                    d.innerHTML = `<span>${l.title} (${l.time || ''})</span> ${can ? '<i class="fa-solid fa-play text-cyan-400"></i>' : '<i class="fa-solid fa-lock text-amber-400"></i>'}`;
+                    lecBox.appendChild(d);
+                });
+            }
 
             const noteBox = document.getElementById('notesList');
             noteBox.innerHTML = '';
@@ -1320,6 +1371,32 @@
                 d.innerHTML = `<span>${q.title}</span> <i class="fa-solid fa-arrow-left text-purple-400"></i>`;
                 quizBox.appendChild(d);
             });
+        }
+
+        // تشغيل المحاضرة في شاشة الفيديو (دعم فيديوهات Google Drive والمشغلات المباشرة)
+        function playLecture(lec) {
+            const screenPlayer = document.getElementById('screenPlayer');
+            document.getElementById('currentScreenTitle').innerText = lec.title;
+            
+            const cleanUrl = formatVideoUrl(lec.video_url);
+
+            if (cleanUrl.includes('drive.google.com') || cleanUrl.includes('youtube') || cleanUrl.includes('vimeo')) {
+                screenPlayer.innerHTML = `
+                    <iframe src="${cleanUrl}" class="w-full h-full rounded-2xl" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                `;
+            } else if (cleanUrl) {
+                screenPlayer.innerHTML = `
+                    <video src="${cleanUrl}" controls class="w-full h-full rounded-2xl bg-black" controlsList="nodownload"></video>
+                `;
+            } else {
+                screenPlayer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-6 text-center">
+                        <i class="fa-solid fa-video text-3xl text-cyan-400 mb-2"></i>
+                        <p class="text-white text-sm font-bold">${lec.title}</p>
+                        <p class="text-xs text-slate-400 mt-1">المعايان جارية لعرض الفيديو</p>
+                    </div>
+                `;
+            }
         }
 
         function triggerCheckout(key) {
@@ -1360,7 +1437,7 @@
                 }]);
 
                 if (error) throw error;
-                alert('تم إرسال طلب الاشتراك بنجاح! سيتم التفعيل فور مراجعة التحويل.');
+                alert('تم إرسال الطلب بنجاح! سيتم التفعيل فور مراجعة التحويل.');
                 closeModal();
             } catch (err) {
                 alert('خطأ: ' + err.message);
