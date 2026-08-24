@@ -9,7 +9,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Supabase & PDF Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
@@ -32,13 +31,11 @@
     }
   </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col antialiased select-none">
+<body class="text-slate-100 min-h-screen flex flex-col antialiased select-none" oncontextmenu="return false;">
 
-  <!-- الهيدر المتجاوب والشامل لمنع الزحمة على الموبايل -->
   <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-4 sm:px-6 py-3 backdrop-blur-md">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
       
-      <!-- اللوجو واسم الأكاديمية -->
       <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigate('landing')">
         <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-cyan-500/30 shadow-lg shadow-cyan-500/20" alt="Logo">
         <div>
@@ -49,7 +46,6 @@
         </div>
       </div>
 
-      <!-- أزرار سطح المكتب (تظهر في الشاشات الكبيرة) -->
       <div class="hidden md:flex items-center gap-2.5">
         <button onclick="navigate('landing')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
           <i class="fa-solid fa-house ml-1"></i> الرئيسية
@@ -73,7 +69,6 @@
         </div>
       </div>
 
-      <!-- زر قائمة الموبايل الهامبرغر (يظهر فقط في الهواتف) -->
       <div class="flex md:hidden items-center gap-2">
         <div id="userProfileTagMobileSnippet" class="hidden">
           <button onclick="openDashboardIfStaff()" id="userNameBadgeMobileSnippet" class="text-[10px] bg-slate-800 border border-slate-700 px-2 py-1 rounded-lg text-cyan-300 font-bold"></button>
@@ -85,7 +80,6 @@
 
     </div>
 
-    <!-- قائمة الموبايل المنسدلة المرتبة -->
     <div id="mobileNavMenu" class="hidden md:hidden pt-3 pb-2 border-t border-slate-800/80 mt-2 space-y-2">
       <div class="grid grid-cols-2 gap-2">
         <button onclick="navigate('landing'); toggleMobileNav();" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700">
@@ -112,14 +106,10 @@
     </div>
   </header>
 
-  <!-- جسم الصفحة الرئيسي -->
   <main class="flex-1 flex overflow-hidden">
 
-    <!-- 1. الواجهة الرئيسية الشاملة -->
     <section id="viewLanding" class="w-full flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 space-y-12">
       <div class="max-w-7xl mx-auto space-y-12">
-        
-        <!-- Hero Section -->
         <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="space-y-4 text-center md:text-right max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
@@ -160,87 +150,9 @@
             </div>
           </div>
         </div>
-
-        <!-- مميزات المنصة -->
-        <div class="space-y-4">
-          <h3 class="text-xl font-black text-white flex items-center gap-2">
-            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i> مميزات المنظومة التعليمية
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
-              <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-xl font-bold">
-                <i class="fa-solid fa-play"></i>
-              </div>
-              <h4 class="text-base font-black text-white">مشغل فائق السرعة وبدون إعلانات</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">تحكم كامل بالسرعات وجودة العرض مع حماية متقدمة بعلامة مائية لبيانات الطالب لمنع السرقة.</p>
-            </div>
-            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
-              <div class="w-12 h-12 bg-rose-500/10 text-rose-400 rounded-2xl flex items-center justify-center text-xl font-bold">
-                <i class="fa-solid fa-pen-ruler"></i>
-              </div>
-              <h4 class="text-base font-black text-white">استوديو PDF للتدوين والشخبطة</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">شخبط وعلّم على مذكرات الكورس بقلم ملون وممحاة مدمجة داخل المنصة تماماً مثل Adobe PDF.</p>
-            </div>
-            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
-              <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-xl font-bold">
-                <i class="fa-solid fa-brain"></i>
-              </div>
-              <h4 class="text-base font-black text-white">بنوك أسئلة وتدريبات تفاعلية</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">اختبارات دورية على كل شابتر بنظام التصحيح الفوري وتوضيح الإجابات الصحيحة لضمان الـ A+.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- آراء وتقييمات الطلاب -->
-        <div class="space-y-4">
-          <h3 class="text-xl font-black text-white flex items-center gap-2">
-            <i class="fa-solid fa-comments text-amber-400"></i> آراء وتقييمات أوائل الدفعة
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
-              <div class="flex items-center gap-1 text-amber-400 text-xs">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              </div>
-              <p class="text-xs text-slate-300 leading-relaxed">"كورس الـ Dental Anatomy مع دكتور أحمد الطاهر فرق معايا جداً في العملي والكارفينج، الشرح دقيق ومفهوم من أول مرة."</p>
-              <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالب بأسنان كفر الشيخ — امتياز</div>
-            </div>
-            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
-              <div class="flex items-center gap-1 text-amber-400 text-xs">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              </div>
-              <p class="text-xs text-slate-300 leading-relaxed">"ميزة الشخبطة والتدوين على المذكرات داخل المنصة وفرت عليا طباعة مذكرات كتير والمذاكرة بقت أسهل وأمتع."</p>
-              <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالبة بالفرقة الأولى — أهلية</div>
-            </div>
-            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
-              <div class="flex items-center gap-1 text-amber-400 text-xs">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-              </div>
-              <p class="text-xs text-slate-300 leading-relaxed">"التنظيم ممتاز ومتابعة تفعيل الكورسات سريعة جداً. المنصة وفرت وقت وجهد المذاكرة للفاينال."</p>
-              <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالب بالفرقة الثانية</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- قنوات التواصل والدعم الفني السريع -->
-        <div class="bg-gradient-to-r from-cyan-950/60 to-blue-950/60 border border-cyan-500/30 rounded-3xl p-6 lg:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-          <div class="space-y-2 text-center md:text-right">
-            <h3 class="text-xl font-black text-white">هل لديك استفسار أو مشكلة تقنية؟ 💬</h3>
-            <p class="text-xs text-slate-300">فريق الدعم الفني للأكاديمية متاح على مدار الساعة لمساعدتك في التفعيل والاشتراكات.</p>
-          </div>
-          <div class="flex flex-wrap gap-3">
-            <a href="https://wa.me/201013122880" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition">
-              <i class="fa-brands fa-whatsapp text-sm"></i> محادثة واتساب فورية
-            </a>
-            <a href="https://t.me/" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-black px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-sky-600/30 transition">
-              <i class="fa-brands fa-telegram text-sm"></i> قناة تليجرام الدفعة
-            </a>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- 2. بوابة الطلاب -->
     <section id="viewStudentAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
       <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
         <div class="flex bg-[#090e1a] p-1.5 rounded-2xl mb-6 border border-slate-800 text-xs font-bold gap-1">
@@ -288,7 +200,6 @@
       </div>
     </section>
 
-    <!-- 3. بوابة المحاضرين -->
     <section id="viewInstructorAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
       <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
         <div class="flex bg-[#090e1a] p-1.5 rounded-2xl mb-6 border border-slate-800 text-xs font-bold gap-1">
@@ -348,28 +259,12 @@
       </div>
     </section>
 
-    <!-- 4. شبكة المواد الدراسية -->
     <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
-        <div class="bg-gradient-to-r from-blue-900/60 via-indigo-900/50 to-cyan-900/60 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="space-y-2 text-center md:text-right">
-            <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-full text-xs font-black">العرض الشامل</span>
-            <h2 class="text-2xl font-black text-white">باقة جميع مواد الترم (5 مواد كاملة)</h2>
-            <p class="text-xs text-slate-300">وصول شامل لكل المحاضرات والمذكرات وتفعيل دائم.</p>
-          </div>
-          <div class="bg-[#090e1a]/80 border border-slate-700 p-4 rounded-2xl text-center min-w-[200px]">
-            <span class="text-3xl font-black text-cyan-400 block my-1">1625 ج.م</span>
-            <button onclick="triggerCheckout('all')" class="mt-2 w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2 rounded-xl text-xs transition">
-              اشتراك الباقة كاملة ⚡
-            </button>
-          </div>
-        </div>
-
         <div id="cardsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       </div>
     </section>
 
-    <!-- 5. مشغل المادة واستوديو الـ PDF -->
     <section id="viewStudentPlatform" class="hidden w-full flex flex-1 overflow-hidden">
       <aside class="w-80 bg-[#0f172a] border-l border-slate-800 flex flex-col flex-shrink-0 z-10">
         <div class="p-4 border-b border-slate-800 bg-[#111a2e] flex items-center justify-between">
@@ -397,7 +292,6 @@
       </aside>
 
       <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-6 custom-scrollbar relative">
-        <!-- مشغل الفيديو -->
         <div id="videoContainerWrapper" class="w-full flex flex-col items-center">
           <div id="playerContainer" class="w-full max-w-4xl aspect-video bg-black rounded-2xl border border-slate-800 relative overflow-hidden shadow-2xl flex items-center justify-center">
             <div class="watermark-text" id="playerWatermark">Dr Success • Student</div>
@@ -415,13 +309,17 @@
               <button onclick="setPlayerSpeed(2.0)" class="speed-btn px-2 py-1 rounded hover:bg-slate-800 text-slate-300 font-bold">2.0x</button>
             </div>
 
-            <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold">
-              <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
-            </button>
+            <div class="flex items-center gap-2">
+              <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-cloud-arrow-down"></i> حفظ للمشاهدة بدون نت
+              </button>
+              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold">
+                <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- استوديو PDF التفاعلي للشخبطة -->
         <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
           <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2">
@@ -449,7 +347,6 @@
       </section>
     </section>
 
-    <!-- 6. لوحة تحكم المالك والمحاضرين الحقيقية -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -499,7 +396,6 @@
           </button>
         </div>
 
-        <!-- رفع محتوى -->
         <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
             <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm border-b border-slate-800 pb-3">
@@ -573,7 +469,6 @@
           </div>
         </div>
 
-        <!-- جدول طلبات اشتراك الطلاب -->
         <div id="dashSectionEnrollments" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-[#0f172a] border-b border-slate-800 font-bold text-xs text-cyan-400">
             طلبات الطلاب الذين قاموا بالتحويل
@@ -593,7 +488,6 @@
           </table>
         </div>
 
-        <!-- جدول المحاضرين المعلقين -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين الجدد المعلقة للاعتماد (خاص بالمالك)
@@ -616,50 +510,6 @@
 
   </main>
 
-  <!-- نافذة الدفع والاشتراك -->
-  <div id="modalCheckout" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#111a2e] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="font-black text-sm text-white flex items-center gap-2">
-          <i class="fa-solid fa-lock text-cyan-400"></i> تأكيد الاشتراك والدفع
-        </h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
-      </div>
-
-      <div class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800 space-y-2">
-        <div class="flex justify-between text-xs">
-          <span class="text-slate-400">المادة:</span>
-          <span id="checkoutTitle" class="font-black text-white"></span>
-        </div>
-        <div class="flex justify-between text-xs">
-          <span class="text-slate-400">المبلغ:</span>
-          <span id="checkoutPrice" class="font-black text-cyan-400 text-sm"></span>
-        </div>
-      </div>
-
-      <div class="space-y-2 text-xs">
-        <p class="text-[11px] text-slate-300 font-bold">بيانات التحويل المعتمدة:</p>
-        <div class="bg-[#090e1a] border border-slate-800 p-3 rounded-xl flex justify-between items-center">
-          <div>
-            <p class="text-[10px] text-slate-400">إنستاباي (InstaPay)</p>
-            <p class="font-mono font-bold text-cyan-300">success.academy@instapay</p>
-          </div>
-          <button onclick="navigator.clipboard.writeText('success.academy@instapay'); alert('تم النسخ!')" class="bg-slate-800 px-3 py-1 rounded text-slate-200">نسخ</button>
-        </div>
-      </div>
-
-      <form onsubmit="handleSendPayment(event)" class="space-y-3 pt-1">
-        <div>
-          <label class="block text-[11px] font-bold text-slate-300 mb-1">رقم المحفظة / اسم حساب المحول</label>
-          <input type="text" id="paySender" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
-        </div>
-        <button type="submit" id="btnPaymentSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs">
-          إرسال إشعار التحويل للمالك للتفعيل ⚡
-        </button>
-      </form>
-    </div>
-  </div>
-
   <script>
     const SUPABASE_URL = "https://rikyazfymdrcyvkjcfsw.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpa3lhemZ5bWRyY3l2a2pjZnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njc4MTYsImV4cCI6MjEwMzE0MzgxNn0.O69zMBVrwlyldCfa9IcVxag3GL5IpZ4zEgsyicY6TiI";
@@ -678,7 +528,6 @@
     let currentUser = null;
     let userUnlockedSubjects = [];
     let currentSubjectKey = 'dental_anatomy';
-    let activeModalKey = 'dental_anatomy';
     let currentActiveLecture = null;
     let currentVideoElement = null;
 
@@ -874,8 +723,8 @@
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    // المشغل الاحترافي الخالي من مشتتات يوتيوب
-    function playLecture(lec) {
+    // المشغل الآمن والمخفي للهوية بالكامل
+    async function playLecture(lec) {
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
       document.getElementById('pdfStudioContainer').classList.add('hidden');
@@ -887,24 +736,76 @@
       const screen = document.getElementById('screenPlayer');
       let url = (lec.video_url || '').trim();
 
+      // التحقق أولاً من وجود الفيديو في وضع الأوفلاين داخل الذاكرة
+      const offlineBlobUrl = await getOfflineVideo(lec.id);
+      if (offlineBlobUrl) {
+        screen.innerHTML = `<video id="nativeVideo" src="${offlineBlobUrl}" controlsList="nodownload" class="w-full h-full rounded-2xl bg-black object-contain" controls autoplay></video>`;
+        currentVideoElement = document.getElementById('nativeVideo');
+        return;
+      }
+
       if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/') || url.includes('youtube.com/shorts/')) {
         let vId = '';
         if (url.includes('youtube.com/watch?v=')) vId = url.split('v=')[1]?.split('&')[0];
         else if (url.includes('youtu.be/')) vId = url.split('youtu.be/')[1]?.split('?')[0];
         else if (url.includes('youtube.com/shorts/')) vId = url.split('shorts/')[1]?.split('?')[0];
 
-        url = `https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1`;
-        screen.innerHTML = `<iframe src="${url}" class="w-full h-full rounded-2xl" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+        // رابط مجهول الهوية خالي من الاقتراحات والشعارات مع تعطيل لوحة المفاتيح
+        url = `https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&controls=1&disablekb=1&fs=0`;
+        
+        screen.innerHTML = `
+          <div class="relative w-full h-full overflow-hidden rounded-2xl">
+            <div class="absolute top-0 left-0 w-full h-14 z-20 pointer-events-auto bg-transparent"></div>
+            <iframe src="${url}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+          </div>
+        `;
         currentVideoElement = null;
       } else if (url.includes('drive.google.com')) {
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) url = `https://drive.google.com/file/d/${match[1]}/preview`;
-        screen.innerHTML = `<iframe src="${url}" class="w-full h-full rounded-2xl" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+        
+        screen.innerHTML = `
+          <div class="relative w-full h-full overflow-hidden rounded-2xl">
+            <div class="absolute top-0 left-0 w-full h-14 z-20 pointer-events-auto bg-transparent"></div>
+            <iframe src="${url}" class="w-full h-full" frameborder="0" allow="autoplay"></iframe>
+          </div>
+        `;
         currentVideoElement = null;
       } else {
-        screen.innerHTML = `<video id="nativeVideo" src="${url}" class="w-full h-full rounded-2xl bg-black object-contain" controls autoplay></video>`;
+        screen.innerHTML = `<video id="nativeVideo" src="${url}" controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full rounded-2xl bg-black object-contain" controls autoplay></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
       }
+    }
+
+    // نظام التحميل والمشاهدة بدون إنترنت (Offline Cache Storage)
+    async function downloadCurrentLectureOffline() {
+      if (!currentActiveLecture) { alert('اختر محاضرة أولاً!'); return; }
+      const btn = document.getElementById('btnDownloadOffline');
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ داخل التطبيق...`;
+
+      try {
+        const cache = await caches.open('dr-success-offline-v1');
+        await cache.add(currentActiveLecture.video_url);
+        localStorage.setItem(`offline_${currentActiveLecture.id}`, 'true');
+        btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> تم الحفظ بدون نت ✅`;
+        alert('تم حفظ المحاضرة داخل التطبيق! يمكنك مشاهدتها حتى لو انقطع الإنترنت.');
+      } catch (e) {
+        btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> حفظ للمشاهدة بدون نت`;
+        alert('ملاحظة: تنزيل الأوفلاين متاح للفيديوهات المباشرة، أما روابط التضمين فيتم تشغيلها بسلاسة من المشغل.');
+      }
+    }
+
+    async function getOfflineVideo(lectureId) {
+      if (!localStorage.getItem(`offline_${lectureId}`)) return null;
+      try {
+        const cache = await caches.open('dr-success-offline-v1');
+        const response = await cache.match(currentActiveLecture.video_url);
+        if (response) {
+          const blob = await response.blob();
+          return URL.createObjectURL(blob);
+        }
+      } catch(e) { return null; }
+      return null;
     }
 
     function setPlayerSpeed(speed) {
@@ -917,7 +818,7 @@
       else document.exitFullscreen();
     }
 
-    // استوديو الشخبطة على الـ PDF
+    // استوديو PDF
     async function openPdfStudio(doc) {
       document.getElementById('videoContainerWrapper').classList.add('hidden');
       document.getElementById('pdfStudioContainer').classList.remove('hidden');
@@ -973,7 +874,6 @@
       if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
     }
 
-    // إدارة الكورسات والمنصة
     function renderCoursesGrid() {
       const container = document.getElementById('cardsGridContainer');
       container.innerHTML = '';
@@ -995,7 +895,6 @@
             <span class="text-sm font-black text-cyan-400">400 ج.م</span>
             <div class="flex gap-2">
               <button onclick="openCourseView('${course.id}')" class="bg-slate-800 text-xs px-3 py-1.5 rounded-xl font-bold">دخول 👁️</button>
-              ${!isUnlocked ? `<button onclick="triggerCheckout('${course.id}')" class="bg-cyan-600 text-xs px-3 py-1.5 rounded-xl font-bold">اشتراك ⚡</button>` : `<span class="text-emerald-400 text-xs font-bold">مفعل ✅</span>`}
             </div>
           </div>
         `;
@@ -1013,7 +912,6 @@
       document.getElementById('platformSubjectTitle').innerText = data.title;
       const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
 
-      // جلب المحاضرات الحقيقية فقط
       const { data: dbLecs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey);
       const lecBox = document.getElementById('lectureList');
       lecBox.innerHTML = '';
@@ -1025,7 +923,7 @@
           const can = l.is_free || isUnlocked;
           const d = document.createElement('div');
           d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
-          d.onclick = () => { if (can) playLecture(l); else triggerCheckout(currentSubjectKey); };
+          d.onclick = () => { if (can) playLecture(l); else alert('المحتوى مخصص للمشتركين'); };
           d.innerHTML = `
             <div class="flex items-center gap-2">
               <i class="fa-solid ${can ? 'fa-play text-cyan-400' : 'fa-lock text-amber-400'}"></i>
@@ -1037,7 +935,6 @@
         });
       }
 
-      // جلب المذكرات الحقيقية
       const { data: dbPdfs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey).not('pdf_url', 'is', null);
       const noteBox = document.getElementById('notesList');
       noteBox.innerHTML = '';
@@ -1053,34 +950,6 @@
           noteBox.appendChild(d);
         });
       }
-    }
-
-    function triggerCheckout(key) {
-      if (!currentUser) { alert('سجل دخولك أولاً!'); openStudentTab('login'); return; }
-      activeModalKey = key;
-      document.getElementById('checkoutTitle').innerText = key === 'all' ? 'باقة كل المواد' : ACADEMY_DATA[key].title;
-      document.getElementById('checkoutPrice').innerText = key === 'all' ? '1625 ج.م' : '400 ج.م';
-      document.getElementById('modalCheckout').classList.remove('hidden');
-    }
-    function closeModal() { document.getElementById('modalCheckout').classList.add('hidden'); }
-
-    async function handleSendPayment(e) {
-      e.preventDefault();
-      const sender = document.getElementById('paySender').value;
-      const amount = activeModalKey === 'all' ? 1625 : 400;
-
-      try {
-        const { error } = await supabaseClient.from('enrollments').insert([{
-          user_id: currentUser.id,
-          subject_id: activeModalKey,
-          amount: amount,
-          sender_number: sender,
-          status: 'pending'
-        }]);
-        if (error) throw error;
-        alert('تم إرسال إشعار التحويل للمالك وسيتم تفعيل حسابك فور التأكد!');
-        closeModal();
-      } catch(err) { alert('خطأ: ' + err.message); }
     }
 
     function openDashboardIfStaff() {
