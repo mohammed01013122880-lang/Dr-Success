@@ -5,43 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dr Success Academy | Your way to A+</title>
   
+  <!-- الخطوط والأيقونات -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- Supabase & LocalForage -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
 
   <style>
     :root {
-      --bg: #0b1329;
-      --header-bg: rgba(15, 23, 42, 0.85);
-      --card-bg: #1e293b;
-      --card-hover: #27354f;
+      --bg: #070d1e;
+      --header-bg: rgba(11, 19, 41, 0.85);
+      --card-bg: #131f38;
+      --card-hover: #1c2c4e;
       --border: rgba(255, 255, 255, 0.08);
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --primary: #2563eb;
-      --primary-hover: #1d4ed8;
+      --primary-gradient: linear-gradient(135deg, #2563eb, #38bdf8);
       --accent: #38bdf8;
       --success: #10b981;
       --danger: #ef4444;
-      --input-bg: #0f172a;
+      --input-bg: #0b1329;
     }
 
     [data-theme="light"] {
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --header-bg: rgba(255, 255, 255, 0.9);
       --card-bg: #ffffff;
-      --card-hover: #f8fafc;
+      --card-hover: #f1f5f9;
       --border: rgba(0, 0, 0, 0.08);
       --text: #0f172a;
       --text-muted: #64748b;
       --primary: #2563eb;
-      --primary-hover: #1d4ed8;
+      --primary-gradient: linear-gradient(135deg, #2563eb, #0284c7);
       --accent: #0284c7;
       --success: #10b981;
       --danger: #ef4444;
-      --input-bg: #f8fafc;
+      --input-bg: #f1f5f9;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; transition: background-color 0.25s ease, border-color 0.25s ease; }
@@ -51,73 +53,133 @@
       background: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 0.75rem 1.5rem;
+      padding: 0.8rem 1.5rem;
       position: sticky; top: 0; z-index: 50;
       display: flex; justify-content: space-between; align-items: center;
     }
 
-    /* مكان وتنسيق الشعار */
-    .brand { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: inherit; }
+    .brand { display: flex; align-items: center; gap: 0.85rem; text-decoration: none; color: inherit; }
     .brand-logo-img {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      object-fit: cover;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      width: 44px; height: 44px; border-radius: 12px; object-fit: cover;
+      border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
-    .brand-text h1 { font-size: 1.15rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
+    .brand-text h1 { font-size: 1.15rem; font-weight: 900; color: var(--accent); line-height: 1.2; letter-spacing: -0.3px; }
     .brand-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
     .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--primary); color: #fff; padding: 0.5rem 1rem; border-radius: 0.6rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s; text-decoration: none; }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-admin { background: rgba(148, 163, 184, 0.15); color: var(--text); border: 1px solid var(--border); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      background: var(--primary); color: #fff; padding: 0.5rem 1rem; border-radius: 0.6rem;
+      font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s; text-decoration: none;
+    }
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-admin { background: rgba(148, 163, 184, 0.12); color: var(--text); border: 1px solid var(--border); }
     .btn-theme { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 0.6rem; cursor: pointer; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
     .btn-success { background: var(--success); }
     .btn-danger { background: var(--danger); }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; width: 100%; flex: 1; }
+    .container { max-width: 1150px; margin: 0 auto; padding: 1.5rem 1rem; width: 100%; flex: 1; }
 
-    .announcement-box { background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(56, 189, 248, 0.1)); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
-    .announcement-box i { font-size: 1.3rem; color: var(--accent); }
-    .announcement-text { font-size: 0.9rem; line-height: 1.4; }
-
-    .search-wrapper { margin-bottom: 1.25rem; position: relative; }
-    .search-wrapper i { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-    .search-input { width: 100%; padding: 0.75rem 2.8rem 0.75rem 1rem; border-radius: 0.75rem; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; outline: none; }
+    /* Hero Section - تصميم إتقان */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(56, 189, 248, 0.05) 100%);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-text h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 0.4rem; }
+    .hero-text p { color: var(--text-muted); font-size: 0.95rem; max-width: 520px; line-height: 1.6; }
     
-    .tabs-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
-    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 0.55rem 1.2rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; }
-    .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .hero-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .stat-pill {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 0.75rem 1.25rem; text-align: center; min-width: 100px;
+    }
+    .stat-pill .num { font-size: 1.3rem; font-weight: 900; color: var(--accent); }
+    .stat-pill .label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
 
-    .player-section { display: none; background: #000; border-radius: 1rem; overflow: hidden; margin-bottom: 2rem; position: relative; border: 1px solid var(--border); }
+    /* شريط البحث والتبويبات */
+    .search-wrapper { margin-bottom: 1.25rem; position: relative; }
+    .search-wrapper i { position: absolute; right: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .search-input {
+      width: 100%; padding: 0.85rem 3rem 0.85rem 1rem; border-radius: 0.9rem;
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text);
+      font-size: 0.95rem; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .search-input:focus { border-color: var(--primary); }
+
+    .tabs-nav { display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.6rem; margin-bottom: 1.5rem; }
+    .tab-btn {
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted);
+      padding: 0.6rem 1.3rem; border-radius: 999px; font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: transparent; }
+
+    /* مشغل الفيديو الذكي */
+    .player-section {
+      display: none; background: #000; border-radius: 1.25rem; overflow: hidden;
+      margin-bottom: 2rem; position: relative; border: 1px solid var(--border);
+    }
     .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; }
     .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .watermark { position: absolute; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; font-weight: bold; pointer-events: none; user-select: none; z-index: 10; top: 15%; left: 15%; animation: floatMark 14s infinite alternate ease-in-out; }
+    .watermark {
+      position: absolute; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem;
+      font-weight: bold; pointer-events: none; user-select: none; z-index: 10;
+      top: 15%; left: 15%; animation: floatMark 14s infinite alternate ease-in-out;
+    }
     @keyframes floatMark { 0% { top: 10%; left: 10%; } 50% { top: 75%; left: 70%; } 100% { top: 40%; left: 40%; } }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
-    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-    .card:hover { transform: translateY(-3px); background: var(--card-hover); }
-    .card-top { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.8rem; }
-    .card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    /* كروت الموديلات الحديثة */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+    .card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem;
+      padding: 1.35rem; display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+    .card:hover { transform: translateY(-3px); background: var(--card-hover); border-color: rgba(56, 189, 248, 0.3); }
+    .card-top { display: flex; align-items: flex-start; gap: 0.85rem; margin-bottom: 1rem; }
+    .card-icon {
+      width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center;
+      justify-content: center; font-size: 1.3rem; flex-shrink: 0;
+    }
     .icon-video { background: rgba(37, 99, 235, 0.15); color: #60a5fa; }
     .icon-pdf { background: rgba(239, 68, 68, 0.15); color: #f87171; }
     .icon-exam { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-    .card-title { font-size: 0.95rem; font-weight: 700; line-height: 1.4; }
-    .card-badge { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.2rem; font-weight: 600; }
-    .card-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
-    .del-btn { position: absolute; top: 0.6rem; left: 0.6rem; background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; display: none; }
+    
+    .card-title { font-size: 1rem; font-weight: 800; line-height: 1.4; margin-bottom: 0.2rem; }
+    .card-badge { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: inline-block; }
+    
+    /* شريط تقدم المحاضرة */
+    .card-progress { margin-top: 0.8rem; }
+    .progress-bar-bg { height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.3s; }
+    .completed-badge { font-size: 0.75rem; color: var(--success); font-weight: 700; display: flex; align-items: center; gap: 0.3rem; margin-top: 0.3rem; }
+
+    .card-actions { display: flex; gap: 0.5rem; margin-top: 1.2rem; }
+
+    .del-btn {
+      position: absolute; top: 0.6rem; left: 0.6rem; background: transparent; border: none;
+      color: var(--danger); cursor: pointer; font-size: 0.95rem; display: none;
+    }
     .admin-active .del-btn { display: block; }
 
-    /* Exam Details */
+    /* Modals & Quiz Engine */
     .quiz-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 9999; flex-direction: column; overflow-y: auto; }
     .quiz-navbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0.9rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
     .quiz-timer { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.8rem; border-radius: 999px; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
     .quiz-body { max-width: 780px; margin: 2rem auto; width: 100%; padding: 0 1rem; flex: 1; }
-    .question-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .question-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem; margin-bottom: 1.5rem; }
     .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .q-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); background: rgba(56, 189, 248, 0.1); padding: 0.2rem 0.6rem; border-radius: 6px; }
     .q-text { font-size: 1.1rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.25rem; }
@@ -126,12 +188,11 @@
     .option-label.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.15); color: var(--accent); }
     
     .result-box { text-align: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.5rem 1.5rem; margin-bottom: 2rem; }
-    .score-circle { width: 120px; height: 120px; border-radius: 50%; margin: 1.5rem auto; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+    .score-circle { width: 120px; height: 120px; border-radius: 50%; margin: 1.5rem auto; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 1.8rem; font-weight: 900; background: var(--primary-gradient); color: #fff; }
     .review-item { padding: 1rem; border-radius: 0.8rem; margin-bottom: 0.75rem; border: 1px solid var(--border); text-align: right; }
     .review-correct { background: rgba(16, 185, 129, 0.1); border-color: var(--success); }
     .review-wrong { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
 
-    /* Modals */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
     .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; width: 100%; max-width: 520px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; color: var(--text); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
@@ -142,10 +203,10 @@
 </head>
 <body>
 
+  <!-- الهيدر -->
   <header>
     <a href="#" class="brand">
-      <!-- صورة الشعار (تقدر ترفع ملف باسم logo.png أو تحط رابط مباشر للصورة) -->
-      <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" alt="Logo" class="brand-logo-img">
+      <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" alt="Dr Success" class="brand-logo-img">
       <div class="brand-text">
         <h1>Dr Success Academy</h1>
         <span>Your way to A+</span>
@@ -158,11 +219,26 @@
   </header>
 
   <div class="container">
-    <div class="announcement-box">
-      <i class="fa-solid fa-bullhorn"></i>
-      <div class="announcement-text">
-        <strong>أهلاً بكم في المنصة الرسمية لـ Dr Success Academy!</strong>
-        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:2px;">تم تحديث الملازم ومحرك الامتحانات والمشاهدة أوفلاين.</p>
+    
+    <!-- Hero Banner بتصميم منصة إتقان -->
+    <div class="hero-banner">
+      <div class="hero-text">
+        <h2>منظومة التعلم الطبي المتقدم 🎯</h2>
+        <p>شروحات منهجية شاملة، مذكرات بجودة عالية، وتدريبات واختبارات تفاعلية بنظام التصحيح والمتابعة الفورية.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <div class="num" id="statLessons">0</div>
+          <div class="label">محاضرة</div>
+        </div>
+        <div class="stat-pill">
+          <div class="num" id="statPdfs">0</div>
+          <div class="label">ملزمة</div>
+        </div>
+        <div class="stat-pill">
+          <div class="num" id="statExams">0</div>
+          <div class="label">امتحان</div>
+        </div>
       </div>
     </div>
 
@@ -181,21 +257,21 @@
     <!-- البحث -->
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" id="searchInput" class="search-input" placeholder="ابحث بالمحاضرة أو المذكرة أو الامتحان..." oninput="handleSearch()">
+      <input type="text" id="searchInput" class="search-input" placeholder="ابحث باسم المحاضرة أو الشابتر أو الامتحان..." oninput="handleSearch()">
     </div>
 
     <!-- التبويبات -->
     <div class="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
-      <button class="tab-btn" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
+      <button class="tab-btn active" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
       <button class="tab-btn" onclick="switchTab('pdf', this)"><i class="fa-solid fa-book-bookmark"></i> ملزمة الكورس</button>
+      <button class="tab-btn" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
       <button class="tab-btn" onclick="switchTab('offline', this)"><i class="fa-solid fa-cloud-arrow-down"></i> التنزيلات (أوفلاين)</button>
     </div>
 
     <div class="grid" id="contentGrid"></div>
   </div>
 
-  <!-- نافذة دخول الامتحان للطالب -->
+  <!-- نافذة دخول الامتحان -->
   <div class="modal" id="studentEntryModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -249,23 +325,23 @@
         <div class="form-group">
           <label>نوع المحتوى:</label>
           <select id="contentType" class="form-control" onchange="toggleFormInputs()">
-            <option value="exam">كويز / بنك أسئلة مدمج</option>
             <option value="lesson">محاضرة ومذكرة (فيديو / PDF)</option>
+            <option value="exam">كويز / بنك أسئلة</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>عنوان المحتوى / الامتحان:</label>
-          <input type="text" id="contentTitle" class="form-control" placeholder="مثال: مراجعة نهائية - شابتر 1">
+          <input type="text" id="contentTitle" class="form-control" placeholder="مثال: مقدمة الشابتر الأول">
         </div>
 
-        <div id="lessonInputs" style="display: none;">
+        <div id="lessonInputs">
           <div class="form-group">
-            <label>اسم الشابتر / الوحدة:</label>
-            <input type="text" id="contentChapter" class="form-control" placeholder="مثال: الفصل الأول">
+            <label>اسم الشابتر / الموديل:</label>
+            <input type="text" id="contentChapter" class="form-control" placeholder="مثال: General Microbiology">
           </div>
           <div class="form-group">
-            <label>رابط الفيديو المباشر:</label>
+            <label>رابط الفيديو المباشر (MP4 Direct):</label>
             <input type="url" id="contentVideo" class="form-control" placeholder="https://...">
           </div>
           <div class="form-group">
@@ -274,14 +350,16 @@
           </div>
         </div>
 
-        <div id="quizInputs">
+        <div id="quizInputs" style="display: none;">
           <div class="form-group">
             <label>مدة الامتحان (بالدقائق):</label>
             <input type="number" id="quizDuration" class="form-control" value="15">
           </div>
           <div class="form-group">
-            <label>الأسئلة (الصق الأسئلة أو كود JSON الخاص بالفورم هنا):</label>
-            <textarea id="quizQuestionsRaw" class="form-control" style="height: 150px; font-size: 0.85rem;" placeholder="انسخ الأسئلة أو كود تصدير الفورم والصقه هنا مباشرة..."></textarea>
+            <label>نص الأسئلة (ضع * أمام الإجابة الصحيحة):</label>
+            <textarea id="quizQuestionsRaw" class="form-control" style="height: 140px; font-size: 0.85rem;" placeholder="What is the gram stain of Staph?
+*A) Gram positive cocci
+B) Gram negative bacilli"></textarea>
           </div>
         </div>
 
@@ -301,7 +379,7 @@
 
     let lessonsData = [];
     let examsData = [];
-    let currentFilter = 'exams';
+    let currentFilter = 'videos';
     let searchQuery = '';
     let isAdmin = false;
 
@@ -310,12 +388,19 @@
     let timerInterval = null;
     let currentStudentName = '';
 
+    let completedLessons = JSON.parse(localStorage.getItem('dr_success_completed') || '[]');
+
     async function loadData() {
       try {
         const { data: lessons } = await db.from('lessons').select('*').order('id', { ascending: false });
         const { data: exams } = await db.from('exams').select('*').order('id', { ascending: false });
         lessonsData = lessons || [];
         examsData = exams || [];
+
+        document.getElementById('statLessons').innerText = lessonsData.filter(l => l.video_url).length;
+        document.getElementById('statPdfs').innerText = lessonsData.filter(l => l.pdf_url).length;
+        document.getElementById('statExams').innerText = examsData.length;
+
         renderCards();
       } catch (err) { console.error(err); }
     }
@@ -339,7 +424,7 @@
                   <div class="card-icon icon-exam"><i class="fa-solid fa-stopwatch"></i></div>
                   <div>
                     <div class="card-title">${exam.title}</div>
-                    <span class="card-badge">امتحان إلكتروني • ${exam.duration_minutes || 15} دقيقة</span>
+                    <span class="card-badge">اختبار تقييمي • ${exam.duration_minutes || 15} دقيقة</span>
                   </div>
                 </div>
               </div>
@@ -364,6 +449,7 @@
       for (const item of filteredLessons) {
         const isOffline = item.video_url ? await localforage.getItem(`video_${item.id}`) : false;
         if (currentFilter === 'offline' && !isOffline) continue;
+        const isDone = completedLessons.includes(item.id);
 
         grid.innerHTML += `
           <div class="card">
@@ -375,9 +461,15 @@
                 </div>
                 <div>
                   <div class="card-title">${item.title}</div>
-                  <span class="card-badge">${item.chapter || 'فصل عام'}</span>
+                  <span class="card-badge">${item.chapter || 'موديل عام'}</span>
                 </div>
               </div>
+              ${item.video_url ? `
+                <div class="card-progress">
+                  <div class="progress-bar-bg"><div class="progress-fill" style="width: ${isDone ? '100%' : '0%'}"></div></div>
+                  ${isDone ? '<div class="completed-badge"><i class="fa-solid fa-check-circle"></i> تم إكمال المشاهدة</div>' : ''}
+                </div>
+              ` : ''}
             </div>
             <div class="card-actions">
               ${item.video_url ? `
@@ -390,6 +482,46 @@
             </div>
           </div>
         `;
+      }
+    }
+
+    async function playVideo(id, onlineUrl, title) {
+      const playerSection = document.getElementById('playerSection');
+      const player = document.getElementById('mainVideoPlayer');
+      document.getElementById('nowPlayingTitle').innerText = title;
+
+      const cachedBlob = await localforage.getItem(`video_${id}`);
+      player.src = cachedBlob ? URL.createObjectURL(cachedBlob) : onlineUrl;
+
+      if (!completedLessons.includes(parseInt(id))) {
+        completedLessons.push(parseInt(id));
+        localStorage.setItem('dr_success_completed', JSON.stringify(completedLessons));
+      }
+
+      playerSection.style.display = 'block';
+      player.play();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closePlayer() {
+      const player = document.getElementById('mainVideoPlayer');
+      player.pause();
+      player.src = '';
+      document.getElementById('playerSection').style.display = 'none';
+      renderCards();
+    }
+
+    async function downloadVideoOffline(id, url, btn) {
+      try {
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        const response = await fetch(url);
+        const blob = await response.blob();
+        await localforage.setItem(`video_${id}`, blob);
+        btn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--success)"></i>';
+        alert('تم تحميل المحاضرة بنجاح وتعمل الآن أوفلاين بدون إنترنت!');
+      } catch (err) {
+        alert('حدث خطأ أثناء التنزيل.');
+        btn.innerHTML = '<i class="fa-solid fa-download"></i>';
       }
     }
 
@@ -478,10 +610,6 @@
 
     function exitQuiz() { clearInterval(timerInterval); document.getElementById('quizOverlay').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
-    async function playVideo(id, onlineUrl, title) { const playerSection = document.getElementById('playerSection'); const player = document.getElementById('mainVideoPlayer'); document.getElementById('nowPlayingTitle').innerText = title; const cachedBlob = await localforage.getItem(`video_${id}`); player.src = cachedBlob ? URL.createObjectURL(cachedBlob) : onlineUrl; playerSection.style.display = 'block'; player.play(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
-    function closePlayer() { const player = document.getElementById('mainVideoPlayer'); player.pause(); player.src = ''; document.getElementById('playerSection').style.display = 'none'; }
-    async function downloadVideoOffline(id, url, btn) { try { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; const response = await fetch(url); const blob = await response.blob(); await localforage.setItem(`video_${id}`, blob); btn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--success)"></i>'; alert('تم تحميل المحاضرة بنجاح وتعمل الآن أوفلاين بدون إنترنت!'); } catch (err) { alert('حدث خطأ أثناء التنزيل.'); btn.innerHTML = '<i class="fa-solid fa-download"></i>'; } }
-    
     function toggleTheme() { const current = document.documentElement.getAttribute('data-theme'); const target = current === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', target); document.getElementById('themeIcon').className = target === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; localStorage.setItem('dr_success_theme', target); }
     if(localStorage.getItem('dr_success_theme') === 'light') toggleTheme();
     function switchTab(type, el) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); currentFilter = type; renderCards(); }
@@ -506,10 +634,7 @@
         const raw = document.getElementById('quizQuestionsRaw').value;
         const duration = parseInt(document.getElementById('quizDuration').value) || 15;
         let parsed = [];
-        try {
-          parsed = JSON.parse(raw);
-        } catch(e) {
-          // محاولة معالجة نصية تلقائية
+        try { parsed = JSON.parse(raw); } catch(e) {
           const blocks = raw.trim().split(/\n\s*\n+/);
           blocks.forEach(block => {
             const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
@@ -527,7 +652,6 @@
             }
           });
         }
-        
         if (parsed.length === 0) return alert('يرجى إدخال أسئلة صالحة');
         await db.from('exams').insert([{ title, exam_url: JSON.stringify(parsed), duration_minutes: duration }]);
       }
