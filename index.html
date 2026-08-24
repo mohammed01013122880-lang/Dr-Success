@@ -75,7 +75,7 @@
         </div>
       </div>
 
-      <!-- زر قائمة الموبايل -->
+      <!-- أزرار الموبايل -->
       <div class="flex md:hidden items-center gap-2">
         <button onclick="navigate('downloads-view')" class="p-2 rounded-xl bg-slate-800 text-cyan-400 border border-slate-700">
           <i class="fa-solid fa-circle-down text-sm"></i>
@@ -396,8 +396,8 @@
               <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 text-xs transition">
                 <i class="fa-solid fa-cloud-arrow-down"></i> حفظ للمشاهدة بدون نت
               </button>
-              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3 py-1.5 rounded-xl font-bold text-xs">
-                <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
+              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1">
+                <i class="fa-solid fa-expand"></i> ملء الشاشة
               </button>
             </div>
           </div>
@@ -812,7 +812,6 @@
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
         
-        // نظام قفل الحساب على جهاز واحد: إنشاء معرف جلسة جديد
         const newSessionId = 'dev_' + Math.random().toString(36).substring(2, 12) + Date.now();
         localStorage.setItem('my_device_session', newSessionId);
 
@@ -870,7 +869,7 @@
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    // المشغل
+    // المشغل المحمي المطور لدعم ملء الشاشة على كل الأنظمة والموبايل
     async function playLecture(lec) {
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
@@ -888,7 +887,7 @@
 
       const offlineBlob = await getOfflineVideoBlob(lec.id);
       if (offlineBlob) {
-        screen.innerHTML = `<video id="nativeVideo" src="${offlineBlob}" controlsList="nodownload" class="w-full h-full object-contain bg-black rounded-2xl" controls autoplay playsinline></video>`;
+        screen.innerHTML = `<video id="nativeVideo" src="${offlineBlob}" controlsList="nodownload" class="w-full h-full object-contain bg-black rounded-2xl" controls autoplay playsinline webkit-playsinline></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
         return;
       }
@@ -902,9 +901,9 @@
         url = `https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&controls=1&disablekb=1&playsinline=1`;
         
         screen.innerHTML = `
-          <div class="relative w-full h-full rounded-2xl overflow-hidden">
+          <div class="relative w-full h-full rounded-2xl overflow-hidden" id="iframeWrapper">
             <div class="absolute top-0 left-0 w-full h-14 z-20 pointer-events-auto bg-transparent"></div>
-            <iframe src="${url}" class="w-full h-full border-0 rounded-2xl" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+            <iframe id="activeIframe" src="${url}" class="w-full h-full border-0 rounded-2xl" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
           </div>
         `;
         currentVideoElement = null;
@@ -913,15 +912,55 @@
         if (match && match[1]) url = `https://drive.google.com/file/d/${match[1]}/preview`;
         
         screen.innerHTML = `
-          <div class="relative w-full h-full rounded-2xl overflow-hidden">
+          <div class="relative w-full h-full rounded-2xl overflow-hidden" id="iframeWrapper">
             <div class="absolute top-0 left-0 w-full h-14 z-20 pointer-events-auto bg-transparent"></div>
-            <iframe src="${url}" class="w-full h-full border-0 rounded-2xl" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            <iframe id="activeIframe" src="${url}" class="w-full h-full border-0 rounded-2xl" allow="autoplay; fullscreen" allowfullscreen></iframe>
           </div>
         `;
         currentVideoElement = null;
       } else {
-        screen.innerHTML = `<video id="nativeVideo" src="${url}" controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-2xl" controls autoplay playsinline></video>`;
+        screen.innerHTML = `<video id="nativeVideo" src="${url}" controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-2xl" controls autoplay playsinline webkit-playsinline></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
+      }
+    }
+
+    // دالة ملء الشاشة الشاملة لجميع الهواتف والمتصفحات والآيفون
+    function togglePlayerFullscreen() {
+      const vid = document.getElementById('nativeVideo');
+      const container = document.getElementById('playerContainer');
+      const iframe = document.getElementById('activeIframe');
+
+      // 1. إذا كان المشغل فيديو مباشر (MP4 أو أوفلاين)
+      if (vid) {
+        if (vid.requestFullscreen) {
+          vid.requestFullscreen();
+        } else if (vid.webkitEnterFullscreen) {
+          // خاص بالآيفون (iOS Safari)
+          vid.webkitEnterFullscreen();
+        } else if (vid.webkitRequestFullscreen) {
+          vid.webkitRequestFullscreen();
+        } else if (vid.msRequestFullscreen) {
+          vid.msRequestFullscreen();
+        }
+        return;
+      }
+
+      // 2. إذا كان المشغل Iframe أو صفحة عامة
+      const target = iframe || container;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (target.requestFullscreen) {
+          target.requestFullscreen();
+        } else if (target.webkitRequestFullscreen) {
+          target.webkitRequestFullscreen();
+        } else if (target.msRequestFullscreen) {
+          target.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
       }
     }
 
@@ -990,14 +1029,25 @@
       document.getElementById('progressBarFill').style.width = `${percent}%`;
     }
 
+    // نظام التحميل والتخزين المحلي المطور
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) { alert('اختر محاضرة أولاً!'); return; }
       const btn = document.getElementById('btnDownloadOffline');
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري التنزيل للأوفلاين...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري التحميل والحفظ للأوفلاين...`;
 
       try {
+        const videoUrl = currentActiveLecture.video_url;
+
+        const response = await fetch(videoUrl, { mode: 'cors' });
+        if (!response.ok) throw new Error('فشل جلب ملف الفيديو');
+        
+        const blob = await response.blob();
         const cache = await caches.open('dr-success-offline-v2');
-        await cache.add(currentActiveLecture.video_url);
+        
+        const cachedResponse = new Response(blob, {
+          headers: { 'Content-Type': 'video/mp4' }
+        });
+        await cache.put(videoUrl, cachedResponse);
 
         let saved = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
         if (!saved.some(i => i.id === currentActiveLecture.id)) {
@@ -1012,10 +1062,11 @@
         }
 
         btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> تم الحفظ في التنزيلات ✅`;
-        alert('تم حفظ المحاضرة داخل التطبيق بنجاح! يمكنك تشغيلها من قسم التنزيلات حتى لو انقطع النت.');
+        alert('تم حفظ الفيديو داخل التطبيق بنجاح! يمكنك الآن مشاهدته في أي وقت بدون إنترنت.');
       } catch (e) {
+        console.error(e);
         btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> حفظ للمشاهدة بدون نت`;
-        alert('تنبيه: التنزيل متاح للفيديوهات المباشرة، أما روابط التضمين فيتم تشغيلها بسلاسة من المشغل.');
+        alert('تعذر التنزيل: تأكد من أن الـ Bucket في Supabase مضبوط كـ Public ومتاح للجميع.');
       }
     }
 
@@ -1082,12 +1133,6 @@
       await caches.delete('dr-success-offline-v2');
       localStorage.removeItem('dr_success_offline_list');
       renderDownloadsView();
-    }
-
-    function togglePlayerFullscreen() {
-      const container = document.getElementById('playerContainer');
-      if (!document.fullscreenElement) container.requestFullscreen();
-      else document.exitFullscreen();
     }
 
     async function openPdfStudio(doc) {
@@ -1402,7 +1447,7 @@
       }
     }
 
-    // مراقب الجلسة الحي: فحص تطابق الجهاز وطرد الحسابات المتعددة فورياً
+    // مراقب الجلسة الحي لحصر الحساب على جهاز واحد
     setInterval(async () => {
       if (!currentUser || currentUser.role === 'super_admin') return;
       const localSession = localStorage.getItem('my_device_session');
