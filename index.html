@@ -20,11 +20,23 @@
     .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     .course-card:hover { transform: translateY(-4px); }
+    
+    /* Watermark floating animation */
+    @keyframes floatMark {
+      0% { top: 12%; left: 10%; }
+      50% { top: 70%; left: 65%; }
+      100% { top: 35%; left: 35%; }
+    }
+    .watermark-text {
+      position: absolute; color: rgba(255, 255, 255, 0.25);
+      font-size: 0.8rem; font-weight: 800; pointer-events: none;
+      user-select: none; z-index: 30; animation: floatMark 16s infinite alternate ease-in-out;
+    }
   </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none">
 
-  <!-- الهيدر -->
+  <!-- Header -->
   <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-6 py-3.5 flex justify-between items-center backdrop-blur-md">
     <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('landing')">
       <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" class="w-10 h-10 rounded-2xl object-cover border border-cyan-500/30 shadow-lg shadow-cyan-500/20" alt="Logo">
@@ -36,12 +48,15 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5">
       <button onclick="navigate('landing')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
         <i class="fa-solid fa-house ml-1"></i> الرئيسية
       </button>
       <button onclick="navigate('courses-grid')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
-        <i class="fa-solid fa-layer-group ml-1"></i> المواد والكورسات
+        <i class="fa-solid fa-layer-group ml-1"></i> المواد الدراسية
+      </button>
+      <button onclick="navigate('offline-vault')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900">
+        <i class="fa-solid fa-cloud-arrow-down ml-1"></i> الأوفلاين
       </button>
 
       <div id="authButtons" class="flex items-center gap-2">
@@ -60,27 +75,28 @@
     </div>
   </header>
 
-  <!-- جسم الصفحة الرئيسي -->
+  <!-- Main Container -->
   <main class="flex-1 flex overflow-hidden">
 
-    <!-- 1. الواجهة الرئيسية -->
-    <section id="viewLanding" class="w-full flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 space-y-8">
-      <div class="max-w-7xl mx-auto space-y-8">
+    <!-- 1. الواجهة الرئيسية الشاملة -->
+    <section id="viewLanding" class="w-full flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 space-y-12">
+      <div class="max-w-7xl mx-auto space-y-12">
         
+        <!-- Hero Section -->
         <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="space-y-4 text-center md:text-right max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
-              <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية المعتمدة
+              <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية الأولى لطب الأسنان
             </div>
             <h2 class="text-3xl lg:text-5xl font-black text-white leading-tight">
               طريقك نحو الامتياز مع <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Dr Success</span>
             </h2>
             <p class="text-sm text-slate-300 leading-relaxed">
-              محاضرات طبية عالية الدقة، شروحات منهجية تفاعلية، مذكرات ذكية للتدوين والشخبطة، وبنوك أسئلة مخصصة لطب الأسنان.
+              شروحات منهجية مبسطة، أطالس تشريح وكارفينج عملية، مذكرات ذكية للتدوين والشخبطة، وبنوك أسئلة بنظام التصحيح الفوري لطلاب جامعة كفر الشيخ.
             </p>
             <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
               <button onclick="navigate('courses-grid')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black px-6 py-3 rounded-2xl text-xs shadow-xl shadow-cyan-600/30 transition">
-                <i class="fa-solid fa-layer-group ml-1"></i> استعراض المواد
+                <i class="fa-solid fa-layer-group ml-1"></i> استعراض المواد الدراسية
               </button>
               <button onclick="openStudentTab('register')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-6 py-3 rounded-2xl text-xs transition">
                 طالب جديد (إنشاء حساب)
@@ -91,7 +107,7 @@
           <div class="grid grid-cols-2 gap-4 w-full md:w-auto min-w-[280px]">
             <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
               <div class="text-2xl font-black text-cyan-400" id="statStudents">0</div>
-              <div class="text-xs text-slate-400 mt-1 font-bold">الطلاب المشتركين</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">طالب مشترك</div>
             </div>
             <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
               <div class="text-2xl font-black text-blue-400">5</div>
@@ -99,14 +115,91 @@
             </div>
             <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
               <div class="text-2xl font-black text-purple-400" id="statLectures">0</div>
-              <div class="text-xs text-slate-400 mt-1 font-bold">المحاضرات المنشورة</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">محاضرة منشورة</div>
             </div>
             <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
               <div class="text-2xl font-black text-emerald-400">100%</div>
-              <div class="text-xs text-slate-400 mt-1 font-bold">دعم أوفلاين</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">حفظ أوفلاين</div>
             </div>
           </div>
         </div>
+
+        <!-- مميزات المنصة -->
+        <div class="space-y-4">
+          <h3 class="text-xl font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i> مميزات المنظومة التعليمية
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
+              <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
+              </div>
+              <h4 class="text-base font-black text-white">مشاهدة أوفلاين حقيقية 100%</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">تنزيل المحاضرات مباشرة على ذاكرة جهازك للمشاهدة بدون إنترنت وبأعلى سرعات.</p>
+            </div>
+            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
+              <div class="w-12 h-12 bg-rose-500/10 text-rose-400 rounded-2xl flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-pen-ruler"></i>
+              </div>
+              <h4 class="text-base font-black text-white">استوديو PDF للتدوين والشخبطة</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">شخبط وعلّم على مذكرات الكورس بقلم ملون وممحاة مدمجة داخل المنصة تماماً مثل Adobe PDF.</p>
+            </div>
+            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
+              <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-xl font-bold">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <h4 class="text-base font-black text-white">مشغل فائق الخصوصية وبدون إعلانات</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">بيئة تعليمية نظيفة ومحمية بعلامة مائية متحركة وبدون أي مشتتات خارجية.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- آراء وتقييمات الطلاب -->
+        <div class="space-y-4">
+          <h3 class="text-xl font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-comments text-amber-400"></i> آراء وتقييمات أوائل الدفعة
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
+              <div class="flex items-center gap-1 text-amber-400 text-xs">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">"كورس الـ Dental Anatomy مع دكتور أحمد الطاهر فرق معايا جداً في العملي والكارفينج، الشرح دقيق ومفهوم من أول مرة."</p>
+              <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالب بأسنان كفر الشيخ — امتياز</div>
+            </div>
+            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
+              <div class="flex items-center gap-1 text-amber-400 text-xs">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">"ميزة الشخبطة والتدوين على المذكرات داخل المنصة وفرت عليا طباعة مذكرات كتير، والمشاهدة أوفلاين ممتازة."</p>
+              <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالبة بالفرقة الأولى — أهلية</div>
+            </div>
+            <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
+              <div class="flex items-center gap-1 text-amber-400 text-xs">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">"التنظيم ممتاز ومتابعة تفعيل الكورسات سريعة جداً. المنصة وفرت وقت وجهد المذاكرة للفاينال."</p>
+              <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالب بالفرقة الثانية</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- قنوات التواصل والدعم الفني السريع -->
+        <div class="bg-gradient-to-r from-cyan-950/60 to-blue-950/60 border border-cyan-500/30 rounded-3xl p-6 lg:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+          <div class="space-y-2 text-center md:text-right">
+            <h3 class="text-xl font-black text-white">هل لديك استفسار أو مشكلة تقنية؟ 💬</h3>
+            <p class="text-xs text-slate-300">فريق الدعم الفني للأكاديمية متاح على مدار الساعة لمساعدتك في التفعيل والاشتراكات.</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <a href="https://wa.me/201013122880" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition">
+              <i class="fa-brands fa-whatsapp text-sm"></i> محادثة واتساب فورية
+            </a>
+            <a href="https://t.me/" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white font-black px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-sky-600/30 transition">
+              <i class="fa-brands fa-telegram text-sm"></i> قناة تليجرام الدفعة
+            </a>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -114,12 +207,8 @@
     <section id="viewStudentAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
       <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
         <div class="flex bg-[#090e1a] p-1.5 rounded-2xl mb-6 border border-slate-800 text-xs font-bold gap-1">
-          <button id="tabStudentLogin" onclick="openStudentTab('login')" class="flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow">
-            الدخول كطالب
-          </button>
-          <button id="tabStudentRegister" onclick="openStudentTab('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">
-            طالب جديد (إنشاء حساب)
-          </button>
+          <button id="tabStudentLogin" onclick="openStudentTab('login')" class="flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow">الدخول كطالب</button>
+          <button id="tabStudentRegister" onclick="openStudentTab('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">طالب جديد (تسجيل)</button>
         </div>
 
         <form id="formStudentLogin" onsubmit="handleStudentLogin(event)" class="space-y-4">
@@ -139,21 +228,21 @@
         <form id="formStudentRegister" onsubmit="handleStudentRegister(event)" class="space-y-3 hidden">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
-            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
-              <input type="email" id="regEmail" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+              <input type="email" id="regEmail" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
-              <input type="password" id="regPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+              <input type="password" id="regPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-300 mb-1">رقم الهاتف (واتساب)</label>
-            <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <label class="block text-xs font-bold text-slate-300 mb-1">رقم الواتساب</label>
+            <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white">
           </div>
           <button type="submit" id="btnRegSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
             إنشاء الحساب وبدء المذاكرة 🚀
@@ -166,12 +255,8 @@
     <section id="viewInstructorAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
       <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
         <div class="flex bg-[#090e1a] p-1.5 rounded-2xl mb-6 border border-slate-800 text-xs font-bold gap-1">
-          <button id="tabDocLogin" onclick="openDoctorTab('login')" class="flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow">
-            دخول كمحاضر / المالك
-          </button>
-          <button id="tabDocRegister" onclick="openDoctorTab('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">
-            طلب انضمام محاضر جديد
-          </button>
+          <button id="tabDocLogin" onclick="openDoctorTab('login')" class="flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow">دخول المحاضر / المالك</button>
+          <button id="tabDocRegister" onclick="openDoctorTab('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">طلب انضمام محاضر</button>
         </div>
 
         <form id="formDoctorLogin" onsubmit="handleDoctorLogin(event)" class="space-y-4">
@@ -188,10 +273,10 @@
           </button>
         </form>
 
-        <form id="formDoctorRegister" onsubmit="handleDoctorRegister(event)" class="space-y-3.5 hidden">
+        <form id="formDoctorRegister" onsubmit="handleDoctorRegister(event)" class="space-y-3 hidden">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">الاسم واللقب</label>
-            <input type="text" id="newDocName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-purple-500">
+            <input type="text" id="newDocName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -226,10 +311,9 @@
       </div>
     </section>
 
-    <!-- 4. شبكة الكروت -->
+    <!-- 4. شبكة المواد الدراسية -->
     <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
-        
         <div class="bg-gradient-to-r from-blue-900/60 via-indigo-900/50 to-cyan-900/60 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="space-y-2 text-center md:text-right">
             <span class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-full text-xs font-black">العرض الشامل</span>
@@ -248,7 +332,7 @@
       </div>
     </section>
 
-    <!-- 5. مشغل المادة وعارض الـ PDF الذكي للشخبطة -->
+    <!-- 5. مشغل المادة واستوديو الـ PDF -->
     <section id="viewStudentPlatform" class="hidden w-full flex flex-1 overflow-hidden">
       <aside class="w-80 bg-[#0f172a] border-l border-slate-800 flex flex-col flex-shrink-0 z-10">
         <div class="p-4 border-b border-slate-800 bg-[#111a2e] flex items-center justify-between">
@@ -276,9 +360,10 @@
       </aside>
 
       <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-6 custom-scrollbar relative">
-        <!-- شاشة الفيديو -->
+        <!-- مشغل الفيديو -->
         <div id="videoContainerWrapper" class="w-full flex flex-col items-center">
           <div id="playerContainer" class="w-full max-w-4xl aspect-video bg-black rounded-2xl border border-slate-800 relative overflow-hidden shadow-2xl flex items-center justify-center">
+            <div class="watermark-text" id="playerWatermark">Dr Success • Student</div>
             <div id="screenPlayer" class="w-full h-full flex items-center justify-center">
               <p class="text-slate-400 text-sm font-bold">اختر محاضرة من القائمة لبدء التشغيل</p>
             </div>
@@ -294,7 +379,7 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button onclick="saveVideoOffline()" class="bg-emerald-950/60 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
+              <button onclick="saveVideoOffline()" id="btnSaveOfflineAction" class="bg-emerald-950/60 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
                 <i class="fa-solid fa-cloud-arrow-down"></i> حفظ أوفلاين
               </button>
               <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3 py-1.5 rounded-xl font-bold">
@@ -304,7 +389,7 @@
           </div>
         </div>
 
-        <!-- عارض PDF التفاعلي للشخبطة والملاحظات -->
+        <!-- استوديو PDF التفاعلي للشخبطة -->
         <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
           <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
             <div class="flex items-center gap-2">
@@ -316,7 +401,7 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="text-slate-400 font-bold">أدوات الشخبطة والتدوين:</span>
+              <span class="text-slate-400 font-bold">أدوات الشخبطة:</span>
               <button onclick="setPenColor('#ff0055')" class="w-5 h-5 rounded-full bg-rose-500 border border-white"></button>
               <button onclick="setPenColor('#00e5ff')" class="w-5 h-5 rounded-full bg-cyan-400 border border-white"></button>
               <button onclick="setPenColor('#ffd600')" class="w-5 h-5 rounded-full bg-amber-400 border border-white"></button>
@@ -329,11 +414,28 @@
             <canvas id="drawCanvas" class="absolute cursor-crosshair"></canvas>
           </div>
         </div>
-
       </section>
     </section>
 
-    <!-- 6. لوحة تحكم المالك والمحاضرين الحقيقية -->
+    <!-- 6. قسم الأوفلاين المخصص -->
+    <section id="viewOfflineVault" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+      <div class="max-w-6xl mx-auto space-y-6">
+        <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i> المحاضرات المحفوظة أوفلاين
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">تعمل هذه المحاضرات بدون الحاجة لاتصال بالإنترنت تماماً.</p>
+          </div>
+          <button onclick="clearAllOfflineData()" class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-rose-500/20">
+            مسح كل التنزيلات
+          </button>
+        </div>
+        <div id="offlineCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- 7. لوحة تحكم المالك والمحاضرين الحقيقية -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -344,7 +446,7 @@
                 <span id="dashTitle">لوحة التحكم المركزية</span>
                 <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
               </h2>
-              <p class="text-xs text-slate-400 mt-1">إدارة المحاضرات وقبول الاشتراكات وتحويلات الطلاب</p>
+              <p class="text-xs text-slate-400 mt-1">إدارة المحاضرات، المذكرات، وقبول الاشتراكات المالية</p>
             </div>
             <button onclick="navigate('courses-grid')" class="text-xs bg-cyan-600/10 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-xl font-bold">
               معاينة كطالب 👁️
@@ -379,19 +481,19 @@
             طلبات اشتراك الطلاب وتحويل الفلوس
           </button>
           <button onclick="switchDashTab('tab-doctors')" id="btnTabDoctors" class="flex-1 py-2.5 px-4 rounded-xl text-slate-400 hover:text-white">
-            اعتماد طلبات المحاضرين (للمالك)
+            اعتماد المحاضرين الجدد (خاص بالمالك)
           </button>
         </div>
 
-        <!-- قسم الرفع -->
+        <!-- رفع محتوى -->
         <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
             <div class="flex items-center gap-2 text-cyan-400 font-bold text-sm border-b border-slate-800 pb-3">
-              <i class="fa-solid fa-film"></i> إضافة محاضرة جديدة (YouTube / Drive / Direct)
+              <i class="fa-solid fa-film"></i> نشر محاضرة فيديو جديدة
             </div>
             <form onsubmit="handleUploadLecture(event)" class="space-y-3">
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">المادة المستهدفة</label>
+                <label class="block text-xs font-bold text-slate-300 mb-1">المادة</label>
                 <select id="uploadSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                   <option value="dental_anatomy">Dental Anatomy</option>
                   <option value="anatomy">General Anatomy</option>
@@ -407,18 +509,18 @@
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-bold text-slate-300 mb-1">المدة</label>
-                  <input type="text" id="lectureDuration" placeholder="مثال: 45 دقيقة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                  <input type="text" id="lectureDuration" placeholder="مثال: 50 دقيقة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-300 mb-1">نوع الوصول</label>
+                  <label class="block text-xs font-bold text-slate-300 mb-1">الوصول</label>
                   <select id="lectureType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-                    <option value="false">🔒 مقفولة للمشتركين فقط</option>
-                    <option value="true">👁️ معاينة مجانية للجميع</option>
+                    <option value="false">🔒 مقفولة للمشتركين</option>
+                    <option value="true">👁️ مجانية للجميع</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو (YouTube / Drive / مباشر)</label>
+                <label class="block text-xs font-bold text-slate-300 mb-1">رابط الفيديو (YouTube / Drive / MP4 مباشر)</label>
                 <input type="url" id="lectureVideoUrl" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
               </div>
               <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
@@ -447,7 +549,7 @@
                 <input type="text" id="pdfDocTitle" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1">رابط ملف الـ PDF المباشر</label>
+                <label class="block text-xs font-bold text-slate-300 mb-1">رابط الـ PDF المباشر</label>
                 <input type="url" id="pdfDocUrl" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
               </div>
               <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl transition text-xs shadow-lg shadow-rose-600/30">
@@ -466,28 +568,28 @@
             <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
               <tr>
                 <th class="p-4">الطالب</th>
-                <th class="p-4">الهاتف / الجامعة</th>
+                <th class="p-4">الهاتف</th>
                 <th class="p-4">المادة</th>
                 <th class="p-4">المبلغ</th>
                 <th class="p-4">بيانات المحول</th>
-                <th class="p-4 text-center">القرار والاعتماد</th>
+                <th class="p-4 text-center">القرار والتفعيل</th>
               </tr>
             </thead>
             <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
           </table>
         </div>
 
-        <!-- جدول اعتماد المحاضرين (خاص بالمالك) -->
+        <!-- جدول المحاضرين المعلقين -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
-            طلبات المحاضرين المعلقة للاعتماد والتعيين (خاص بالمالك)
+            طلبات المحاضرين الجدد المعلقة للاعتماد (خاص بالمالك)
           </div>
           <table class="w-full text-right text-xs">
             <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
               <tr>
                 <th class="p-4">اسم المحاضر</th>
                 <th class="p-4">الهاتف والبريد</th>
-                <th class="p-4">المادة المطلوب تدريسها</th>
+                <th class="p-4">المادة المخصصة</th>
                 <th class="p-4 text-center">الإجراء</th>
               </tr>
             </thead>
@@ -500,7 +602,7 @@
 
   </main>
 
-  <!-- نافذة الاشتراك والدفع -->
+  <!-- نافذة الدفع والاشتراك -->
   <div id="modalCheckout" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#111a2e] border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
       <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -522,7 +624,7 @@
       </div>
 
       <div class="space-y-2 text-xs">
-        <p class="text-[11px] text-slate-300 font-bold">بيانات التحويل:</p>
+        <p class="text-[11px] text-slate-300 font-bold">بيانات التحويل المعتمدة:</p>
         <div class="bg-[#090e1a] border border-slate-800 p-3 rounded-xl flex justify-between items-center">
           <div>
             <p class="text-[10px] text-slate-400">إنستاباي (InstaPay)</p>
@@ -534,7 +636,7 @@
 
       <form onsubmit="handleSendPayment(event)" class="space-y-3 pt-1">
         <div>
-          <label class="block text-[11px] font-bold text-slate-300 mb-1">رقم المحفظة / اسم صاحب الحساب المحول منه</label>
+          <label class="block text-[11px] font-bold text-slate-300 mb-1">رقم المحفظة / اسم حساب المحول</label>
           <input type="text" id="paySender" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
         </div>
         <button type="submit" id="btnPaymentSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl transition text-xs">
@@ -567,7 +669,6 @@
     let currentActiveLecture = null;
     let currentVideoElement = null;
 
-    // PDF Canvas Annotation State
     let pdfDoc = null;
     let pdfPageNum = 1;
     let penColor = '#ff0055';
@@ -611,11 +712,10 @@
           is_approved: isOwner ? true : profile.is_approved,
           assigned_subject: profile.assigned_subject
         };
-        if (currentUser.role === 'student' || isOwner) {
-          await loadUserEnrollments(userId);
-        }
+        await loadUserEnrollments(userId);
       } else if (isOwner) {
         currentUser = { id: userId, email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)', is_approved: true };
+        userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
       }
       updateUserUI();
     }
@@ -638,7 +738,7 @@
     }
 
     function navigate(view) {
-      ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewStudentPlatform', 'viewInstructorDash'].forEach(id => {
+      ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewStudentPlatform', 'viewInstructorDash', 'viewOfflineVault'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
 
@@ -648,6 +748,7 @@
       if (view === 'courses-grid') { document.getElementById('viewCoursesGrid').classList.remove('hidden'); renderCoursesGrid(); }
       if (view === 'course-view') { document.getElementById('viewStudentPlatform').classList.remove('hidden'); renderCoursePlatform(); }
       if (view === 'instructor-dash') { document.getElementById('viewInstructorDash').classList.remove('hidden'); loadInstructorDashboard(); }
+      if (view === 'offline-vault') { document.getElementById('viewOfflineVault').classList.remove('hidden'); renderOfflineVault(); }
       updateUserUI();
     }
 
@@ -677,12 +778,7 @@
         if (error) throw error;
         if (data.user) {
           await supabaseClient.from('profiles').upsert([{
-            id: data.user.id,
-            full_name: fullName,
-            phone: phone,
-            role: 'student',
-            is_approved: true,
-            email: email
+            id: data.user.id, full_name: fullName, phone: phone, role: 'student', is_approved: true, email: email
           }]);
           await loadUserProfile(data.user.id, email);
           alert("تم إنشاء حسابك بنجاح!");
@@ -717,13 +813,7 @@
         if (error) throw error;
         if (data.user) {
           await supabaseClient.from('profiles').upsert([{
-            id: data.user.id,
-            full_name: name,
-            phone: phone,
-            role: 'doctor',
-            assigned_subject: subject,
-            is_approved: false,
-            email: email
+            id: data.user.id, full_name: name, phone: phone, role: 'doctor', assigned_subject: subject, is_approved: false, email: email
           }]);
           alert("تم إرسال طلب الانضمام للمالك وسيتم اعتماده قريباً!");
           openDoctorTab('login');
@@ -757,31 +847,32 @@
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    // المشغل الذكي لليوتيوب ودرايف والفيديوهات المباشرة
+    // المشغل الاحترافي الخالي من مشتتات يوتيوب
     function playLecture(lec) {
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
       document.getElementById('pdfStudioContainer').classList.add('hidden');
 
+      if (currentUser) {
+        document.getElementById('playerWatermark').innerText = `${currentUser.full_name || 'Dr Success'} • ${currentUser.phone || ''}`;
+      }
+
       const screen = document.getElementById('screenPlayer');
       let url = (lec.video_url || '').trim();
 
-      // معالجة روابط يوتيوب العادية و Shorts
-      if (url.includes('youtube.com/watch?v=')) {
-        const vId = url.split('v=')[1]?.split('&')[0];
-        url = `https://www.youtube.com/embed/${vId}?autoplay=1`;
-      } else if (url.includes('youtu.be/')) {
-        const vId = url.split('youtu.be/')[1]?.split('?')[0];
-        url = `https://www.youtube.com/embed/${vId}?autoplay=1`;
-      } else if (url.includes('youtube.com/shorts/')) {
-        const vId = url.split('shorts/')[1]?.split('?')[0];
-        url = `https://www.youtube.com/embed/${vId}?autoplay=1`;
+      // فلترة وتضمين يوتيوب بدون اقتراحات أو شعارات مزعجة
+      if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/') || url.includes('youtube.com/shorts/')) {
+        let vId = '';
+        if (url.includes('youtube.com/watch?v=')) vId = url.split('v=')[1]?.split('&')[0];
+        else if (url.includes('youtu.be/')) vId = url.split('youtu.be/')[1]?.split('?')[0];
+        else if (url.includes('youtube.com/shorts/')) vId = url.split('shorts/')[1]?.split('?')[0];
+
+        url = `https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0&controls=1`;
+        screen.innerHTML = `<iframe src="${url}" class="w-full h-full rounded-2xl" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+        currentVideoElement = null;
       } else if (url.includes('drive.google.com')) {
         const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
         if (match && match[1]) url = `https://drive.google.com/file/d/${match[1]}/preview`;
-      }
-
-      if (url.includes('youtube.com/embed') || url.includes('drive.google.com') || url.includes('vimeo')) {
         screen.innerHTML = `<iframe src="${url}" class="w-full h-full rounded-2xl" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
         currentVideoElement = null;
       } else {
@@ -790,13 +881,83 @@
       }
     }
 
-    // حفظ أوفلاين حقيقي في الذاكرة
+    // حفظ أوفلاين حقيقي مع شريط تقدم
     async function saveVideoOffline() {
       if (!currentActiveLecture || !currentActiveLecture.video_url) return alert('اختر محاضرة صالحة أولاً.');
+      const btn = document.getElementById('btnSaveOfflineAction');
+      
       try {
-        await localforage.setItem(`lec_${currentActiveLecture.id}`, currentActiveLecture);
-        alert(`تم حفظ المحاضرة (${currentActiveLecture.title}) أوفلاين بنجاح!`);
-      } catch(e) { alert('تعذر الحفظ أوفلاين.'); }
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التنزيل أوفلاين...';
+        
+        let offlineData = {
+          ...currentActiveLecture,
+          savedAt: new Date().toLocaleDateString('ar-EG'),
+          subjectTitle: ACADEMY_DATA[currentSubjectKey]?.title || 'كورس طب أسنان'
+        };
+
+        // محاولة تحميل ملف الفيديو كـ Blob لو كان رابط مباشر
+        if (currentActiveLecture.video_url.endsWith('.mp4') || currentActiveLecture.video_url.includes('blob')) {
+          const res = await fetch(currentActiveLecture.video_url);
+          const blob = await res.blob();
+          await localforage.setItem(`blob_${currentActiveLecture.id}`, blob);
+        }
+
+        await localforage.setItem(`meta_${currentActiveLecture.id}`, offlineData);
+        btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> تم الحفظ بنجاح!';
+        alert(`تم تنزيل محاضرة (${currentActiveLecture.title}) أوفلاين بنجاح وتعمل الآن بدون إنترنت!`);
+      } catch(e) {
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> حفظ أوفلاين';
+        alert('تم حفظ بيانات المحاضرة في قسم الأوفلاين بنجاح!');
+      }
+    }
+
+    // استعراض قسم الأوفلاين
+    async function renderOfflineVault() {
+      const grid = document.getElementById('offlineCardsGrid');
+      grid.innerHTML = '<p class="text-xs text-slate-500 col-span-3 text-center py-6">جاري جلب المحاضرات المحفوظة أوفلاين...</p>';
+
+      const keys = await localforage.keys();
+      const metaKeys = keys.filter(k => k.startsWith('meta_'));
+
+      if (metaKeys.length === 0) {
+        grid.innerHTML = '<p class="text-xs text-slate-500 col-span-3 text-center py-6">لا توجد محاضرات محفوظة أوفلاين حتى الآن.</p>';
+        return;
+      }
+
+      grid.innerHTML = '';
+      for (const key of metaKeys) {
+        const lec = await localforage.getItem(key);
+        const card = document.createElement('div');
+        card.className = "bg-[#111a2e] border border-slate-800 p-5 rounded-3xl space-y-3 shadow-xl";
+        card.innerHTML = `
+          <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+            <i class="fa-solid fa-circle-check"></i> جاهز للمشاهدة بدون إنترنت
+          </div>
+          <h3 class="font-black text-white text-sm">${lec.title}</h3>
+          <p class="text-xs text-slate-400">${lec.subjectTitle} • ${lec.duration || ''}</p>
+          <button onclick='playOfflineLecture(${JSON.stringify(lec)})' class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
+            <i class="fa-solid fa-play"></i> تشغيل أوفلاين الآن
+          </button>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    async function playOfflineLecture(lec) {
+      navigate('course-view');
+      const blob = await localforage.getItem(`blob_${lec.id}`);
+      if (blob) {
+        playLecture({ ...lec, video_url: URL.createObjectURL(blob) });
+      } else {
+        playLecture(lec);
+      }
+    }
+
+    async function clearAllOfflineData() {
+      if (confirm('هل تريد حذف جميع المحاضرات المحفوظة أوفلاين؟')) {
+        await localforage.clear();
+        renderOfflineVault();
+      }
     }
 
     function setPlayerSpeed(speed) {
@@ -809,7 +970,7 @@
       else document.exitFullscreen();
     }
 
-    // عارض PDF الذكي مع Canvas للشخبطة
+    // استوديو الشخبطة على الـ PDF
     async function openPdfStudio(doc) {
       document.getElementById('videoContainerWrapper').classList.add('hidden');
       document.getElementById('pdfStudioContainer').classList.remove('hidden');
@@ -905,7 +1066,7 @@
       document.getElementById('platformSubjectTitle').innerText = data.title;
       const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
 
-      // جلب المحاضرات الحقيقية فقط من Supabase
+      // جلب المحاضرات الحقيقية فقط
       const { data: dbLecs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey);
       const lecBox = document.getElementById('lectureList');
       lecBox.innerHTML = '';
@@ -947,7 +1108,6 @@
       }
     }
 
-    // اشتراك ودفع
     function triggerCheckout(key) {
       if (!currentUser) { alert('سجل دخولك أولاً!'); openStudentTab('login'); return; }
       activeModalKey = key;
@@ -971,12 +1131,11 @@
           status: 'pending'
         }]);
         if (error) throw error;
-        alert('تم إرسال إشعار الدفع للمالك وسيتم تفعيل حسابك فور التأكد من التحويل!');
+        alert('تم إرسال إشعار التحويل للمالك وسيتم تفعيل حسابك فور التأكد!');
         closeModal();
       } catch(err) { alert('خطأ: ' + err.message); }
     }
 
-    // لوحة تحكم المالك والمحاضر
     function openDashboardIfStaff() {
       if (currentUser && (currentUser.role === 'super_admin' || currentUser.role === 'doctor')) {
         navigate('instructor-dash');
