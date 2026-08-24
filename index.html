@@ -82,7 +82,7 @@
 
     .container { max-width: 1150px; margin: 0 auto; padding: 1.5rem 1rem; width: 100%; flex: 1; }
 
-    /* Hero Section - تصميم إتقان */
+    /* Hero Section */
     .hero-banner {
       background: linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(56, 189, 248, 0.05) 100%);
       border: 1px solid var(--border);
@@ -108,6 +108,44 @@
     .stat-pill .num { font-size: 1.3rem; font-weight: 900; color: var(--accent); }
     .stat-pill .label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
 
+    /* شبكة الكورسات المتاحة */
+    .section-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .courses-carousel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .course-track-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1.1rem;
+      padding: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.6rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .course-track-card:hover, .course-track-card.active-track {
+      background: var(--card-hover);
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .course-track-card.active-track::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--accent);
+    }
+    .track-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; background: rgba(56, 189, 248, 0.12); color: var(--accent);
+    }
+    .track-name { font-size: 0.95rem; font-weight: 800; }
+    .track-count { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
     /* شريط البحث والتبويبات */
     .search-wrapper { margin-bottom: 1.25rem; position: relative; }
     .search-wrapper i { position: absolute; right: 1.1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -126,7 +164,7 @@
     }
     .tab-btn.active { background: var(--primary-gradient); color: #fff; border-color: transparent; }
 
-    /* مشغل الفيديو الذكي */
+    /* مشغل الفيديو */
     .player-section {
       display: none; background: #000; border-radius: 1.25rem; overflow: hidden;
       margin-bottom: 2rem; position: relative; border: 1px solid var(--border);
@@ -140,7 +178,7 @@
     }
     @keyframes floatMark { 0% { top: 10%; left: 10%; } 50% { top: 75%; left: 70%; } 100% { top: 40%; left: 40%; } }
 
-    /* كروت الموديلات الحديثة */
+    /* شبكة الكروت */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
     .card {
       background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem;
@@ -160,7 +198,6 @@
     .card-title { font-size: 1rem; font-weight: 800; line-height: 1.4; margin-bottom: 0.2rem; }
     .card-badge { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; display: inline-block; }
     
-    /* شريط تقدم المحاضرة */
     .card-progress { margin-top: 0.8rem; }
     .progress-bar-bg { height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
     .progress-fill { height: 100%; width: 0%; background: var(--accent); transition: width 0.3s; }
@@ -174,7 +211,7 @@
     }
     .admin-active .del-btn { display: block; }
 
-    /* Modals & Quiz Engine */
+    /* Quiz Engine & Modals */
     .quiz-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 9999; flex-direction: column; overflow-y: auto; }
     .quiz-navbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0.9rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
     .quiz-timer { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.8rem; border-radius: 999px; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
@@ -220,7 +257,7 @@
 
   <div class="container">
     
-    <!-- Hero Banner بتصميم منصة إتقان -->
+    <!-- Hero Banner -->
     <div class="hero-banner">
       <div class="hero-text">
         <h2>منظومة التعلم الطبي المتقدم 🎯</h2>
@@ -242,6 +279,43 @@
       </div>
     </div>
 
+    <!-- قسم الكورسات الطبية المتاحة -->
+    <div class="section-title">
+      <i class="fa-solid fa-layer-group" style="color:var(--accent);"></i> الكورسات المتاحة (Available Courses)
+    </div>
+    <div class="courses-carousel" id="tracksContainer">
+      <div class="course-track-card active-track" onclick="filterByTrack('all', this)">
+        <div class="track-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="track-name">جميع الكورسات</div>
+        <div class="track-count" id="countAll">كل المحتوى</div>
+      </div>
+      <div class="course-track-card" onclick="filterByTrack('Dental Anatomy', this)">
+        <div class="track-icon"><i class="fa-solid fa-tooth"></i></div>
+        <div class="track-name">Dental Anatomy</div>
+        <div class="track-count" id="countDental">0 محتوى</div>
+      </div>
+      <div class="course-track-card" onclick="filterByTrack('Anatomy 1', this)">
+        <div class="track-icon"><i class="fa-solid fa-bone"></i></div>
+        <div class="track-name">Anatomy 1</div>
+        <div class="track-count" id="countAnatomy">0 محتوى</div>
+      </div>
+      <div class="course-track-card" onclick="filterByTrack('Biochemistry 1', this)">
+        <div class="track-icon"><i class="fa-solid fa-flask-vial"></i></div>
+        <div class="track-name">Biochemistry 1</div>
+        <div class="track-count" id="countBiochem">0 محتوى</div>
+      </div>
+      <div class="course-track-card" onclick="filterByTrack('Microbiology 1', this)">
+        <div class="track-icon"><i class="fa-solid fa-bacterium"></i></div>
+        <div class="track-name">Microbiology 1</div>
+        <div class="track-count" id="countMicro">0 محتوى</div>
+      </div>
+      <div class="course-track-card" onclick="filterByTrack('Histology', this)">
+        <div class="track-icon"><i class="fa-solid fa-microscope"></i></div>
+        <div class="track-name">Histology</div>
+        <div class="track-count" id="countHisto">0 محتوى</div>
+      </div>
+    </div>
+
     <!-- مشغل الفيديو -->
     <div class="player-section" id="playerSection">
       <div class="video-wrapper">
@@ -254,7 +328,7 @@
       </div>
     </div>
 
-    <!-- البحث -->
+    <!-- شريط البحث -->
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" id="searchInput" class="search-input" placeholder="ابحث باسم المحاضرة أو الشابتر أو الامتحان..." oninput="handleSearch()">
@@ -331,15 +405,23 @@
         </div>
 
         <div class="form-group">
+          <label>الكورس التابع له:</label>
+          <select id="contentCourse" class="form-control">
+            <option value="Dental Anatomy">Dental Anatomy</option>
+            <option value="Anatomy 1">Anatomy 1</option>
+            <option value="Biochemistry 1">Biochemistry 1</option>
+            <option value="Microbiology 1">Microbiology 1</option>
+            <option value="Histology">Histology</option>
+            <option value="General">عام / مادة أخرى</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label>عنوان المحتوى / الامتحان:</label>
           <input type="text" id="contentTitle" class="form-control" placeholder="مثال: مقدمة الشابتر الأول">
         </div>
 
         <div id="lessonInputs">
-          <div class="form-group">
-            <label>اسم الشابتر / الموديل:</label>
-            <input type="text" id="contentChapter" class="form-control" placeholder="مثال: General Microbiology">
-          </div>
           <div class="form-group">
             <label>رابط الفيديو المباشر (MP4 Direct):</label>
             <input type="url" id="contentVideo" class="form-control" placeholder="https://...">
@@ -380,6 +462,7 @@ B) Gram negative bacilli"></textarea>
     let lessonsData = [];
     let examsData = [];
     let currentFilter = 'videos';
+    let currentTrack = 'all';
     let searchQuery = '';
     let isAdmin = false;
 
@@ -397,12 +480,33 @@ B) Gram negative bacilli"></textarea>
         lessonsData = lessons || [];
         examsData = exams || [];
 
+        // إحصائيات البانر
         document.getElementById('statLessons').innerText = lessonsData.filter(l => l.video_url).length;
         document.getElementById('statPdfs').innerText = lessonsData.filter(l => l.pdf_url).length;
         document.getElementById('statExams').innerText = examsData.length;
 
+        // إحصائيات الكورسات
+        updateTrackCounts();
         renderCards();
       } catch (err) { console.error(err); }
+    }
+
+    function updateTrackCounts() {
+      const allItems = [...lessonsData, ...examsData];
+      const count = (name) => allItems.filter(i => (i.chapter || '').toLowerCase().includes(name.toLowerCase())).length;
+      
+      document.getElementById('countDental').innerText = `${count('Dental Anatomy')} محتوى`;
+      document.getElementById('countAnatomy').innerText = `${count('Anatomy 1')} محتوى`;
+      document.getElementById('countBiochem').innerText = `${count('Biochemistry 1')} محتوى`;
+      document.getElementById('countMicro').innerText = `${count('Microbiology 1')} محتوى`;
+      document.getElementById('countHisto').innerText = `${count('Histology')} محتوى`;
+    }
+
+    function filterByTrack(trackName, element) {
+      document.querySelectorAll('.course-track-card').forEach(c => c.classList.remove('active-track'));
+      element.classList.add('active-track');
+      currentTrack = trackName;
+      renderCards();
     }
 
     async function renderCards() {
@@ -410,9 +514,14 @@ B) Gram negative bacilli"></textarea>
       grid.innerHTML = '';
 
       if (currentFilter === 'exams') {
-        const filteredExams = examsData.filter(e => e.title.toLowerCase().includes(searchQuery));
+        let filteredExams = examsData.filter(e => {
+          const matchQuery = e.title.toLowerCase().includes(searchQuery) || (e.chapter && e.chapter.toLowerCase().includes(searchQuery));
+          const matchTrack = currentTrack === 'all' || (e.chapter && e.chapter.toLowerCase().includes(currentTrack.toLowerCase()));
+          return matchQuery && matchTrack;
+        });
+
         if (filteredExams.length === 0) {
-          grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:2rem;">لا توجد اختبارات مضافة حالياً.</p>';
+          grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:2rem;">لا توجد اختبارات مضافة في هذا الكورس حالياً.</p>';
           return;
         }
         filteredExams.forEach(exam => {
@@ -424,7 +533,7 @@ B) Gram negative bacilli"></textarea>
                   <div class="card-icon icon-exam"><i class="fa-solid fa-stopwatch"></i></div>
                   <div>
                     <div class="card-title">${exam.title}</div>
-                    <span class="card-badge">اختبار تقييمي • ${exam.duration_minutes || 15} دقيقة</span>
+                    <span class="card-badge">${exam.chapter || 'كورس عام'} • ${exam.duration_minutes || 15} دقيقة</span>
                   </div>
                 </div>
               </div>
@@ -437,12 +546,17 @@ B) Gram negative bacilli"></textarea>
         return;
       }
 
-      let filteredLessons = lessonsData.filter(l => l.title.toLowerCase().includes(searchQuery) || (l.chapter && l.chapter.toLowerCase().includes(searchQuery)));
+      let filteredLessons = lessonsData.filter(l => {
+        const matchQuery = l.title.toLowerCase().includes(searchQuery) || (l.chapter && l.chapter.toLowerCase().includes(searchQuery));
+        const matchTrack = currentTrack === 'all' || (l.chapter && l.chapter.toLowerCase().includes(currentTrack.toLowerCase()));
+        return matchQuery && matchTrack;
+      });
+
       if (currentFilter === 'videos') filteredLessons = filteredLessons.filter(l => l.video_url);
       if (currentFilter === 'pdf') filteredLessons = filteredLessons.filter(l => l.pdf_url);
 
       if (filteredLessons.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:2rem;">لا يوجد محتوى متاح حالياً في هذا القسم.</p>';
+        grid.innerHTML = '<p style="color:var(--text-muted);grid-column:1/-1;text-align:center;padding:2rem;">لا يوجد محتوى متاح حالياً في هذا الكورس.</p>';
         return;
       }
 
@@ -461,7 +575,7 @@ B) Gram negative bacilli"></textarea>
                 </div>
                 <div>
                   <div class="card-title">${item.title}</div>
-                  <span class="card-badge">${item.chapter || 'موديل عام'}</span>
+                  <span class="card-badge">${item.chapter || 'كورس عام'}</span>
                 </div>
               </div>
               ${item.video_url ? `
@@ -623,13 +737,13 @@ B) Gram negative bacilli"></textarea>
     async function publishContent() {
       const type = document.getElementById('contentType').value;
       const title = document.getElementById('contentTitle').value;
+      const course = document.getElementById('contentCourse').value;
       if (!title) return alert('يرجى كتابة العنوان');
 
       if (type === 'lesson') {
-        const chapter = document.getElementById('contentChapter').value;
         const video_url = document.getElementById('contentVideo').value;
         const pdf_url = document.getElementById('contentPdf').value;
-        await db.from('lessons').insert([{ title, chapter, video_url, pdf_url }]);
+        await db.from('lessons').insert([{ title, chapter: course, video_url, pdf_url }]);
       } else {
         const raw = document.getElementById('quizQuestionsRaw').value;
         const duration = parseInt(document.getElementById('quizDuration').value) || 15;
@@ -653,7 +767,7 @@ B) Gram negative bacilli"></textarea>
           });
         }
         if (parsed.length === 0) return alert('يرجى إدخال أسئلة صالحة');
-        await db.from('exams').insert([{ title, exam_url: JSON.stringify(parsed), duration_minutes: duration }]);
+        await db.from('exams').insert([{ title, chapter: course, exam_url: JSON.stringify(parsed), duration_minutes: duration }]);
       }
 
       closeModal(); loadData(); alert('تم النشر بنجاح على المنصة!');
