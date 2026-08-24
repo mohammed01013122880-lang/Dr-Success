@@ -10,6 +10,10 @@
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
+  
+  <!-- مكتبة قراءة ملفات PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <script>window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
 
   <style>
     :root {
@@ -52,175 +56,97 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 0.8rem 1.5rem;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      position: sticky; top: 0; z-index: 50;
+      display: flex; justify-content: space-between; align-items: center;
     }
 
     .brand { display: flex; align-items: center; gap: 0.75rem; }
-    .brand-icon {
-      width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
-    }
+    .brand-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
     .brand-text h1 { font-size: 1.15rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
     .brand-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
     .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
 
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
-      background: var(--primary); color: #fff; text-decoration: none; padding: 0.5rem 1rem;
-      border-radius: 0.6rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--primary); color: #fff; padding: 0.5rem 1rem; border-radius: 0.6rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s; }
     .btn:hover { background: var(--primary-hover); }
     .btn-admin { background: rgba(148, 163, 184, 0.15); color: var(--text); border: 1px solid var(--border); }
-    .btn-admin:hover { background: rgba(148, 163, 184, 0.25); }
     .btn-theme { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 0.6rem; cursor: pointer; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-outline:hover { background: rgba(148, 163, 184, 0.15); }
     .btn-success { background: var(--success); }
     .btn-danger { background: var(--danger); }
 
     .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; width: 100%; flex: 1; }
 
-    .announcement-box {
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(56, 189, 248, 0.1));
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem;
-      display: flex; align-items: center; gap: 0.8rem;
-    }
+    .announcement-box { background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(56, 189, 248, 0.1)); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
     .announcement-box i { font-size: 1.3rem; color: var(--accent); }
     .announcement-text { font-size: 0.9rem; line-height: 1.4; }
 
     .search-wrapper { margin-bottom: 1.25rem; position: relative; }
     .search-wrapper i { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-    .search-input {
-      width: 100%; padding: 0.75rem 2.8rem 0.75rem 1rem; border-radius: 0.75rem;
-      background: var(--card-bg); border: 1px solid var(--border); color: var(--text);
-      font-size: 0.9rem; outline: none;
-    }
-    .search-input:focus { border-color: var(--primary); }
-
-    .tabs-nav {
-      display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem;
-    }
-    .tab-btn {
-      background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted);
-      padding: 0.55rem 1.2rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem;
-      cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem;
-    }
+    .search-input { width: 100%; padding: 0.75rem 2.8rem 0.75rem 1rem; border-radius: 0.75rem; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; outline: none; }
+    
+    .tabs-nav { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    .tab-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-muted); padding: 0.55rem 1.2rem; border-radius: 999px; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; }
     .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-    /* مشغل الفيديو */
-    .player-section {
-      display: none; background: #000; border-radius: 1rem; overflow: hidden;
-      margin-bottom: 2rem; position: relative; border: 1px solid var(--border);
-    }
+    .player-section { display: none; background: #000; border-radius: 1rem; overflow: hidden; margin-bottom: 2rem; position: relative; border: 1px solid var(--border); }
     .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; }
     .video-wrapper video { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .watermark {
-      position: absolute; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem;
-      font-weight: bold; pointer-events: none; user-select: none; z-index: 10;
-      top: 15%; left: 15%; animation: floatMark 14s infinite alternate ease-in-out;
-    }
-    @keyframes floatMark {
-      0% { top: 10%; left: 10%; }
-      50% { top: 75%; left: 70%; }
-      100% { top: 40%; left: 40%; }
-    }
+    .watermark { position: absolute; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; font-weight: bold; pointer-events: none; user-select: none; z-index: 10; top: 15%; left: 15%; animation: floatMark 14s infinite alternate ease-in-out; }
+    @keyframes floatMark { 0% { top: 10%; left: 10%; } 50% { top: 75%; left: 70%; } 100% { top: 40%; left: 40%; } }
 
-    /* الكروت */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
-    .card {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem;
-      padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;
-      position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1rem; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
     .card:hover { transform: translateY(-3px); background: var(--card-hover); }
     .card-top { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.8rem; }
-    .card-icon {
-      width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center;
-      justify-content: center; font-size: 1.2rem; flex-shrink: 0;
-    }
+    .card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
     .icon-video { background: rgba(37, 99, 235, 0.15); color: #60a5fa; }
     .icon-pdf { background: rgba(239, 68, 68, 0.15); color: #f87171; }
     .icon-exam { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-    
     .card-title { font-size: 0.95rem; font-weight: 700; line-height: 1.4; }
     .card-badge { font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.2rem; font-weight: 600; }
     .card-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
-
-    .del-btn {
-      position: absolute; top: 0.6rem; left: 0.6rem; background: transparent; border: none;
-      color: var(--danger); cursor: pointer; font-size: 0.9rem; display: none;
-    }
+    .del-btn { position: absolute; top: 0.6rem; left: 0.6rem; background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; display: none; }
     .admin-active .del-btn { display: block; }
 
-    /* ================= مشغل الامتحانات المدمج ================= */
-    .quiz-overlay {
-      display: none; position: fixed; inset: 0; background: var(--bg);
-      z-index: 9999; flex-direction: column; overflow-y: auto;
-    }
-    .quiz-navbar {
-      background: var(--card-bg); border-bottom: 1px solid var(--border);
-      padding: 0.9rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
-      position: sticky; top: 0; z-index: 10;
-    }
-    .quiz-timer {
-      background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 0.4rem 0.8rem; border-radius: 999px; font-weight: 800; font-size: 0.9rem;
-      display: flex; align-items: center; gap: 0.4rem;
-    }
+    /* Quiz Styling */
+    .quiz-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 9999; flex-direction: column; overflow-y: auto; }
+    .quiz-navbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0.9rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+    .quiz-timer { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.8rem; border-radius: 999px; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
     .quiz-body { max-width: 780px; margin: 2rem auto; width: 100%; padding: 0 1rem; flex: 1; }
-    .question-card {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem;
-      padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
+    .question-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
     .q-num { font-size: 0.85rem; font-weight: 700; color: var(--accent); background: rgba(56, 189, 248, 0.1); padding: 0.2rem 0.6rem; border-radius: 6px; }
     .q-text { font-size: 1.1rem; font-weight: 700; line-height: 1.5; margin-bottom: 1.25rem; }
-    
     .options-list { display: flex; flex-direction: column; gap: 0.65rem; }
-    .option-label {
-      display: flex; align-items: center; gap: 0.8rem; padding: 0.85rem 1.1rem;
-      background: var(--bg); border: 1px solid var(--border); border-radius: 0.8rem;
-      cursor: pointer; transition: all 0.2s; font-size: 0.95rem; font-weight: 600;
-    }
-    .option-label:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    .option-label { display: flex; align-items: center; gap: 0.8rem; padding: 0.85rem 1.1rem; background: var(--bg); border: 1px solid var(--border); border-radius: 0.8rem; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
     .option-label.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.15); color: var(--accent); }
     
-    .result-box {
-      text-align: center; background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 1.5rem; padding: 2.5rem 1.5rem; margin-bottom: 2rem;
-    }
-    .score-circle {
-      width: 120px; height: 120px; border-radius: 50%; margin: 1.5rem auto;
-      display: flex; align-items: center; justify-content: center; flex-direction: column;
-      font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff;
-    }
+    .result-box { text-align: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2.5rem 1.5rem; margin-bottom: 2rem; }
+    .score-circle { width: 120px; height: 120px; border-radius: 50%; margin: 1.5rem auto; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
     .review-item { padding: 1rem; border-radius: 0.8rem; margin-bottom: 0.75rem; border: 1px solid var(--border); text-align: right; }
     .review-correct { background: rgba(16, 185, 129, 0.1); border-color: var(--success); }
     .review-wrong { background: rgba(239, 68, 68, 0.1); border-color: var(--danger); }
 
     /* Modals */
-    .modal {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; padding: 1rem;
-    }
-    .modal-content {
-      background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem;
-      width: 100%; max-width: 520px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; color: var(--text);
-    }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; width: 100%; max-width: 540px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; color: var(--text); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
     .form-group { margin-bottom: 1rem; }
     .form-group label { display: block; font-size: 0.85rem; margin-bottom: 0.35rem; color: var(--text-muted); font-weight: 600; }
-    .form-control {
-      width: 100%; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: var(--input-bg);
-      border: 1px solid var(--border); color: var(--text); font-size: 0.9rem;
+    .form-control { width: 100%; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; }
+    
+    .file-drop-area { border: 2px dashed var(--border); border-radius: 0.8rem; padding: 1.2rem; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; transition: 0.2s; }
+    .file-drop-area:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
+    
+    /* محرر النصوص الذكي */
+    .smart-editor { 
+      min-height: 180px; max-height: 250px; overflow-y: auto; 
+      background: #ffffff; color: #000000; padding: 1rem; 
+      border-radius: 0.6rem; border: 2px solid var(--border);
+      font-family: Arial, sans-serif; text-align: left; direction: ltr; font-size: 0.95rem;
     }
+    .smart-editor:focus { border-color: var(--primary); outline: none; }
   </style>
 </head>
 <body>
@@ -244,11 +170,10 @@
       <i class="fa-solid fa-bullhorn"></i>
       <div class="announcement-text">
         <strong>أهلاً بكم في المنصة الرسمية لـ Dr Success Academy!</strong>
-        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:2px;">نظام كويزات إلكتروني فائق السرعة مع تصحيح وحفظ درجات فوري.</p>
+        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:2px;">تم تفعيل النظام الذكي لاستخراج الأسئلة وقراءة ملفات الـ PDF تلقائياً.</p>
       </div>
     </div>
 
-    <!-- مشغل الفيديو -->
     <div class="player-section" id="playerSection">
       <div class="video-wrapper">
         <video id="mainVideoPlayer" controls controlsList="nodownload"></video>
@@ -260,13 +185,11 @@
       </div>
     </div>
 
-    <!-- البحث -->
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" id="searchInput" class="search-input" placeholder="ابحث بالمحاضرة أو المذكرة أو الامتحان..." oninput="handleSearch()">
     </div>
 
-    <!-- التبويبات -->
     <div class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
       <button class="tab-btn" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
@@ -277,25 +200,23 @@
     <div class="grid" id="contentGrid"></div>
   </div>
 
-  <!-- نافذة إدخال اسم الطالب قبل الامتحان -->
   <div class="modal" id="studentEntryModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>بيانات دخول الاختبار</h3>
+        <h3>دخول الاختبار التقييمي</h3>
         <button onclick="closeStudentEntry()" style="background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;">&times;</button>
       </div>
       <div class="form-group">
-        <label>الاسم ثلاثي:</label>
-        <input type="text" id="studentNameInput" class="form-control" placeholder="اكتب اسمك كاملاً">
+        <label>اسم الطالب ثلاثي:</label>
+        <input type="text" id="studentNameInput" class="form-control" placeholder="اكتب اسمك">
       </div>
       <input type="hidden" id="targetExamId">
       <button class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="confirmStartQuiz()">
-        <i class="fa-solid fa-play"></i> ابدأ الامتحان فوراً
+        <i class="fa-solid fa-play"></i> ابدأ الآن
       </button>
     </div>
   </div>
 
-  <!-- مشغل الكويزات المدمج الكامل -->
   <div class="quiz-overlay" id="quizOverlay">
     <div class="quiz-navbar">
       <div>
@@ -308,22 +229,20 @@
       </div>
       <button class="btn btn-outline" onclick="exitQuiz()"><i class="fa-solid fa-xmark"></i> إنهاء</button>
     </div>
-
     <div class="quiz-body" id="quizBodyArea"></div>
   </div>
 
-  <!-- لوحة تحكم المحاضر -->
   <div class="modal" id="adminModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalHeading">لوحة إدارة المحتوى والامتحانات</h3>
+        <h3 id="modalHeading">لوحة الإدارة الذكية</h3>
         <button onclick="closeModal()" style="background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;">&times;</button>
       </div>
       
       <div id="authBox">
         <div class="form-group">
           <label>رمز المحاضر السري:</label>
-          <input type="password" id="adminPassword" class="form-control" placeholder="أدخل الرمز (الافتراضي: 1234)">
+          <input type="password" id="adminPassword" class="form-control" placeholder="أدخل الرمز (1234)">
         </div>
         <button class="btn btn-success" style="width: 100%;" onclick="loginAdmin()">دخول</button>
       </div>
@@ -332,7 +251,7 @@
         <div class="form-group">
           <label>نوع المحتوى:</label>
           <select id="contentType" class="form-control" onchange="toggleFormInputs()">
-            <option value="exam">كويز / بنك أسئلة مدمج (Native Quiz)</option>
+            <option value="exam">كويز (يقرأ الألوان و الـ PDF تلقائياً)</option>
             <option value="lesson">محاضرة ومذكرة (فيديو / PDF)</option>
           </select>
         </div>
@@ -348,7 +267,7 @@
             <input type="text" id="contentChapter" class="form-control" placeholder="مثال: الفصل الأول">
           </div>
           <div class="form-group">
-            <label>رابط الفيديو المباشر (Direct MP4 URL):</label>
+            <label>رابط الفيديو المباشر:</label>
             <input type="url" id="contentVideo" class="form-control" placeholder="https://...">
           </div>
           <div class="form-group">
@@ -362,23 +281,25 @@
             <label>مدة الامتحان (بالدقائق):</label>
             <input type="number" id="quizDuration" class="form-control" value="15">
           </div>
+          
           <div class="form-group">
-            <label>نص بنك الأسئلة (اكتب الأسئلة والخيارات بهذا النسق البسيط):</label>
-            <textarea id="quizQuestionsRaw" class="form-control" style="height: 160px; font-family: monospace; font-size: 0.85rem;" placeholder="Which of the following is a characteristic of Neisseria?
-A) Grow on ordinary medium
-B) Grow at room temperature
-*C) Require excess CO2 for growth
-D) Colonies are opaque and rough
+            <label>استخراج الأسئلة من ملف (يدعم PDF / TXT / CSV):</label>
+            <div class="file-drop-area" onclick="document.getElementById('quizFileInput').click()">
+              <i class="fa-solid fa-file-pdf" style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.4rem;"></i>
+              <p style="font-size: 0.85rem; font-weight: 600;">اضغط هنا لرفع ملف الـ PDF</p>
+              <input type="file" id="quizFileInput" style="display: none;" accept=".txt,.csv,.json,.pdf" onchange="handleFileUpload(event)">
+            </div>
+          </div>
 
-What is the gram stain of Staph?
-*A) Gram positive cocci
-B) Gram negative bacilli"></textarea>
-            <small style="color:var(--text-muted); display:block; margin-top:4px;">* ضع علامة النجمة (*) أمام الإجابة الصحيحة فقط، وافصل بين كل سؤال بسطر فارغ.</small>
+          <div class="form-group">
+            <label>أو الصق الأسئلة هنا (الكود سيحوّل أي كلمة لونها <span style="color:red;">أحمر</span> لإجابة صحيحة تلقائياً):</label>
+            <div id="quizQuestionsRaw" contenteditable="true" class="smart-editor" oninput="updateParsedPreview()"></div>
+            <div id="parsedStatus" style="font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-top: 6px;"></div>
           </div>
         </div>
 
         <button class="btn btn-success" style="width: 100%; margin-top: 0.8rem;" onclick="publishContent()">
-          <i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر على المنصة
+          <i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر الامتحان
         </button>
       </div>
     </div>
@@ -409,9 +330,7 @@ B) Gram negative bacilli"></textarea>
         lessonsData = lessons || [];
         examsData = exams || [];
         renderCards();
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (err) { console.error(err); }
     }
 
     async function renderCards() {
@@ -446,10 +365,7 @@ B) Gram negative bacilli"></textarea>
         return;
       }
 
-      let filteredLessons = lessonsData.filter(l => 
-        l.title.toLowerCase().includes(searchQuery) || (l.chapter && l.chapter.toLowerCase().includes(searchQuery))
-      );
-
+      let filteredLessons = lessonsData.filter(l => l.title.toLowerCase().includes(searchQuery) || (l.chapter && l.chapter.toLowerCase().includes(searchQuery)));
       if (currentFilter === 'videos') filteredLessons = filteredLessons.filter(l => l.video_url);
       if (currentFilter === 'pdf') filteredLessons = filteredLessons.filter(l => l.pdf_url);
 
@@ -478,17 +394,11 @@ B) Gram negative bacilli"></textarea>
             </div>
             <div class="card-actions">
               ${item.video_url ? `
-                <button class="btn" style="flex:1" onclick="playVideo('${item.id}', '${item.video_url}', '${item.title}')">
-                  <i class="fa-solid fa-play"></i> مشاهدة
-                </button>
-                <button class="btn btn-outline" title="حفظ أوفلاين" onclick="downloadVideoOffline('${item.id}', '${item.video_url}', this)">
-                  <i class="fa-solid ${isOffline ? 'fa-check text-green-500' : 'fa-download'}"></i>
-                </button>
+                <button class="btn" style="flex:1" onclick="playVideo('${item.id}', '${item.video_url}', '${item.title}')"><i class="fa-solid fa-play"></i> مشاهدة</button>
+                <button class="btn btn-outline" title="حفظ أوفلاين" onclick="downloadVideoOffline('${item.id}', '${item.video_url}', this)"><i class="fa-solid ${isOffline ? 'fa-check text-green-500' : 'fa-download'}"></i></button>
               ` : ''}
               ${item.pdf_url ? `
-                <a href="${item.pdf_url}" target="_blank" class="btn btn-outline" style="${item.video_url ? '' : 'width:100%'}" title="فتح ملزمة الكورس">
-                  <i class="fa-solid fa-file-pdf"></i> ${item.video_url ? '' : 'فتح الملزمة'}
-                </a>
+                <a href="${item.pdf_url}" target="_blank" class="btn btn-outline" style="${item.video_url ? '' : 'width:100%'}"><i class="fa-solid fa-file-pdf"></i> ${item.video_url ? '' : 'فتح الملزمة'}</a>
               ` : ''}
             </div>
           </div>
@@ -496,15 +406,128 @@ B) Gram negative bacilli"></textarea>
       }
     }
 
-    // نافذة إدخال الاسم وبدء الامتحان
-    function openStudentEntry(examId) {
-      document.getElementById('targetExamId').value = examId;
-      document.getElementById('studentEntryModal').style.display = 'flex';
+    // المعالج الذكي لقراءة ملفات PDF
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const editor = document.getElementById('quizQuestionsRaw');
+      editor.innerHTML = '<span style="color:var(--primary);font-weight:bold;">جاري استخراج النص من الملف...</span>';
+      
+      if (file.name.toLowerCase().endsWith('.pdf')) {
+         try {
+             const arrayBuffer = await file.arrayBuffer();
+             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+             let fullText = '';
+             for (let i = 1; i <= pdf.numPages; i++) {
+                 const page = await pdf.getPage(i);
+                 const textContent = await page.getTextContent();
+                 const pageText = textContent.items.map(item => item.str).join(' ');
+                 fullText += pageText + '\n\n';
+             }
+             editor.innerText = fullText;
+             updateParsedPreview();
+         } catch(err) {
+             editor.innerHTML = '<span style="color:red;">حدث خطأ أثناء قراءة الـ PDF.</span>';
+         }
+      } else {
+         const reader = new FileReader();
+         reader.onload = function(e) {
+           editor.innerText = e.target.result;
+           updateParsedPreview();
+         };
+         reader.readAsText(file);
+      }
     }
 
-    function closeStudentEntry() {
-      document.getElementById('studentEntryModal').style.display = 'none';
+    // الخوارزمية الذكية لاستخراج اللون الأحمر
+    function getHtmlWithRedMarked() {
+      const editor = document.getElementById('quizQuestionsRaw');
+      const clone = editor.cloneNode(true);
+      
+      function walkAndMark(node) {
+          if (node.nodeType === 1) { // Element
+              const styleColor = (node.style.color || '').replace(/\s/g, '').toLowerCase();
+              const attrColor = (node.getAttribute('color') || '').replace(/\s/g, '').toLowerCase();
+              const combinedColor = styleColor + attrColor;
+              
+              if (combinedColor.includes('red') || combinedColor.includes('rgb(255,0,0)') || combinedColor.includes('#ff0000') || combinedColor.includes('#c00000') || combinedColor.includes('#e60000') || combinedColor.includes('rgb(192,0,0)')) {
+                  node.prepend(document.createTextNode('*'));
+              }
+          }
+          Array.from(node.childNodes).forEach(walkAndMark);
+      }
+      
+      walkAndMark(clone);
+      return clone.innerText || clone.textContent;
     }
+
+    function smartQuestionParser(text) {
+      if (!text || !text.trim()) return [];
+      try {
+        const parsedJson = JSON.parse(text);
+        if (Array.isArray(parsedJson)) return parsedJson;
+      } catch(e) {}
+
+      const blocks = text.trim().split(/\n\s*\n+/);
+      const questions = [];
+
+      blocks.forEach(block => {
+        const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length >= 2) {
+          let questionText = lines[0].replace(/^(Q\s*[\d]+|س\s*[\d]+|[\d]+)[\.\:\-\)]\s*/i, '').trim();
+          let options = [];
+          let detectedAnswerKey = null;
+
+          for (let i = 1; i < lines.length; i++) {
+            let line = lines[i];
+            const ansMatch = line.match(/^(Ans|Answer|الإجابة|الحل)\s*[\:\-]\s*([A-Ea-e1-5])/i);
+            if (ansMatch) {
+              detectedAnswerKey = ansMatch[2].toUpperCase();
+              continue;
+            }
+
+            let isCorrect = false;
+            if (line.startsWith('*')) {
+              isCorrect = true;
+              line = line.substring(1).trim();
+            }
+
+            line = line.replace(/^([A-Ea-e\d]|[\u0623\u0628\u062c\u062f])[\.\:\-\)]\s*/, '').trim();
+            if (line) {
+              options.push({ text: line, isCorrect });
+            }
+          }
+
+          if (detectedAnswerKey && options.length > 0) {
+            const letterMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, '1': 0, '2': 1, '3': 2, '4': 3 };
+            const correctIdx = letterMap[detectedAnswerKey] ?? 0;
+            if (options[correctIdx]) options[correctIdx].isCorrect = true;
+          } else if (!options.some(o => o.isCorrect) && options.length > 0) {
+            options[0].isCorrect = true; // الافتراضي لو مفيش لون أو نجمة
+          }
+
+          if (options.length >= 2) {
+            questions.push({ question: questionText, options });
+          }
+        }
+      });
+      return questions;
+    }
+
+    function updateParsedPreview() {
+      const rawTextWithStars = getHtmlWithRedMarked();
+      const parsed = smartQuestionParser(rawTextWithStars);
+      const status = document.getElementById('parsedStatus');
+      if (parsed.length > 0) {
+        status.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> تم استخراج ${parsed.length} سؤال بنجاح جاهزين للامتحان!`;
+      } else {
+        status.innerText = '';
+      }
+    }
+
+    function openStudentEntry(examId) { document.getElementById('targetExamId').value = examId; document.getElementById('studentEntryModal').style.display = 'flex'; }
+    function closeStudentEntry() { document.getElementById('studentEntryModal').style.display = 'none'; }
 
     function confirmStartQuiz() {
       const name = document.getElementById('studentNameInput').value.trim();
@@ -518,13 +541,7 @@ B) Gram negative bacilli"></textarea>
       if (!exam) return;
 
       let questions = [];
-      try {
-        questions = JSON.parse(exam.exam_url);
-      } catch (e) {
-        // لو الامتحان كان رابط قديم
-        alert('هذا الامتحان بتنسيق قديم، يرجى حذفه وإضافته من لوحة المحاضر بالنص المباشر');
-        return;
-      }
+      try { questions = JSON.parse(exam.exam_url); } catch (e) { return alert('الامتحان ده بصيغة قديمة، امسحه وضيفه من جديد.'); }
 
       activeQuiz = { ...exam, parsedQuestions: questions };
       studentAnswers = {};
@@ -559,209 +576,54 @@ B) Gram negative bacilli"></textarea>
     function renderQuizQuestions() {
       const area = document.getElementById('quizBodyArea');
       let html = '';
-
       activeQuiz.parsedQuestions.forEach((q, idx) => {
-        html += `
-          <div class="question-card">
-            <div class="q-header">
-              <span class="q-num">سؤال ${idx + 1} من ${activeQuiz.parsedQuestions.length}</span>
-            </div>
-            <div class="q-text">${q.question}</div>
-            <div class="options-list">
-              ${q.options.map((opt, oIdx) => `
-                <div class="option-label ${studentAnswers[idx] === oIdx ? 'selected' : ''}" onclick="selectAnswer(${idx}, ${oIdx})">
-                  <span style="width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;">
-                    ${['A', 'B', 'C', 'D', 'E'][oIdx]}
-                  </span>
-                  <span>${opt.text}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
+        html += `<div class="question-card"><div class="q-header"><span class="q-num">سؤال ${idx + 1} من ${activeQuiz.parsedQuestions.length}</span></div><div class="q-text">${q.question}</div><div class="options-list">`;
+        q.options.forEach((opt, oIdx) => {
+          html += `<div class="option-label ${studentAnswers[idx] === oIdx ? 'selected' : ''}" onclick="selectAnswer(${idx}, ${oIdx})"><span style="width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:0.75rem;">${['A', 'B', 'C', 'D', 'E'][oIdx]}</span><span>${opt.text}</span></div>`;
+        });
+        html += `</div></div>`;
       });
-
-      html += `
-        <button class="btn btn-success" style="width:100%; padding:1rem; font-size:1.1rem; margin-bottom:3rem;" onclick="submitQuiz()">
-          <i class="fa-solid fa-check-circle"></i> تسليم الامتحان ورؤية النتيجة
-        </button>
-      `;
-
+      html += `<button class="btn btn-success" style="width:100%; padding:1rem; font-size:1.1rem; margin-bottom:3rem;" onclick="submitQuiz()"><i class="fa-solid fa-check-circle"></i> تسليم الامتحان ورؤية النتيجة</button>`;
       area.innerHTML = html;
     }
 
-    function selectAnswer(qIdx, optIdx) {
-      studentAnswers[qIdx] = optIdx;
-      renderQuizQuestions();
-    }
+    function selectAnswer(qIdx, optIdx) { studentAnswers[qIdx] = optIdx; renderQuizQuestions(); }
 
     async function submitQuiz() {
       clearInterval(timerInterval);
-      let score = 0;
-      const total = activeQuiz.parsedQuestions.length;
-
-      activeQuiz.parsedQuestions.forEach((q, idx) => {
-        const correctIdx = q.options.findIndex(o => o.isCorrect);
-        if (studentAnswers[idx] === correctIdx) score++;
-      });
-
+      let score = 0; const total = activeQuiz.parsedQuestions.length;
+      activeQuiz.parsedQuestions.forEach((q, idx) => { const correctIdx = q.options.findIndex(o => o.isCorrect); if (studentAnswers[idx] === correctIdx) score++; });
       const percentage = Math.round((score / total) * 100);
 
-      try {
-        await db.from('quiz_submissions').insert([{
-          student_name: currentStudentName,
-          quiz_title: activeQuiz.title,
-          score,
-          total,
-          percentage
-        }]);
-      } catch (err) {
-        console.error('Save score error:', err);
-      }
+      try { await db.from('quiz_submissions').insert([{ student_name: currentStudentName, quiz_title: activeQuiz.title, score, total, percentage }]); } catch (err) { console.error(err); }
 
       const area = document.getElementById('quizBodyArea');
-      let reviewHtml = `
-        <div class="result-box">
-          <h2 style="font-size:1.4rem; color:var(--text)">تم إنهاء الاختبار بنجاح</h2>
-          <div class="score-circle">${percentage}%</div>
-          <p style="font-size:1.1rem; font-weight:700;">درجتك: ${score} من ${total}</p>
-        </div>
-        <h3 style="margin-bottom:1rem;">مراجعة الإجابات النموذجية:</h3>
-      `;
-
+      let reviewHtml = `<div class="result-box"><h2 style="font-size:1.4rem; color:var(--text)">تم إنهاء الاختبار بنجاح</h2><div class="score-circle">${percentage}%</div><p style="font-size:1.1rem; font-weight:700;">درجتك: ${score} من ${total}</p></div><h3 style="margin-bottom:1rem;">مراجعة الإجابات النموذجية:</h3>`;
       activeQuiz.parsedQuestions.forEach((q, idx) => {
         const correctIdx = q.options.findIndex(o => o.isCorrect);
         const userChoice = studentAnswers[idx];
         const isRight = userChoice === correctIdx;
-
-        reviewHtml += `
-          <div class="review-item ${isRight ? 'review-correct' : 'review-wrong'}">
-            <div style="font-weight:700; margin-bottom:0.4rem;">${idx + 1}. ${q.question}</div>
-            <div style="font-size:0.85rem; color: ${isRight ? 'var(--success)' : 'var(--danger)'}">
-              إجابتك: ${userChoice !== undefined ? q.options[userChoice].text : 'لم تجب'} ${isRight ? '✔ (إجابة صحيحة)' : '✖'}
-            </div>
-            ${!isRight ? `<div style="font-size:0.85rem; color:var(--success); margin-top:2px;">الإجابة الصحيحة: ${q.options[correctIdx].text}</div>` : ''}
-          </div>
-        `;
+        reviewHtml += `<div class="review-item ${isRight ? 'review-correct' : 'review-wrong'}"><div style="font-weight:700; margin-bottom:0.4rem;">${idx + 1}. ${q.question}</div><div style="font-size:0.85rem; color: ${isRight ? 'var(--success)' : 'var(--danger)'}">إجابتك: ${userChoice !== undefined ? q.options[userChoice].text : 'لم تجب'} ${isRight ? '✔ (إجابة صحيحة)' : '✖'}</div>${!isRight && correctIdx !== -1 ? `<div style="font-size:0.85rem; color:var(--success); margin-top:2px;">الإجابة الصحيحة: ${q.options[correctIdx].text}</div>` : ''}</div>`;
       });
-
-      reviewHtml += `
-        <button class="btn btn-outline" style="width:100%; margin:2rem 0;" onclick="exitQuiz()">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i> العودة للمنصة
-        </button>
-      `;
-
-      area.innerHTML = reviewHtml;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      reviewHtml += `<button class="btn btn-outline" style="width:100%; margin:2rem 0;" onclick="exitQuiz()"><i class="fa-solid fa-arrow-right-from-bracket"></i> العودة للمنصة</button>`;
+      area.innerHTML = reviewHtml; window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function exitQuiz() {
-      clearInterval(timerInterval);
-      document.getElementById('quizOverlay').style.display = 'none';
-      document.body.style.overflow = 'auto';
-    }
+    function exitQuiz() { clearInterval(timerInterval); document.getElementById('quizOverlay').style.display = 'none'; document.body.style.overflow = 'auto'; }
 
-    // تشغيل الفيديو
-    async function playVideo(id, onlineUrl, title) {
-      const playerSection = document.getElementById('playerSection');
-      const player = document.getElementById('mainVideoPlayer');
-      document.getElementById('nowPlayingTitle').innerText = title;
-
-      const cachedBlob = await localforage.getItem(`video_${id}`);
-      player.src = cachedBlob ? URL.createObjectURL(cachedBlob) : onlineUrl;
-
-      playerSection.style.display = 'block';
-      player.play();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function closePlayer() {
-      const player = document.getElementById('mainVideoPlayer');
-      player.pause();
-      player.src = '';
-      document.getElementById('playerSection').style.display = 'none';
-    }
-
-    async function downloadVideoOffline(id, url, btn) {
-      try {
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-        const response = await fetch(url);
-        const blob = await response.blob();
-        await localforage.setItem(`video_${id}`, blob);
-        btn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--success)"></i>';
-        alert('تم تحميل المحاضرة بنجاح وتعمل الآن أوفلاين بدون إنترنت!');
-      } catch (err) {
-        alert('حدث خطأ أثناء التنزيل.');
-        btn.innerHTML = '<i class="fa-solid fa-download"></i>';
-      }
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const target = current === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', target);
-      document.getElementById('themeIcon').className = target === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-      localStorage.setItem('dr_success_theme', target);
-    }
+    async function playVideo(id, onlineUrl, title) { const playerSection = document.getElementById('playerSection'); const player = document.getElementById('mainVideoPlayer'); document.getElementById('nowPlayingTitle').innerText = title; const cachedBlob = await localforage.getItem(`video_${id}`); player.src = cachedBlob ? URL.createObjectURL(cachedBlob) : onlineUrl; playerSection.style.display = 'block'; player.play(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function closePlayer() { const player = document.getElementById('mainVideoPlayer'); player.pause(); player.src = ''; document.getElementById('playerSection').style.display = 'none'; }
+    async function downloadVideoOffline(id, url, btn) { try { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; const response = await fetch(url); const blob = await response.blob(); await localforage.setItem(`video_${id}`, blob); btn.innerHTML = '<i class="fa-solid fa-check" style="color:var(--success)"></i>'; alert('تم تحميل المحاضرة بنجاح وتعمل الآن أوفلاين بدون إنترنت!'); } catch (err) { alert('حدث خطأ أثناء التنزيل.'); btn.innerHTML = '<i class="fa-solid fa-download"></i>'; } }
+    
+    function toggleTheme() { const current = document.documentElement.getAttribute('data-theme'); const target = current === 'light' ? 'dark' : 'light'; document.documentElement.setAttribute('data-theme', target); document.getElementById('themeIcon').className = target === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; localStorage.setItem('dr_success_theme', target); }
     if(localStorage.getItem('dr_success_theme') === 'light') toggleTheme();
-
-    function switchTab(type, el) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      el.classList.add('active');
-      currentFilter = type;
-      renderCards();
-    }
-
-    function handleSearch() {
-      searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
-      renderCards();
-    }
-
+    function switchTab(type, el) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); currentFilter = type; renderCards(); }
+    function handleSearch() { searchQuery = document.getElementById('searchInput').value.toLowerCase().trim(); renderCards(); }
+    
     function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('adminModal').style.display = 'none'; }
-
-    function loginAdmin() {
-      if (document.getElementById('adminPassword').value === '1234') {
-        isAdmin = true;
-        document.body.classList.add('admin-active');
-        document.getElementById('authBox').style.display = 'none';
-        document.getElementById('controlBox').style.display = 'block';
-        renderCards();
-      } else {
-        alert('كلمة المرور غير صحيحة!');
-      }
-    }
-
-    function toggleFormInputs() {
-      const type = document.getElementById('contentType').value;
-      document.getElementById('quizInputs').style.display = type === 'exam' ? 'block' : 'none';
-      document.getElementById('lessonInputs').style.display = type === 'lesson' ? 'block' : 'none';
-    }
-
-    function parseRawQuizText(raw) {
-      const blocks = raw.trim().split(/\n\s*\n/);
-      const questions = [];
-
-      blocks.forEach(block => {
-        const lines = block.trim().split('\n').map(l => l.trim()).filter(Boolean);
-        if (lines.length >= 2) {
-          const questionText = lines[0].replace(/^[0-9]+[\.\-\)]\s*/, '');
-          const options = [];
-          for (let i = 1; i < lines.length; i++) {
-            let line = lines[i];
-            let isCorrect = false;
-            if (line.startsWith('*')) {
-              isCorrect = true;
-              line = line.substring(1).trim();
-            }
-            line = line.replace(/^[A-Ea-e][\.\-\)]\s*/, '');
-            options.push({ text: line, isCorrect });
-          }
-          questions.push({ question: questionText, options });
-        }
-      });
-      return questions;
-    }
+    function loginAdmin() { if (document.getElementById('adminPassword').value === '1234') { isAdmin = true; document.body.classList.add('admin-active'); document.getElementById('authBox').style.display = 'none'; document.getElementById('controlBox').style.display = 'block'; renderCards(); } else { alert('كلمة المرور غير صحيحة!'); } }
+    function toggleFormInputs() { const type = document.getElementById('contentType').value; document.getElementById('quizInputs').style.display = type === 'exam' ? 'block' : 'none'; document.getElementById('lessonInputs').style.display = type === 'lesson' ? 'block' : 'none'; }
 
     async function publishContent() {
       const type = document.getElementById('contentType').value;
@@ -774,36 +636,19 @@ B) Gram negative bacilli"></textarea>
         const pdf_url = document.getElementById('contentPdf').value;
         await db.from('lessons').insert([{ title, chapter, video_url, pdf_url }]);
       } else {
-        const raw = document.getElementById('quizQuestionsRaw').value;
+        const rawTextWithStars = getHtmlWithRedMarked();
         const duration = parseInt(document.getElementById('quizDuration').value) || 15;
-        const parsed = parseRawQuizText(raw);
-        if (parsed.length === 0) return alert('يرجى كتابة سؤال واحد على الأقل بالتنسيق الموضح');
+        const parsed = smartQuestionParser(rawTextWithStars);
+        if (parsed.length === 0) return alert('يرجى رفع ملف أو لصق أسئلة صحيحة');
         
-        await db.from('exams').insert([{ 
-          title, 
-          exam_url: JSON.stringify(parsed),
-          duration_minutes: duration 
-        }]);
+        await db.from('exams').insert([{ title, exam_url: JSON.stringify(parsed), duration_minutes: duration }]);
       }
 
-      closeModal();
-      loadData();
-      alert('تم النشر بنجاح على المنصة!');
+      closeModal(); loadData(); alert('تم النشر بنجاح على المنصة!');
     }
 
-    async function deleteLesson(id) {
-      if (confirm('هل أنت متأكد من حذف هذه المحاضرة؟')) {
-        await db.from('lessons').delete().eq('id', id);
-        loadData();
-      }
-    }
-
-    async function deleteExam(id) {
-      if (confirm('هل أنت متأكد من حذف هذا الامتحان؟')) {
-        await db.from('exams').delete().eq('id', id);
-        loadData();
-      }
-    }
+    async function deleteLesson(id) { if (confirm('هل أنت متأكد من حذف هذه المحاضرة؟')) { await db.from('lessons').delete().eq('id', id); loadData(); } }
+    async function deleteExam(id) { if (confirm('هل أنت متأكد من حذف هذا الامتحان؟')) { await db.from('exams').delete().eq('id', id); loadData(); } }
 
     loadData();
   </script>
