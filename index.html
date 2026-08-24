@@ -401,7 +401,7 @@
       </section>
     </section>
 
-    <!-- 7. لوحة تحكم المالك المركزية (SUPER ADMIN DASHBOARD) -->
+    <!-- 7. لوحة تحكم المالك المركزية -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -417,7 +417,6 @@
           </button>
         </div>
 
-        <!-- أزرار التبويبات الأربعة المقسمة بدقة -->
         <div class="flex flex-wrap bg-[#090e1a] p-1.5 rounded-2xl border border-slate-800 text-xs font-bold gap-1">
           <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap">
             رفع المحتوى والمذكرات 🚀
@@ -592,26 +591,27 @@
       m.classList.toggle('hidden');
     }
 
-    // مراقبة الجلسة وحصر الجهاز الواحد
     auth.onAuthStateChanged(async (user) => {
       if (user) {
-        const isOwner = user.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
-        const doc = await db.collection('profiles').doc(user.uid).get();
-        
-        if (doc.exists) {
-          currentUser = { id: user.uid, email: user.email, ...doc.data() };
-          if (isOwner) {
-            currentUser.role = 'super_admin';
-            currentUser.full_name = 'د. محمد رجب (المالك)';
+        const isOwner = user.email && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        try {
+          const doc = await db.collection('profiles').doc(user.uid).get();
+          if (doc.exists) {
+            currentUser = { id: user.uid, email: user.email, ...doc.data() };
+            if (isOwner) {
+              currentUser.role = 'super_admin';
+              currentUser.full_name = 'د. محمد رجب (المالك)';
+              userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
+            } else {
+              await loadUserUnlockedSubjects(user.uid);
+            }
+          } else if (isOwner) {
+            currentUser = { id: user.uid, email: user.email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
             userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
-          } else {
-            await loadUserUnlockedSubjects(user.uid);
           }
-        } else if (isOwner) {
-          currentUser = { id: user.uid, email: user.email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
-          userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
+        } catch (e) {
+          console.error("Auth profile error:", e);
         }
-
         updateUserUI();
       } else {
         currentUser = null;
@@ -704,8 +704,6 @@
 
       try {
         const cred = await auth.signInWithEmailAndPassword(email, password);
-        const userDoc = await db.collection('profiles').doc(cred.user.uid).get();
-
         const newDeviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
         localStorage.setItem('dr_success_device_id', newDeviceId);
 
@@ -905,8 +903,8 @@
     }
 
     function loadInstructorDashboard() {
-      const isOwner = currentUser && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
-      document.getElementById('docTag').innerText = isOwner ? 'المالك (Super Admin)' : `محاضر: ${currentUser.assigned_subject || ''}`;
+      const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+      document.getElementById('docTag').innerText = isOwner ? 'المالك (Super Admin)' : `محاضر: ${currentUser?.assigned_subject || ''}`;
       switchDashTab('tab-upload', document.getElementById('btnTabUpload'));
     }
 
@@ -927,7 +925,6 @@
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
-    // 1. سجل الطلاب مع زر فك قفل الجهاز (Reset Device)
     async function loadAllFirebaseUsers() {
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">جاري جلب السجلات من Firebase...</td></tr>';
@@ -989,7 +986,6 @@
       link.click();
     }
 
-    // 2. إدارة طلبات التحويل المالي
     async function loadPendingEnrollments() {
       const tbody = document.getElementById('enrollmentsTableBody');
       tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">جاري جلب طلبات التحويل...</td></tr>';
@@ -1023,7 +1019,6 @@
       loadPendingEnrollments();
     }
 
-    // 3. إدارة واعتماد المحاضرين
     async function loadPendingDoctors() {
       const tbody = document.getElementById('doctorsApprovalTableBody');
       tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">جاري جلب طلبات المحاضرين...</td></tr>';
@@ -1039,8 +1034,8 @@
         const d = doc.data();
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-4 font-bold text-white">${d.full_name}</td>
-          <td class="p-4">${d.phone} <span class="block text-slate-500 text-[10px]">${d.email}</span></td>
+          <td class="p-4 font-bold text-white">${d.full_name || '--'}</td>
+          <td class="p-4">${d.phone || '--'} <span class="block text-slate-500 text-[10px]">${d.email || ''}</span></td>
           <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
           <td class="p-4 text-center">
             <button onclick="approveDoctor('${doc.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
@@ -1091,8 +1086,8 @@
         document.getElementById('authButtonsMobile').classList.add('hidden');
         document.getElementById('userProfileTagDesktop').classList.remove('hidden');
         document.getElementById('userProfileTagMobile').classList.remove('hidden');
-        document.getElementById('userNameBadgeDesktop').innerText = `${currentUser.full_name} ⚙️`;
-        document.getElementById('userNameBadgeMobile').innerText = `${currentUser.full_name} ⚙️`;
+        document.getElementById('userNameBadgeDesktop').innerText = `${currentUser.full_name || 'حسابي'} ⚙️`;
+        document.getElementById('userNameBadgeMobile').innerText = `${currentUser.full_name || 'حسابي'} ⚙️`;
       } else {
         document.getElementById('authButtonsDesktop').classList.remove('hidden');
         document.getElementById('authButtonsMobile').classList.remove('hidden');
@@ -1101,7 +1096,6 @@
       }
     }
 
-    // فحص تطابق جلسة الجهاز الواحد الحي لطرد الأجهزة المتعددة
     setInterval(async () => {
       if (!currentUser || currentUser.role === 'super_admin') return;
       const localDev = localStorage.getItem('dr_success_device_id');
