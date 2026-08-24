@@ -10,10 +10,6 @@
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
-  
-  <!-- مكتبة قراءة ملفات PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <script>window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
 
   <style>
     :root {
@@ -55,19 +51,26 @@
       background: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 0.8rem 1.5rem;
+      padding: 0.75rem 1.5rem;
       position: sticky; top: 0; z-index: 50;
       display: flex; justify-content: space-between; align-items: center;
     }
 
-    .brand { display: flex; align-items: center; gap: 0.75rem; }
-    .brand-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    /* مكان وتنسيق الشعار */
+    .brand { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: inherit; }
+    .brand-logo-img {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
     .brand-text h1 { font-size: 1.15rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
     .brand-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
 
     .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--primary); color: #fff; padding: 0.5rem 1rem; border-radius: 0.6rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--primary); color: #fff; padding: 0.5rem 1rem; border-radius: 0.6rem; font-weight: 600; font-size: 0.85rem; border: none; cursor: pointer; transition: 0.2s; text-decoration: none; }
     .btn:hover { background: var(--primary-hover); }
     .btn-admin { background: rgba(148, 163, 184, 0.15); color: var(--text); border: 1px solid var(--border); }
     .btn-theme { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 0.5rem 0.75rem; border-radius: 0.6rem; cursor: pointer; }
@@ -109,7 +112,7 @@
     .del-btn { position: absolute; top: 0.6rem; left: 0.6rem; background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; display: none; }
     .admin-active .del-btn { display: block; }
 
-    /* Quiz Styling */
+    /* Exam Details */
     .quiz-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 9999; flex-direction: column; overflow-y: auto; }
     .quiz-navbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0.9rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
     .quiz-timer { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.8rem; border-radius: 999px; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; }
@@ -130,35 +133,24 @@
 
     /* Modals */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
-    .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; width: 100%; max-width: 540px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; color: var(--text); }
+    .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.25rem; width: 100%; max-width: 520px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; color: var(--text); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
     .form-group { margin-bottom: 1rem; }
     .form-group label { display: block; font-size: 0.85rem; margin-bottom: 0.35rem; color: var(--text-muted); font-weight: 600; }
     .form-control { width: 100%; padding: 0.6rem 0.8rem; border-radius: 0.6rem; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); font-size: 0.9rem; }
-    
-    .file-drop-area { border: 2px dashed var(--border); border-radius: 0.8rem; padding: 1.2rem; text-align: center; background: rgba(255, 255, 255, 0.02); cursor: pointer; transition: 0.2s; }
-    .file-drop-area:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
-    
-    /* محرر النصوص الذكي */
-    .smart-editor { 
-      min-height: 180px; max-height: 250px; overflow-y: auto; 
-      background: #ffffff; color: #000000; padding: 1rem; 
-      border-radius: 0.6rem; border: 2px solid var(--border);
-      font-family: Arial, sans-serif; text-align: left; direction: ltr; font-size: 0.95rem;
-    }
-    .smart-editor:focus { border-color: var(--primary); outline: none; }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">
-      <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+    <a href="#" class="brand">
+      <!-- صورة الشعار (تقدر ترفع ملف باسم logo.png أو تحط رابط مباشر للصورة) -->
+      <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" alt="Logo" class="brand-logo-img">
       <div class="brand-text">
         <h1>Dr Success Academy</h1>
         <span>Your way to A+</span>
       </div>
-    </div>
+    </a>
     <div class="nav-actions">
       <button class="btn-theme" onclick="toggleTheme()" title="تغيير الثيم"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
       <button class="btn btn-admin" onclick="openAdminModal()"><i class="fa-solid fa-shield-halved"></i> المحاضر</button>
@@ -170,10 +162,11 @@
       <i class="fa-solid fa-bullhorn"></i>
       <div class="announcement-text">
         <strong>أهلاً بكم في المنصة الرسمية لـ Dr Success Academy!</strong>
-        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:2px;">تم تفعيل النظام الذكي لاستخراج الأسئلة وقراءة ملفات الـ PDF تلقائياً.</p>
+        <p style="color:var(--text-muted); font-size:0.8rem; margin-top:2px;">تم تحديث الملازم ومحرك الامتحانات والمشاهدة أوفلاين.</p>
       </div>
     </div>
 
+    <!-- مشغل الفيديو -->
     <div class="player-section" id="playerSection">
       <div class="video-wrapper">
         <video id="mainVideoPlayer" controls controlsList="nodownload"></video>
@@ -185,11 +178,13 @@
       </div>
     </div>
 
+    <!-- البحث -->
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" id="searchInput" class="search-input" placeholder="ابحث بالمحاضرة أو المذكرة أو الامتحان..." oninput="handleSearch()">
     </div>
 
+    <!-- التبويبات -->
     <div class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
       <button class="tab-btn" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
@@ -200,6 +195,7 @@
     <div class="grid" id="contentGrid"></div>
   </div>
 
+  <!-- نافذة دخول الامتحان للطالب -->
   <div class="modal" id="studentEntryModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -208,7 +204,7 @@
       </div>
       <div class="form-group">
         <label>اسم الطالب ثلاثي:</label>
-        <input type="text" id="studentNameInput" class="form-control" placeholder="اكتب اسمك">
+        <input type="text" id="studentNameInput" class="form-control" placeholder="اكتب اسمك كاملاً">
       </div>
       <input type="hidden" id="targetExamId">
       <button class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="confirmStartQuiz()">
@@ -217,6 +213,7 @@
     </div>
   </div>
 
+  <!-- مشغل الامتحان المدمج -->
   <div class="quiz-overlay" id="quizOverlay">
     <div class="quiz-navbar">
       <div>
@@ -232,10 +229,11 @@
     <div class="quiz-body" id="quizBodyArea"></div>
   </div>
 
+  <!-- لوحة تحكم المحاضر -->
   <div class="modal" id="adminModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="modalHeading">لوحة الإدارة الذكية</h3>
+        <h3 id="modalHeading">لوحة إدارة المحتوى</h3>
         <button onclick="closeModal()" style="background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;">&times;</button>
       </div>
       
@@ -251,14 +249,14 @@
         <div class="form-group">
           <label>نوع المحتوى:</label>
           <select id="contentType" class="form-control" onchange="toggleFormInputs()">
-            <option value="exam">كويز (يقرأ الألوان و الـ PDF تلقائياً)</option>
+            <option value="exam">كويز / بنك أسئلة مدمج</option>
             <option value="lesson">محاضرة ومذكرة (فيديو / PDF)</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>عنوان المحتوى / الامتحان:</label>
-          <input type="text" id="contentTitle" class="form-control" placeholder="مثال: كويز ميكرو - شابتر 1">
+          <input type="text" id="contentTitle" class="form-control" placeholder="مثال: مراجعة نهائية - شابتر 1">
         </div>
 
         <div id="lessonInputs" style="display: none;">
@@ -281,25 +279,14 @@
             <label>مدة الامتحان (بالدقائق):</label>
             <input type="number" id="quizDuration" class="form-control" value="15">
           </div>
-          
           <div class="form-group">
-            <label>استخراج الأسئلة من ملف (يدعم PDF / TXT / CSV):</label>
-            <div class="file-drop-area" onclick="document.getElementById('quizFileInput').click()">
-              <i class="fa-solid fa-file-pdf" style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.4rem;"></i>
-              <p style="font-size: 0.85rem; font-weight: 600;">اضغط هنا لرفع ملف الـ PDF</p>
-              <input type="file" id="quizFileInput" style="display: none;" accept=".txt,.csv,.json,.pdf" onchange="handleFileUpload(event)">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>أو الصق الأسئلة هنا (الكود سيحوّل أي كلمة لونها <span style="color:red;">أحمر</span> لإجابة صحيحة تلقائياً):</label>
-            <div id="quizQuestionsRaw" contenteditable="true" class="smart-editor" oninput="updateParsedPreview()"></div>
-            <div id="parsedStatus" style="font-size: 0.85rem; font-weight: 700; color: var(--accent); margin-top: 6px;"></div>
+            <label>الأسئلة (الصق الأسئلة أو كود JSON الخاص بالفورم هنا):</label>
+            <textarea id="quizQuestionsRaw" class="form-control" style="height: 150px; font-size: 0.85rem;" placeholder="انسخ الأسئلة أو كود تصدير الفورم والصقه هنا مباشرة..."></textarea>
           </div>
         </div>
 
         <button class="btn btn-success" style="width: 100%; margin-top: 0.8rem;" onclick="publishContent()">
-          <i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر الامتحان
+          <i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر على المنصة
         </button>
       </div>
     </div>
@@ -406,126 +393,6 @@
       }
     }
 
-    // المعالج الذكي لقراءة ملفات PDF
-    async function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const editor = document.getElementById('quizQuestionsRaw');
-      editor.innerHTML = '<span style="color:var(--primary);font-weight:bold;">جاري استخراج النص من الملف...</span>';
-      
-      if (file.name.toLowerCase().endsWith('.pdf')) {
-         try {
-             const arrayBuffer = await file.arrayBuffer();
-             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-             let fullText = '';
-             for (let i = 1; i <= pdf.numPages; i++) {
-                 const page = await pdf.getPage(i);
-                 const textContent = await page.getTextContent();
-                 const pageText = textContent.items.map(item => item.str).join(' ');
-                 fullText += pageText + '\n\n';
-             }
-             editor.innerText = fullText;
-             updateParsedPreview();
-         } catch(err) {
-             editor.innerHTML = '<span style="color:red;">حدث خطأ أثناء قراءة الـ PDF.</span>';
-         }
-      } else {
-         const reader = new FileReader();
-         reader.onload = function(e) {
-           editor.innerText = e.target.result;
-           updateParsedPreview();
-         };
-         reader.readAsText(file);
-      }
-    }
-
-    // الخوارزمية الذكية لاستخراج اللون الأحمر
-    function getHtmlWithRedMarked() {
-      const editor = document.getElementById('quizQuestionsRaw');
-      const clone = editor.cloneNode(true);
-      
-      function walkAndMark(node) {
-          if (node.nodeType === 1) { // Element
-              const styleColor = (node.style.color || '').replace(/\s/g, '').toLowerCase();
-              const attrColor = (node.getAttribute('color') || '').replace(/\s/g, '').toLowerCase();
-              const combinedColor = styleColor + attrColor;
-              
-              if (combinedColor.includes('red') || combinedColor.includes('rgb(255,0,0)') || combinedColor.includes('#ff0000') || combinedColor.includes('#c00000') || combinedColor.includes('#e60000') || combinedColor.includes('rgb(192,0,0)')) {
-                  node.prepend(document.createTextNode('*'));
-              }
-          }
-          Array.from(node.childNodes).forEach(walkAndMark);
-      }
-      
-      walkAndMark(clone);
-      return clone.innerText || clone.textContent;
-    }
-
-    function smartQuestionParser(text) {
-      if (!text || !text.trim()) return [];
-      try {
-        const parsedJson = JSON.parse(text);
-        if (Array.isArray(parsedJson)) return parsedJson;
-      } catch(e) {}
-
-      const blocks = text.trim().split(/\n\s*\n+/);
-      const questions = [];
-
-      blocks.forEach(block => {
-        const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
-        if (lines.length >= 2) {
-          let questionText = lines[0].replace(/^(Q\s*[\d]+|س\s*[\d]+|[\d]+)[\.\:\-\)]\s*/i, '').trim();
-          let options = [];
-          let detectedAnswerKey = null;
-
-          for (let i = 1; i < lines.length; i++) {
-            let line = lines[i];
-            const ansMatch = line.match(/^(Ans|Answer|الإجابة|الحل)\s*[\:\-]\s*([A-Ea-e1-5])/i);
-            if (ansMatch) {
-              detectedAnswerKey = ansMatch[2].toUpperCase();
-              continue;
-            }
-
-            let isCorrect = false;
-            if (line.startsWith('*')) {
-              isCorrect = true;
-              line = line.substring(1).trim();
-            }
-
-            line = line.replace(/^([A-Ea-e\d]|[\u0623\u0628\u062c\u062f])[\.\:\-\)]\s*/, '').trim();
-            if (line) {
-              options.push({ text: line, isCorrect });
-            }
-          }
-
-          if (detectedAnswerKey && options.length > 0) {
-            const letterMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, '1': 0, '2': 1, '3': 2, '4': 3 };
-            const correctIdx = letterMap[detectedAnswerKey] ?? 0;
-            if (options[correctIdx]) options[correctIdx].isCorrect = true;
-          } else if (!options.some(o => o.isCorrect) && options.length > 0) {
-            options[0].isCorrect = true; // الافتراضي لو مفيش لون أو نجمة
-          }
-
-          if (options.length >= 2) {
-            questions.push({ question: questionText, options });
-          }
-        }
-      });
-      return questions;
-    }
-
-    function updateParsedPreview() {
-      const rawTextWithStars = getHtmlWithRedMarked();
-      const parsed = smartQuestionParser(rawTextWithStars);
-      const status = document.getElementById('parsedStatus');
-      if (parsed.length > 0) {
-        status.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--success)"></i> تم استخراج ${parsed.length} سؤال بنجاح جاهزين للامتحان!`;
-      } else {
-        status.innerText = '';
-      }
-    }
-
     function openStudentEntry(examId) { document.getElementById('targetExamId').value = examId; document.getElementById('studentEntryModal').style.display = 'flex'; }
     function closeStudentEntry() { document.getElementById('studentEntryModal').style.display = 'none'; }
 
@@ -541,7 +408,7 @@
       if (!exam) return;
 
       let questions = [];
-      try { questions = JSON.parse(exam.exam_url); } catch (e) { return alert('الامتحان ده بصيغة قديمة، امسحه وضيفه من جديد.'); }
+      try { questions = JSON.parse(exam.exam_url); } catch (e) { return alert('الامتحان بصيغة غير متوافقة'); }
 
       activeQuiz = { ...exam, parsedQuestions: questions };
       studentAnswers = {};
@@ -636,11 +503,32 @@
         const pdf_url = document.getElementById('contentPdf').value;
         await db.from('lessons').insert([{ title, chapter, video_url, pdf_url }]);
       } else {
-        const rawTextWithStars = getHtmlWithRedMarked();
+        const raw = document.getElementById('quizQuestionsRaw').value;
         const duration = parseInt(document.getElementById('quizDuration').value) || 15;
-        const parsed = smartQuestionParser(rawTextWithStars);
-        if (parsed.length === 0) return alert('يرجى رفع ملف أو لصق أسئلة صحيحة');
+        let parsed = [];
+        try {
+          parsed = JSON.parse(raw);
+        } catch(e) {
+          // محاولة معالجة نصية تلقائية
+          const blocks = raw.trim().split(/\n\s*\n+/);
+          blocks.forEach(block => {
+            const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+            if(lines.length >= 2) {
+              const question = lines[0];
+              const options = [];
+              for(let i=1; i<lines.length; i++) {
+                let text = lines[i];
+                let isCorrect = text.startsWith('*');
+                if(isCorrect) text = text.substring(1).trim();
+                options.push({ text, isCorrect });
+              }
+              if(!options.some(o => o.isCorrect)) options[0].isCorrect = true;
+              parsed.push({ question, options });
+            }
+          });
+        }
         
+        if (parsed.length === 0) return alert('يرجى إدخال أسئلة صالحة');
         await db.from('exams').insert([{ title, exam_url: JSON.stringify(parsed), duration_minutes: duration }]);
       }
 
