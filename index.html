@@ -9,11 +9,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  
   <!-- PDF.js Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
@@ -96,7 +91,7 @@
 
     </div>
 
-    <!-- قائمة الموبايل المنسدلة -->
+    <!-- قائمة الموبايل -->
     <div id="mobileNavMenu" class="hidden md:hidden pt-3 pb-2 border-t border-slate-800/80 mt-2 space-y-2">
       <div class="grid grid-cols-3 gap-2">
         <button onclick="navigate('landing'); toggleMobileNav();" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700">
@@ -331,7 +326,7 @@
       </div>
     </section>
 
-    <!-- 6. مشغل المادة واستوديو التدوين للـ PDF -->
+    <!-- 6. مشغل المادة واستوديو PDF -->
     <section id="viewStudentPlatform" class="hidden w-full flex flex-col md:flex-row flex-1 overflow-hidden">
       <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
         <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
@@ -387,7 +382,7 @@
           </div>
         </div>
 
-        <!-- استوديو PDF -->
+        <!-- استوديو PDF التفاعلي -->
         <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
           <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-xl">
             <div class="flex items-center gap-2">
@@ -435,7 +430,7 @@
       </section>
     </section>
 
-    <!-- 7. لوحة تحكم المالك المركزية -->
+    <!-- 7. لوحة تحكم المالك المركزية (مقسمة على جدولين فقط) -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -456,10 +451,7 @@
             رفع المحتوى والمذكرات 🚀
           </button>
           <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
-            سجل الحسابات وإدارة الأجهزة (Excel) 📱
-          </button>
-          <button onclick="switchDashTab('tab-enrollments', this)" id="btnTabEnrollments" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
-            طلبات الاشتراكات والتحويل 💰
+            سجل الطلاب وتفعيل الاشتراكات (Excel) 📊
           </button>
           <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
             اعتماد المحاضرين الجدد 👨‍🏫
@@ -512,7 +504,7 @@
           </div>
         </div>
 
-        <!-- تبويب 2: سجل الحسابات وتغيير الأجهزة -->
+        <!-- تبويب 2: سجل الطلاب وإدارة الاشتراكات المدمجة -->
         <div id="dashSectionUsers" class="hidden space-y-4">
           <div class="flex flex-wrap justify-between items-center bg-[#111a2e] p-4 rounded-2xl border border-slate-800 gap-3">
             <input type="text" id="searchUserInput" oninput="filterUsersTable()" placeholder="ابحث باسم الطالب أو الهاتف..." class="bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white w-64">
@@ -526,10 +518,10 @@
               <thead class="bg-[#090e1a] text-slate-400 font-black border-b border-slate-800 text-[11px]">
                 <tr>
                   <th class="p-4">الاسم</th>
-                  <th class="p-4">النوع</th>
-                  <th class="p-4">البريد</th>
-                  <th class="p-4">الواتساب</th>
+                  <th class="p-4">الهاتف والبريد</th>
                   <th class="p-4">الجامعة والفرقة</th>
+                  <th class="p-4">المواد المفعلة للطالب</th>
+                  <th class="p-4 text-center">التحكم في الاشتراك</th>
                   <th class="p-4 text-center">إدارة الجهاز</th>
                 </tr>
               </thead>
@@ -538,28 +530,7 @@
           </div>
         </div>
 
-        <!-- تبويب 3: طلبات اشتراك الطلاب والتحويل -->
-        <div id="dashSectionEnrollments" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-          <div class="p-4 bg-[#0f172a] border-b border-slate-800 font-bold text-xs text-cyan-400">
-            طلبات الطلاب الذين قاموا بالتحويل المالي
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-right text-xs">
-              <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
-                <tr>
-                  <th class="p-4">الطالب</th>
-                  <th class="p-4">الهاتف</th>
-                  <th class="p-4">المادة المطلوبة</th>
-                  <th class="p-4">رقم المحول منه</th>
-                  <th class="p-4 text-center">القرار والتفعيل</th>
-                </tr>
-              </thead>
-              <tbody id="enrollmentsTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- تبويب 4: طلبات اعتماد المحاضرين -->
+        <!-- تبويب 3: طلبات اعتماد المحاضرين المدمجة -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين الجدد المعلقة للاعتماد
@@ -585,21 +556,8 @@
   </main>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBfJyx1GmyBUlvb4JdejGWB_mcne4EUUcc",
-      authDomain: "dr-success.firebaseapp.com",
-      databaseURL: "https://dr-success-default-rtdb.firebaseio.com",
-      projectId: "dr-success",
-      storageBucket: "dr-success.firebasestorage.app",
-      messagingSenderId: "1074780204229",
-      appId: "1:1074780204229:web:39aa3eb25a7fd317fb54ac",
-      measurementId: "G-VXQFSKCVM0"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
+    // الرابط المباشر لمشروعك السحابي السريع
+    const API_BASE = "https://6a8cc4e763f113bab0b8707f.mockapi.io";
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
     const ACADEMY_DATA = {
@@ -630,7 +588,7 @@
       const cached = localStorage.getItem('dr_success_cached_user');
       if (cached) {
         currentUser = JSON.parse(cached);
-        userUnlockedSubjects = JSON.parse(localStorage.getItem('dr_success_cached_subs') || '[]');
+        userUnlockedSubjects = currentUser.unlocked_courses || (currentUser.role === 'super_admin' ? ['all'] : []);
         updateUserUI();
       }
     } catch(e) {}
@@ -640,60 +598,14 @@
       m.classList.toggle('hidden');
     }
 
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const isOwner = user.email && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
-        try {
-          const doc = await db.collection('profiles').doc(user.uid).get();
-          if (doc.exists) {
-            currentUser = { id: user.uid, email: user.email, ...doc.data() };
-            if (isOwner) {
-              currentUser.role = 'super_admin';
-              currentUser.full_name = 'د. محمد رجب (المالك)';
-              userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
-            } else {
-              await loadUserUnlockedSubjects(user.uid);
-            }
-          } else if (isOwner) {
-            currentUser = { id: user.uid, email: user.email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
-            userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
-          }
-        } catch (e) {
-          if (isOwner) {
-            currentUser = { id: user.uid, email: user.email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
-            userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
-          }
-        }
-
-        if (currentUser) {
-          localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
-          localStorage.setItem('dr_success_cached_subs', JSON.stringify(userUnlockedSubjects));
-        }
-        updateUserUI();
-      } else {
-        currentUser = null;
-        userUnlockedSubjects = [];
-        localStorage.removeItem('dr_success_cached_user');
-        localStorage.removeItem('dr_success_cached_subs');
-        updateUserUI();
-      }
-      loadGlobalStats();
-    });
-
-    async function loadUserUnlockedSubjects(userId) {
-      try {
-        const snap = await db.collection('enrollments').where('user_id', '==', userId).where('status', '==', 'active').get();
-        userUnlockedSubjects = [];
-        snap.forEach(d => userUnlockedSubjects.push(d.data().subject_id));
-      } catch(e) {}
-    }
-
     async function loadGlobalStats() {
       try {
-        const sSnap = await db.collection('profiles').where('role', '==', 'student').get();
-        const lSnap = await db.collection('lectures').get();
-        if (sSnap) document.getElementById('statStudents').innerText = sSnap.size;
-        if (lSnap) document.getElementById('statLectures').innerText = lSnap.size;
+        const resU = await fetch(`${API_BASE}/users`);
+        const users = await resU.json();
+        const resL = await fetch(`${API_BASE}/lectures`);
+        const lecs = await resL.json();
+        if (Array.isArray(users)) document.getElementById('statStudents').innerText = users.filter(u => u.role === 'student').length;
+        if (Array.isArray(lecs)) document.getElementById('statLectures').innerText = lecs.length;
       } catch(e) {}
     }
 
@@ -749,95 +661,107 @@
       }
     }
 
-    // إنشاء حساب الطالب مع معالجة الأخطاء الدقيقة
+    // تسجيل حساب طالب جديد
     async function handleStudentRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentRegisterSubmit');
       const originalText = 'إنشاء الحساب وبدء المذاكرة 🚀';
 
-      const email = document.getElementById('regEmail').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
       const password = document.getElementById('regPass').value;
       const fullName = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim();
       const university = document.getElementById('regUniversity').value;
       const faculty = document.getElementById('regFaculty').value;
 
-      if (!email || !password || !fullName || !phone) {
-        return alert('يرجى ملء جميع الحقول المطلوبة.');
-      }
+      if (!email || !password || !fullName || !phone) return alert('يرجى ملء جميع الحقول المطلوبة.');
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري إنشاء الحساب...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري حفظ البيانات...';
 
       try {
-        const cred = await auth.createUserWithEmailAndPassword(email, password);
         const deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
-        localStorage.setItem('dr_success_device_id', deviceId);
-
-        const userData = {
+        const payload = {
           full_name: fullName,
           email: email,
+          password: password,
           phone: phone,
           university: university,
           faculty: faculty,
           role: 'student',
+          unlocked_courses: [],
           device_session: deviceId,
-          created_at: firebase.firestore.FieldValue.serverTimestamp()
+          created_at: new Date().toISOString()
         };
 
-        await db.collection('profiles').doc(cred.user.uid).set(userData);
+        const res = await fetch(`${API_BASE}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
 
-        currentUser = { id: cred.user.uid, ...userData };
+        const createdUser = await res.json();
+        currentUser = createdUser;
+        userUnlockedSubjects = [];
         localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
-        
+        localStorage.setItem('dr_success_device_id', deviceId);
+
         updateUserUI();
         navigate('courses-grid');
         alert('🎉 تم إنشاء حسابك بنجاح! مرحباً بك يا دكتور.');
       } catch (err) {
-        let msg = err.message;
-        if (err.code === 'auth/email-already-in-use') msg = 'هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول.';
-        if (err.code === 'auth/weak-password') msg = 'كلمة المرور ضعيفة. يجب أن تتكون من 6 أحرف على الأقل.';
-        if (err.code === 'auth/invalid-email') msg = 'صيغة البريد الإلكتروني غير صحيحة.';
-        alert('❌ تعذر إنشاء الحساب: ' + msg);
+        alert('❌ حدث خطأ أثناء الاتصال بالسيرفر: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     }
 
+    // تسجيل دخول طالب
     async function handleStudentLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentLoginSubmit');
       const originalText = 'الدخول للمنصة 🚀';
 
-      const email = document.getElementById('loginStudentEmail').value.trim();
+      const email = document.getElementById('loginStudentEmail').value.trim().toLowerCase();
       const password = document.getElementById('loginStudentPass').value;
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الدخول...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
 
       try {
-        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const res = await fetch(`${API_BASE}/users`);
+        const users = await res.json();
+        const user = users.find(u => u.email && u.email.toLowerCase() === email && u.password === password);
+
+        if (!user) {
+          alert('بيانات الدخول غير صحيحة. يرجى التأكد من البريد وكلمة المرور.');
+          return;
+        }
+
         const newDeviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
         localStorage.setItem('dr_success_device_id', newDeviceId);
+        currentUser = user;
+        userUnlockedSubjects = user.unlocked_courses || [];
+        localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
 
-        db.collection('profiles').doc(cred.user.uid).update({
-          device_session: newDeviceId
+        fetch(`${API_BASE}/users/${user.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_session: newDeviceId })
         }).catch(() => {});
 
+        updateUserUI();
         navigate('courses-grid');
       } catch (err) {
-        let msg = err.message;
-        if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-          msg = 'بيانات الدخول غير صحيحة. يرجى التأكد من البريد وكلمة المرور.';
-        }
-        alert('خطأ أثناء الدخول: ' + msg);
+        alert('خطأ أثناء الدخول: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     }
 
+    // تسجيل حساب دكتور جديد
     async function handleDoctorRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorRegisterSubmit');
@@ -846,24 +770,32 @@
       const name = document.getElementById('newDocName').value.trim();
       const subject = document.getElementById('newDocSubject').value;
       const phone = document.getElementById('newDocPhone').value.trim();
-      const email = document.getElementById('newDocEmail').value.trim();
+      const email = document.getElementById('newDocEmail').value.trim().toLowerCase();
       const pass = document.getElementById('newDocPass').value;
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإرسال...';
 
       try {
-        const cred = await auth.createUserWithEmailAndPassword(email, pass);
-        await db.collection('profiles').doc(cred.user.uid).set({
+        const payload = {
           full_name: name,
           email: email,
+          password: pass,
           phone: phone,
           assigned_subject: subject,
           role: 'doctor',
           is_approved: false,
-          created_at: firebase.firestore.FieldValue.serverTimestamp()
+          unlocked_courses: [subject],
+          created_at: new Date().toISOString()
+        };
+
+        await fetch(`${API_BASE}/users`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        alert('✅ تم إرسال طلب الانضمام وسيتم مراجعته واعتماده من المالك!');
+
+        alert('✅ تم إرسال طلب الانضمام وسيتم اعتماده من المالك!');
         openDoctorTab('login');
       } catch (err) {
         alert('خطأ: ' + err.message);
@@ -873,28 +805,47 @@
       }
     }
 
+    // تسجيل دخول دكتور / المالك
     async function handleDoctorLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorLoginSubmit');
       const originalText = 'دخول لوحة التحكم والاعتمادات';
 
-      const email = document.getElementById('docLoginEmail').value.trim();
+      const email = document.getElementById('docLoginEmail').value.trim().toLowerCase();
       const pass = document.getElementById('docLoginPass').value;
-      const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+      const isOwner = email === OWNER_EMAIL.toLowerCase();
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
 
       try {
-        const cred = await auth.signInWithEmailAndPassword(email, pass);
         if (isOwner) {
-          currentUser = { id: cred.user.uid, email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
+          currentUser = { email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
+          userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
           localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
           updateUserUI();
           navigate('instructor-dash');
-        } else {
-          navigate('instructor-dash');
+          return;
         }
+
+        const res = await fetch(`${API_BASE}/users`);
+        const users = await res.json();
+        const doc = users.find(u => u.email && u.email.toLowerCase() === email && u.password === pass && u.role === 'doctor');
+
+        if (!doc) {
+          alert('بيانات الدخول غير صحيحة.');
+          return;
+        }
+        if (!doc.is_approved) {
+          alert('حسابك بانتظار موافقة واعتماد المالك.');
+          return;
+        }
+
+        currentUser = doc;
+        userUnlockedSubjects = doc.unlocked_courses || [doc.assigned_subject];
+        localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+        updateUserUI();
+        navigate('instructor-dash');
       } catch (err) {
         alert('خطأ: ' + err.message);
       } finally {
@@ -909,6 +860,7 @@
       container.innerHTML = '';
 
       Object.values(ACADEMY_DATA).forEach(course => {
+        const isUnlocked = userUnlockedSubjects.includes(course.id) || userUnlockedSubjects.includes('all');
         const card = document.createElement('div');
         card.className = "course-card bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-xl p-5 flex flex-col justify-between";
         card.innerHTML = `
@@ -921,7 +873,7 @@
             <p class="text-xs text-slate-400 mt-2 line-clamp-2">${course.desc}</p>
           </div>
           <div class="flex items-center justify-between border-t border-slate-800 pt-3 mt-4">
-            <span class="text-sm font-black text-cyan-400">400 ج.م</span>
+            <span class="text-sm font-black text-cyan-400">${isUnlocked ? 'مفعل لك ✅' : '400 ج.م'}</span>
             <button onclick="openCourseView('${course.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold">دخول 👁️</button>
           </div>
         `;
@@ -945,11 +897,14 @@
       noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">جاري التحميل...</p>';
 
       try {
-        const lecsSnap = await db.collection('lectures').where('subject_id', '==', currentSubjectKey).get();
+        const res = await fetch(`${API_BASE}/lectures`);
+        const allLecs = await res.json();
+        const lecs = Array.isArray(allLecs) ? allLecs.filter(l => l.subject_id === currentSubjectKey) : [];
+
         lecBox.innerHTML = '';
         noteBox.innerHTML = '';
 
-        if (!lecsSnap || lecsSnap.empty) {
+        if (lecs.length === 0) {
           lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
           noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد مذكرات مرفوعة حالياً.</p>';
           return;
@@ -958,8 +913,7 @@
         let hasLec = false;
         let hasNote = false;
 
-        lecsSnap.forEach(doc => {
-          const l = doc.data();
+        lecs.forEach(l => {
           const can = l.is_free || isUnlocked;
 
           if (l.video_url) {
@@ -1211,39 +1165,38 @@
     }
 
     function switchDashTab(tab, btn) {
-      ['dashSectionUpload', 'dashSectionUsers', 'dashSectionEnrollments', 'dashSectionDoctors'].forEach(id => {
+      ['dashSectionUpload', 'dashSectionUsers', 'dashSectionDoctors'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
 
-      ['btnTabUpload', 'btnTabUsers', 'btnTabEnrollments', 'btnTabDoctors'].forEach(id => {
+      ['btnTabUpload', 'btnTabUsers', 'btnTabDoctors'].forEach(id => {
         document.getElementById(id).className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap';
       });
 
       if (btn) btn.className = 'flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap';
 
       if (tab === 'tab-upload') document.getElementById('dashSectionUpload').classList.remove('hidden');
-      if (tab === 'tab-users') { document.getElementById('dashSectionUsers').classList.remove('hidden'); loadAllFirebaseUsers(); }
-      if (tab === 'tab-enrollments') { document.getElementById('dashSectionEnrollments').classList.remove('hidden'); loadPendingEnrollments(); }
+      if (tab === 'tab-users') { document.getElementById('dashSectionUsers').classList.remove('hidden'); loadAllServerUsers(); }
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
-    async function loadAllFirebaseUsers() {
+    // 1. سجل الطلاب وإدارة الاشتراكات المدمجة بجدول users
+    async function loadAllServerUsers() {
       const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Firebase...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات...</td></tr>';
 
       try {
-        const snap = await db.collection('profiles').get();
-        allPlatformUsers = [];
-        snap.forEach(doc => allPlatformUsers.push({ id: doc.id, ...doc.data() }));
+        const res = await fetch(`${API_BASE}/users`);
+        allPlatformUsers = await res.json();
 
-        if (allPlatformUsers.length === 0) {
+        if (!Array.isArray(allPlatformUsers) || allPlatformUsers.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">لا يوجد أي حسابات مسجلة حتى الآن.</td></tr>';
           return;
         }
 
         renderUsersTable(allPlatformUsers);
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-400 font-bold">تعذر الاتصال بـ Firestore: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-400 font-bold">تعذر جلب الحسابات: ${err.message}</td></tr>`;
       }
     }
 
@@ -1252,13 +1205,28 @@
       tbody.innerHTML = '';
       list.forEach(u => {
         const isDoc = u.role === 'doctor';
+        const unlocked = u.unlocked_courses || [];
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-4 font-bold text-white">${u.full_name || '--'}</td>
-          <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${isDoc ? 'bg-purple-500/20 text-purple-300' : 'bg-cyan-500/20 text-cyan-300'}">${isDoc ? 'محاضر' : 'طالب'}</span></td>
-          <td class="p-4 text-slate-400 font-mono">${u.email || '--'}</td>
-          <td class="p-4 text-cyan-300 font-mono">${u.phone || '--'}</td>
+          <td class="p-4 font-bold text-white">${u.full_name || '--'} ${isDoc ? '<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded mr-1">محاضر</span>' : ''}</td>
+          <td class="p-4 text-slate-300 font-mono">${u.phone || '--'}<br><span class="text-[10px] text-slate-500">${u.email || ''}</span></td>
           <td class="p-4 text-slate-300">${u.university ? `${u.university} (${u.faculty || ''})` : '--'}</td>
+          <td class="p-4">
+            <span class="text-cyan-400 font-bold">${unlocked.length > 0 ? unlocked.join(', ') : 'لا يوجد مواد مفعلة'}</span>
+          </td>
+          <td class="p-4 text-center">
+            ${!isDoc ? `
+              <select onchange="toggleCourseForStudent('${u.id}', this.value, this)" class="bg-[#090e1a] border border-slate-700 rounded-lg text-xs text-cyan-300 px-2 py-1">
+                <option value="">+ تفعيل / إغلاق مادة</option>
+                <option value="dental_anatomy">Dental Anatomy</option>
+                <option value="anatomy">General Anatomy</option>
+                <option value="histology">Histology</option>
+                <option value="biochemistry">Biochemistry</option>
+                <option value="microbiology">Microbiology</option>
+                <option value="all">⭐ تفعيل كل المواد</option>
+              </select>
+            ` : '--'}
+          </td>
           <td class="p-4 text-center">
             ${!isDoc ? `<button onclick="resetStudentDevice('${u.id}', '${u.full_name}')" class="bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition"><i class="fa-solid fa-arrows-rotate ml-1"></i> فك قفل الجهاز</button>` : '--'}
           </td>
@@ -1267,11 +1235,45 @@
       });
     }
 
+    async function toggleCourseForStudent(userId, subjectKey, selectEl) {
+      if (!subjectKey) return;
+      const user = allPlatformUsers.find(u => u.id === userId);
+      if (!user) return;
+
+      let courses = user.unlocked_courses || [];
+      if (subjectKey === 'all') {
+        courses = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology'];
+      } else {
+        if (courses.includes(subjectKey)) {
+          if (confirm(`المادة (${subjectKey}) مفعلة للطالب بالفعل، هل تريد إلغاء تفعيلها؟`)) {
+            courses = courses.filter(c => c !== subjectKey);
+          }
+        } else {
+          courses.push(subjectKey);
+        }
+      }
+
+      try {
+        await fetch(`${API_BASE}/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ unlocked_courses: courses })
+        });
+        alert('تم تحديث اشتراك الطالب بنجاح!');
+        loadAllServerUsers();
+      } catch(e) {
+        alert('فشل التحديث: ' + e.message);
+      }
+      selectEl.value = '';
+    }
+
     async function resetStudentDevice(userId, studentName) {
       if (!confirm(`هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`)) return;
       try {
-        await db.collection('profiles').doc(userId).update({
-          device_session: null
+        await fetch(`${API_BASE}/users/${userId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_session: null })
         });
         alert('تمت إعادة تعيين الجهاز بنجاح!');
       } catch (err) { alert('فشل إعادة التعيين: ' + err.message); }
@@ -1289,9 +1291,10 @@
 
     function exportUsersToCSV() {
       if (allPlatformUsers.length === 0) return alert('لا توجد بيانات مسجلة للتصدير');
-      let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة\n";
+      let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة,المواد المفعلة\n";
       allPlatformUsers.forEach(u => {
-        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}"\n`;
+        const courses = (u.unlocked_courses || []).join(' - ');
+        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}","${courses}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
@@ -1300,66 +1303,30 @@
       link.click();
     }
 
-    async function loadPendingEnrollments() {
-      const tbody = document.getElementById('enrollmentsTableBody');
-      tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات التحويل...</td></tr>';
-
-      try {
-        const snap = await db.collection('enrollments').where('status', '==', 'pending').get();
-        if (snap.empty) {
-          tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">لا توجد طلبات تحويل معلقة حالياً</td></tr>';
-          return;
-        }
-
-        tbody.innerHTML = '';
-        snap.forEach(doc => {
-          const o = doc.data();
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="p-4 font-bold text-white">${o.student_name || 'طالب'}</td>
-            <td class="p-4">${o.phone || '--'}</td>
-            <td class="p-4 font-bold text-cyan-400">${ACADEMY_DATA[o.subject_id]?.title || o.subject_id}</td>
-            <td class="p-4 font-mono text-amber-300">${o.sender_number || '--'}</td>
-            <td class="p-4 text-center">
-              <button onclick="approveEnrollment('${doc.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل المادة ✅</button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-400 font-bold">تعذر تحميل الطلبات: ${err.message}</td></tr>`;
-      }
-    }
-
-    async function approveEnrollment(docId) {
-      try {
-        await db.collection('enrollments').doc(docId).update({ status: 'active' });
-        alert('تم تفعيل المادة للطالب بنجاح!');
-        loadPendingEnrollments();
-      } catch (err) { alert('خطأ في التفعيل: ' + err.message); }
-    }
-
+    // 2. اعتماد المحاضرين (مدمج في جدول users)
     async function loadPendingDoctors() {
       const tbody = document.getElementById('doctorsApprovalTableBody');
       tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-purple-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات المحاضرين...</td></tr>';
 
       try {
-        const snap = await db.collection('profiles').where('role', '==', 'doctor').where('is_approved', '==', false).get();
-        if (snap.empty) {
+        const res = await fetch(`${API_BASE}/users`);
+        const all = await res.json();
+        const pending = Array.isArray(all) ? all.filter(u => u.role === 'doctor' && !u.is_approved) : [];
+
+        if (pending.length === 0) {
           tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
           return;
         }
 
         tbody.innerHTML = '';
-        snap.forEach(doc => {
-          const d = doc.data();
+        pending.forEach(d => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="p-4 font-bold text-white">${d.full_name || '--'}</td>
             <td class="p-4">${d.phone || '--'} <span class="block text-slate-500 text-[10px]">${d.email || ''}</span></td>
             <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
             <td class="p-4 text-center">
-              <button onclick="approveDoctor('${doc.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
+              <button onclick="approveDoctor('${d.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -1371,12 +1338,17 @@
 
     async function approveDoctor(docId) {
       try {
-        await db.collection('profiles').doc(docId).update({ is_approved: true });
+        await fetch(`${API_BASE}/users/${docId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_approved: true })
+        });
         alert('تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!');
         loadPendingDoctors();
       } catch (err) { alert('خطأ في الاعتماد: ' + err.message); }
     }
 
+    // نشر محاضرة فيديو
     async function handleUploadLecture(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadLectureSubmit');
@@ -1394,13 +1366,17 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
 
       try {
-        await db.collection('lectures').add({
-          subject_id: sub,
-          title: title,
-          duration: duration || 'غير محدد',
-          video_url: url,
-          is_free: isFree,
-          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        await fetch(`${API_BASE}/lectures`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subject_id: sub,
+            title: title,
+            duration: duration || 'غير محدد',
+            video_url: url,
+            is_free: isFree,
+            created_at: new Date().toISOString()
+          })
         });
 
         alert('✅ تم نشر المحاضرة بنجاح على المنصة!');
@@ -1416,6 +1392,7 @@
       }
     }
 
+    // رفع مذكرة PDF
     async function handleUploadPdf(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadPdfSubmit');
@@ -1432,12 +1409,16 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإضافة...';
 
       try {
-        await db.collection('lectures').add({
-          subject_id: sub,
-          title: title,
-          pdf_url: url,
-          is_free: isFree,
-          created_at: firebase.firestore.FieldValue.serverTimestamp()
+        await fetch(`${API_BASE}/lectures`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subject_id: sub,
+            title: title,
+            pdf_url: url,
+            is_free: isFree,
+            created_at: new Date().toISOString()
+          })
         });
 
         alert('✅ تم إضافة مذكرة الـ PDF بنجاح وأصبحت متاحة للطلاب!');
@@ -1479,25 +1460,9 @@
       }
     }
 
-    setInterval(async () => {
-      if (!currentUser || currentUser.role === 'super_admin') return;
-      const localDev = localStorage.getItem('dr_success_device_id');
-      if (!localDev) return;
-
-      try {
-        const doc = await db.collection('profiles').doc(currentUser.id).get();
-        if (doc.exists && doc.data().device_session && doc.data().device_session !== localDev) {
-          alert('⚠️ تنبيه أمني: تم تسجيل الدخول إلى حسابك من جهاز آخر.');
-          handleLogout();
-        }
-      } catch(e) {}
-    }, 4000);
-
-    async function handleLogout() {
-      await auth.signOut();
+    function handleLogout() {
       localStorage.removeItem('dr_success_device_id');
       localStorage.removeItem('dr_success_cached_user');
-      localStorage.removeItem('dr_success_cached_subs');
       currentUser = null;
       userUnlockedSubjects = [];
       updateUserUI();
@@ -1505,6 +1470,7 @@
     }
 
     navigate('landing');
+    loadGlobalStats();
   </script>
 </body>
 </html>
