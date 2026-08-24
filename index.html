@@ -14,12 +14,14 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <script>window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
+  <!-- PDF.js Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
 
   <style>
-    body { font-family: 'Tajawal', sans-serif; background-color: #080c14; }
+    body { font-family: 'Tajawal', sans-serif; background-color: #080c14; touch-action: manipulation; }
     .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     .course-card:hover { transform: translateY(-4px); }
@@ -34,6 +36,7 @@
       font-size: 0.8rem; font-weight: 800; pointer-events: none;
       user-select: none; z-index: 30; animation: floatMark 16s infinite alternate ease-in-out;
     }
+    canvas { touch-action: none; }
   </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none" oncontextmenu="return false;">
@@ -328,7 +331,7 @@
       </div>
     </section>
 
-    <!-- 6. مشغل المادة واستوديو PDF -->
+    <!-- 6. مشغل المادة واستوديو التدوين الذكي للـ PDF -->
     <section id="viewStudentPlatform" class="hidden w-full flex flex-col md:flex-row flex-1 overflow-hidden">
       <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
         <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
@@ -356,7 +359,7 @@
         </div>
       </aside>
 
-      <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-3 md:p-6 custom-scrollbar relative">
+      <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-2 sm:p-4 custom-scrollbar relative">
         <div id="videoContainerWrapper" class="w-full flex flex-col items-center">
           <div id="playerContainer" class="w-full max-w-4xl aspect-video bg-black rounded-2xl border border-slate-800 relative overflow-hidden shadow-2xl flex items-center justify-center min-h-[220px] sm:min-h-[340px]">
             <div class="watermark-text" id="playerWatermark">Dr Success • Student</div>
@@ -384,20 +387,55 @@
           </div>
         </div>
 
+        <!-- استوديو PDF التفاعلي المتكامل للتابلت والقلم -->
         <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
-          <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
-            <span class="font-bold text-cyan-400" id="pdfFileName">مذكرة الشرح</span>
+          
+          <!-- شريط تحكم وأدوات القلم -->
+          <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-xl">
             <div class="flex items-center gap-2">
-              <span>صفحة: <span id="pageNum">1</span> / <span id="pageCount">--</span></span>
-              <button onclick="prevPdfPage()" class="bg-slate-800 px-2 py-1 rounded"><i class="fa-solid fa-chevron-right"></i></button>
-              <button onclick="nextPdfPage()" class="bg-slate-800 px-2 py-1 rounded"><i class="fa-solid fa-chevron-left"></i></button>
+              <span class="font-bold text-cyan-400 max-w-[150px] truncate" id="pdfFileName">المذكرة</span>
+              <span class="text-slate-500">|</span>
+              <span>صفحة: <span id="pageNum" class="font-bold text-white">1</span> / <span id="pageCount" class="font-bold text-slate-400">--</span></span>
+              <div class="flex items-center gap-1">
+                <button onclick="prevPdfPage()" class="bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg"><i class="fa-solid fa-chevron-right"></i></button>
+                <button onclick="nextPdfPage()" class="bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg"><i class="fa-solid fa-chevron-left"></i></button>
+              </div>
+            </div>
+
+            <!-- أدوات التدوين والأقلام للتابلت -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="setToolMode('pen')" id="toolPenBtn" class="bg-cyan-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
+                <i class="fa-solid fa-pen"></i> قلم
+              </button>
+              <button onclick="setToolMode('highlighter')" id="toolHighBtn" class="bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
+                <i class="fa-solid fa-highlighter text-amber-400"></i> تظليل
+              </button>
+              <button onclick="setToolMode('eraser')" id="toolEraserBtn" class="bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
+                <i class="fa-solid fa-eraser text-rose-400"></i> ممحاة
+              </button>
+
+              <div class="flex items-center gap-1 border-r border-slate-700 pr-2">
+                <button onclick="setPenColor('#ef4444')" class="w-5 h-5 rounded-full bg-red-500 border border-white/40"></button>
+                <button onclick="setPenColor('#06b6d4')" class="w-5 h-5 rounded-full bg-cyan-400 border border-white/40"></button>
+                <button onclick="setPenColor('#eab308')" class="w-5 h-5 rounded-full bg-yellow-400 border border-white/40"></button>
+                <button onclick="setPenColor('#10b981')" class="w-5 h-5 rounded-full bg-emerald-500 border border-white/40"></button>
+              </div>
+
+              <button onclick="clearCurrentPageDrawings()" class="bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 px-2.5 py-1 rounded-lg font-bold text-[11px]">
+                مسح الشخبطة
+              </button>
             </div>
           </div>
-          <div class="relative w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-auto flex justify-center p-2 min-h-[500px]">
-            <canvas id="pdfCanvas" class="shadow-2xl"></canvas>
-            <canvas id="drawCanvas" class="absolute cursor-crosshair"></canvas>
+
+          <!-- منطقة عرض صفحات الـ PDF مع طبقة الرسم -->
+          <div id="pdfCanvasContainer" class="relative w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-auto flex justify-center p-2 min-h-[550px] shadow-2xl">
+            <div id="canvasWrapper" class="relative inline-block">
+              <canvas id="pdfCanvas" class="rounded-lg shadow-xl block"></canvas>
+              <canvas id="drawCanvas" class="absolute top-0 left-0 rounded-lg cursor-crosshair"></canvas>
+            </div>
           </div>
         </div>
+
       </section>
     </section>
 
@@ -568,6 +606,13 @@
 
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
+    function promiseWithTimeout(promise, ms = 8000, errorMsg = "انتهت مهلة الاتصال بقاعدة البيانات.") {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error(errorMsg)), ms))
+      ]);
+    }
+
     const ACADEMY_DATA = {
       dental_anatomy: { id: 'dental_anatomy', title: 'Dental Anatomy', doctor: 'Dr. Ahmed El-Taher', price: 400, image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80', desc: 'تضاريس وتشريح الأسنان وفيديوهات الكارفينج.' },
       anatomy: { id: 'anatomy', title: 'General Anatomy', doctor: 'Dr. Mohamed Fawzy', price: 400, image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=800&q=80', desc: 'تشريح منطقة الرأس والعنق.' },
@@ -583,8 +628,24 @@
     let currentVideoElement = null;
     let allPlatformUsers = [];
 
+    // إعدادات استوديو الـ PDF والأقلام
     let pdfDoc = null;
     let pdfPageNum = 1;
+    let currentTool = 'pen';
+    let penColor = '#06b6d4';
+    let penWidth = 3;
+    let isDrawing = false;
+    let drawCtx = null;
+    let pageDrawingsCache = {};
+
+    try {
+      const cached = localStorage.getItem('dr_success_cached_user');
+      if (cached) {
+        currentUser = JSON.parse(cached);
+        userUnlockedSubjects = JSON.parse(localStorage.getItem('dr_success_cached_subs') || '[]');
+        updateUserUI();
+      }
+    } catch(e) {}
 
     function toggleMobileNav() {
       const m = document.getElementById('mobileNavMenu');
@@ -595,7 +656,7 @@
       if (user) {
         const isOwner = user.email && user.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
         try {
-          const doc = await db.collection('profiles').doc(user.uid).get();
+          const doc = await promiseWithTimeout(db.collection('profiles').doc(user.uid).get(), 5000);
           if (doc.exists) {
             currentUser = { id: user.uid, email: user.email, ...doc.data() };
             if (isOwner) {
@@ -610,12 +671,22 @@
             userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
           }
         } catch (e) {
-          console.error("Auth profile error:", e);
+          if (isOwner) {
+            currentUser = { id: user.uid, email: user.email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
+            userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
+          }
+        }
+
+        if (currentUser) {
+          localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+          localStorage.setItem('dr_success_cached_subs', JSON.stringify(userUnlockedSubjects));
         }
         updateUserUI();
       } else {
         currentUser = null;
         userUnlockedSubjects = [];
+        localStorage.removeItem('dr_success_cached_user');
+        localStorage.removeItem('dr_success_cached_subs');
         updateUserUI();
       }
       loadGlobalStats();
@@ -623,7 +694,7 @@
 
     async function loadUserUnlockedSubjects(userId) {
       try {
-        const snap = await db.collection('enrollments').where('user_id', '==', userId).where('status', '==', 'active').get();
+        const snap = await promiseWithTimeout(db.collection('enrollments').where('user_id', '==', userId).where('status', '==', 'active').get(), 4000);
         userUnlockedSubjects = [];
         snap.forEach(d => userUnlockedSubjects.push(d.data().subject_id));
       } catch(e) {}
@@ -631,10 +702,10 @@
 
     async function loadGlobalStats() {
       try {
-        const sSnap = await db.collection('profiles').where('role', '==', 'student').get();
-        const lSnap = await db.collection('lectures').get();
-        document.getElementById('statStudents').innerText = sSnap.size;
-        document.getElementById('statLectures').innerText = lSnap.size;
+        const sSnap = await promiseWithTimeout(db.collection('profiles').where('role', '==', 'student').get(), 4000);
+        const lSnap = await promiseWithTimeout(db.collection('lectures').get(), 4000);
+        if (sSnap) document.getElementById('statStudents').innerText = sSnap.size;
+        if (lSnap) document.getElementById('statLectures').innerText = lSnap.size;
       } catch(e) {}
     }
 
@@ -658,6 +729,17 @@
       const isLogin = mode === 'login';
       document.getElementById('formStudentLogin').classList.toggle('hidden', !isLogin);
       document.getElementById('formStudentRegister').classList.toggle('hidden', isLogin);
+
+      const tabLog = document.getElementById('tabStudentLogin');
+      const tabReg = document.getElementById('tabStudentRegister');
+
+      if (isLogin) {
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-cyan-600 text-white shadow';
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      } else {
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-cyan-600 text-white shadow';
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      }
     }
 
     function openDoctorTab(mode) {
@@ -665,6 +747,17 @@
       const isLogin = mode === 'login';
       document.getElementById('formDoctorLogin').classList.toggle('hidden', !isLogin);
       document.getElementById('formDoctorRegister').classList.toggle('hidden', isLogin);
+
+      const tabLog = document.getElementById('tabDocLogin');
+      const tabReg = document.getElementById('tabDocRegister');
+
+      if (isLogin) {
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-purple-600 text-white shadow';
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      } else {
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-purple-600 text-white shadow';
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      }
     }
 
     async function handleStudentRegister(e) {
@@ -681,7 +774,7 @@
         const deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
         localStorage.setItem('dr_success_device_id', deviceId);
 
-        await db.collection('profiles').doc(cred.user.uid).set({
+        const userData = {
           full_name: fullName,
           email: email,
           phone: phone,
@@ -690,11 +783,17 @@
           role: 'student',
           device_session: deviceId,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        };
+
+        await promiseWithTimeout(db.collection('profiles').doc(cred.user.uid).set(userData), 6000);
+
+        currentUser = { id: cred.user.uid, ...userData };
+        localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+        updateUserUI();
 
         alert('تم إنشاء حسابك بنجاح!');
         navigate('courses-grid');
-      } catch (err) { alert('خطأ: ' + err.message); }
+      } catch (err) { alert('خطأ أثناء التسجيل: ' + err.message); }
     }
 
     async function handleStudentLogin(e) {
@@ -707,12 +806,12 @@
         const newDeviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
         localStorage.setItem('dr_success_device_id', newDeviceId);
 
-        await db.collection('profiles').doc(cred.user.uid).update({
+        await promiseWithTimeout(db.collection('profiles').doc(cred.user.uid).update({
           device_session: newDeviceId
-        });
+        }), 4000).catch(() => {});
 
         navigate('courses-grid');
-      } catch (err) { alert('خطأ: ' + err.message); }
+      } catch (err) { alert('خطأ أثناء الدخول: ' + err.message); }
     }
 
     async function handleDoctorRegister(e) {
@@ -725,7 +824,7 @@
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, pass);
-        await db.collection('profiles').doc(cred.user.uid).set({
+        await promiseWithTimeout(db.collection('profiles').doc(cred.user.uid).set({
           full_name: name,
           email: email,
           phone: phone,
@@ -733,7 +832,7 @@
           role: 'doctor',
           is_approved: false,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        }), 6000);
         alert('تم إرسال طلب الانضمام وسيتم مراجعته واعتماده من المالك!');
         openDoctorTab('login');
       } catch (err) { alert('خطأ: ' + err.message); }
@@ -743,10 +842,18 @@
       e.preventDefault();
       const email = document.getElementById('docLoginEmail').value.trim();
       const pass = document.getElementById('docLoginPass').value;
+      const isOwner = email.toLowerCase() === OWNER_EMAIL.toLowerCase();
 
       try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        navigate('instructor-dash');
+        const cred = await auth.signInWithEmailAndPassword(email, pass);
+        if (isOwner) {
+          currentUser = { id: cred.user.uid, email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
+          localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+          updateUserUI();
+          navigate('instructor-dash');
+        } else {
+          navigate('instructor-dash');
+        }
       } catch (err) { alert('خطأ: ' + err.message); }
     }
 
@@ -786,20 +893,31 @@
       document.getElementById('platformSubjectTitle').innerText = data.title;
       const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
 
-      const lecsSnap = await db.collection('lectures').where('subject_id', '==', currentSubjectKey).get();
       const lecBox = document.getElementById('lectureList');
       const noteBox = document.getElementById('notesList');
-      lecBox.innerHTML = '';
-      noteBox.innerHTML = '';
+      lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">جاري التحميل...</p>';
+      noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">جاري التحميل...</p>';
 
-      if (lecsSnap.empty) {
-        lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
-      } else {
+      try {
+        const lecsSnap = await promiseWithTimeout(db.collection('lectures').where('subject_id', '==', currentSubjectKey).get(), 6000);
+        lecBox.innerHTML = '';
+        noteBox.innerHTML = '';
+
+        if (!lecsSnap || lecsSnap.empty) {
+          lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
+          noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد مذكرات مرفوعة حالياً.</p>';
+          return;
+        }
+
+        let hasLec = false;
+        let hasNote = false;
+
         lecsSnap.forEach(doc => {
           const l = doc.data();
           const can = l.is_free || isUnlocked;
 
           if (l.video_url) {
+            hasLec = true;
             const d = document.createElement('div');
             d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
             d.onclick = () => { if (can) playLecture(l); else alert('هذه المحاضرة مقفولة للمشتركين'); };
@@ -807,6 +925,7 @@
             lecBox.appendChild(d);
           }
           if (l.pdf_url) {
+            hasNote = true;
             const d = document.createElement('div');
             d.className = `p-2.5 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-rose-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
             d.onclick = () => { if (can) openPdfStudio(l); else alert('هذه المذكرة مقفولة للمشتركين'); };
@@ -814,6 +933,12 @@
             noteBox.appendChild(d);
           }
         });
+
+        if (!hasLec) lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
+        if (!hasNote) noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد مذكرات مرفوعة حالياً.</p>';
+      } catch (err) {
+        lecBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المحتوى.</p>';
+        noteBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المذكرات.</p>';
       }
     }
 
@@ -871,26 +996,168 @@
       alert('تم مسح المحفوظات.');
     }
 
+    // ========================================================
+    // محرك استوديو الـ PDF المطور للأجهزة اللوحية وأقلام التدوين
+    // ========================================================
     async function openPdfStudio(doc) {
       document.getElementById('videoContainerWrapper').classList.add('hidden');
       document.getElementById('pdfStudioContainer').classList.remove('hidden');
       document.getElementById('pdfFileName').innerText = doc.title;
+      pageDrawingsCache = {};
 
-      const loadingTask = pdfjsLib.getDocument(doc.pdf_url);
-      pdfDoc = await loadingTask.promise;
-      document.getElementById('pageCount').innerText = pdfDoc.numPages;
-      pdfPageNum = 1;
-      renderPdfPage(pdfPageNum);
+      try {
+        let pdfTargetUrl = doc.pdf_url;
+        // تجاوز مشاكل الـ CORS لروابط الـ PDF
+        if (pdfTargetUrl.startsWith('http') && !pdfTargetUrl.includes(window.location.hostname)) {
+          pdfTargetUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(pdfTargetUrl)}`;
+        }
+
+        const loadingTask = pdfjsLib.getDocument({
+          url: pdfTargetUrl,
+          cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+          cMapPacked: true,
+        });
+
+        pdfDoc = await loadingTask.promise;
+        document.getElementById('pageCount').innerText = pdfDoc.numPages;
+        pdfPageNum = 1;
+        renderPdfPage(pdfPageNum);
+      } catch(e) {
+        console.error("PDF loading error:", e);
+        // تجربة التحميل بالرابط المباشر
+        try {
+          const directTask = pdfjsLib.getDocument(doc.pdf_url);
+          pdfDoc = await directTask.promise;
+          document.getElementById('pageCount').innerText = pdfDoc.numPages;
+          pdfPageNum = 1;
+          renderPdfPage(pdfPageNum);
+        } catch(err2) {
+          alert('تعذر فتح ملف الـ PDF. تأكد من أن الرابط مباشر وينتهي بـ .pdf.');
+        }
+      }
     }
 
     async function renderPdfPage(num) {
+      if (!pdfDoc) return;
+      
+      // حفظ شخبطة الصفحة الحالية قبل الانتقال
+      saveCurrentPageDrawing();
+
       const page = await pdfDoc.getPage(num);
-      const viewport = page.getViewport({ scale: 1.3 });
-      const canvas = document.getElementById('pdfCanvas');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      const containerWidth = document.getElementById('pdfCanvasContainer').clientWidth - 40;
+      const unscaledViewport = page.getViewport({ scale: 1.0 });
+      const scale = Math.min(Math.max(containerWidth / unscaledViewport.width, 1.0), 2.0);
+      const viewport = page.getViewport({ scale: scale });
+
+      const pdfCanvas = document.getElementById('pdfCanvas');
+      const pdfCtx = pdfCanvas.getContext('2d');
+      pdfCanvas.height = viewport.height;
+      pdfCanvas.width = viewport.width;
+
+      const drawCanvas = document.getElementById('drawCanvas');
+      drawCanvas.height = viewport.height;
+      drawCanvas.width = viewport.width;
+      drawCtx = drawCanvas.getContext('2d');
+
+      // تهيئة طبقة الرسم التفاعلي
+      initTabletDrawingLayer(drawCanvas);
+
+      await page.render({ canvasContext: pdfCtx, viewport: viewport }).promise;
       document.getElementById('pageNum').innerText = num;
+
+      // استرجاع شخبطة الصفحة إذا كانت موجودة مسبقاً
+      restorePageDrawing(num);
+    }
+
+    function initTabletDrawingLayer(canvas) {
+      // دعم أحداث القلم واللمس والماوس (Pointer Events)
+      canvas.onpointerdown = (e) => {
+        isDrawing = true;
+        canvas.setPointerCapture(e.pointerId);
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        drawCtx.beginPath();
+        drawCtx.moveTo(x, y);
+
+        applyToolStyle();
+      };
+
+      canvas.onpointermove = (e) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (currentTool === 'eraser') {
+          drawCtx.clearRect(x - 12, y - 12, 24, 24);
+        } else {
+          drawCtx.lineTo(x, y);
+          drawCtx.stroke();
+        }
+      };
+
+      canvas.onpointerup = (e) => {
+        if (isDrawing) {
+          isDrawing = false;
+          drawCtx.closePath();
+          saveCurrentPageDrawing();
+        }
+      };
+
+      canvas.onpointercancel = () => { isDrawing = false; };
+    }
+
+    function applyToolStyle() {
+      if (!drawCtx) return;
+      drawCtx.lineCap = 'round';
+      drawCtx.lineJoin = 'round';
+
+      if (currentTool === 'pen') {
+        drawCtx.globalCompositeOperation = 'source-over';
+        drawCtx.strokeStyle = penColor;
+        drawCtx.lineWidth = penWidth;
+      } else if (currentTool === 'highlighter') {
+        drawCtx.globalCompositeOperation = 'source-over';
+        drawCtx.strokeStyle = 'rgba(250, 204, 21, 0.4)'; // أصفر شفاف تظليلي
+        drawCtx.lineWidth = 18;
+      }
+    }
+
+    function setToolMode(mode) {
+      currentTool = mode;
+      document.getElementById('toolPenBtn').className = mode === 'pen' ? 'bg-cyan-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1' : 'bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1';
+      document.getElementById('toolHighBtn').className = mode === 'highlighter' ? 'bg-amber-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1' : 'bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1';
+      document.getElementById('toolEraserBtn').className = mode === 'eraser' ? 'bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1' : 'bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1';
+    }
+
+    function setPenColor(color) {
+      penColor = color;
+      setToolMode('pen');
+    }
+
+    function clearCurrentPageDrawings() {
+      const drawCanvas = document.getElementById('drawCanvas');
+      if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+      delete pageDrawingsCache[pdfPageNum];
+    }
+
+    function saveCurrentPageDrawing() {
+      const drawCanvas = document.getElementById('drawCanvas');
+      if (drawCanvas && drawCanvas.width > 0) {
+        pageDrawingsCache[pdfPageNum] = drawCanvas.toDataURL();
+      }
+    }
+
+    function restorePageDrawing(num) {
+      if (pageDrawingsCache[num]) {
+        const img = new Image();
+        img.src = pageDrawingsCache[num];
+        img.onload = () => {
+          if (drawCtx) drawCtx.drawImage(img, 0, 0);
+        };
+      }
     }
 
     function prevPdfPage() { if (pdfPageNum > 1) { pdfPageNum--; renderPdfPage(pdfPageNum); } }
@@ -925,16 +1192,24 @@
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
-    // 1. سجل الطلاب مع زر فك قفل الجهاز (Reset Device)
     async function loadAllFirebaseUsers() {
       const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">جاري جلب السجلات من Firebase...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Firebase...</td></tr>';
 
-      const snap = await db.collection('profiles').get();
-      allPlatformUsers = [];
-      snap.forEach(doc => allPlatformUsers.push({ id: doc.id, ...doc.data() }));
+      try {
+        const snap = await promiseWithTimeout(db.collection('profiles').get(), 7000);
+        allPlatformUsers = [];
+        snap.forEach(doc => allPlatformUsers.push({ id: doc.id, ...doc.data() }));
 
-      renderUsersTable(allPlatformUsers);
+        if (allPlatformUsers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">لا يوجد أي حسابات مسجلة حتى الآن.</td></tr>';
+          return;
+        }
+
+        renderUsersTable(allPlatformUsers);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-400 font-bold">تعذر الاتصال بـ Firestore: ${err.message}</td></tr>`;
+      }
     }
 
     function renderUsersTable(list) {
@@ -959,10 +1234,12 @@
 
     async function resetStudentDevice(userId, studentName) {
       if (!confirm(`هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`)) return;
-      await db.collection('profiles').doc(userId).update({
-        device_session: null
-      });
-      alert('تمت إعادة تعيين الجهاز بنجاح! يستطيع الطالب الآن الدخول من جهازه الجديد.');
+      try {
+        await promiseWithTimeout(db.collection('profiles').doc(userId).update({
+          device_session: null
+        }), 5000);
+        alert('تمت إعادة تعيين الجهاز بنجاح!');
+      } catch (err) { alert('فشل إعادة التعيين: ' + err.message); }
     }
 
     function filterUsersTable() {
@@ -976,6 +1253,7 @@
     }
 
     function exportUsersToCSV() {
+      if (allPlatformUsers.length === 0) return alert('لا توجد بيانات مسجلة للتصدير');
       let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة\n";
       allPlatformUsers.forEach(u => {
         csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}"\n`;
@@ -987,78 +1265,87 @@
       link.click();
     }
 
-    // 2. إدارة طلبات التحويل المالي
     async function loadPendingEnrollments() {
       const tbody = document.getElementById('enrollmentsTableBody');
-      tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">جاري جلب طلبات التحويل...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات التحويل...</td></tr>';
 
-      const snap = await db.collection('enrollments').where('status', '==', 'pending').get();
-      if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">لا توجد طلبات تحويل معلقة حالياً</td></tr>';
-        return;
+      try {
+        const snap = await promiseWithTimeout(db.collection('enrollments').where('status', '==', 'pending').get(), 6000);
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">لا توجد طلبات تحويل معلقة حالياً</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        snap.forEach(doc => {
+          const o = doc.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-4 font-bold text-white">${o.student_name || 'طالب'}</td>
+            <td class="p-4">${o.phone || '--'}</td>
+            <td class="p-4 font-bold text-cyan-400">${ACADEMY_DATA[o.subject_id]?.title || o.subject_id}</td>
+            <td class="p-4 font-mono text-amber-300">${o.sender_number || '--'}</td>
+            <td class="p-4 text-center">
+              <button onclick="approveEnrollment('${doc.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل المادة ✅</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-400 font-bold">تعذر تحميل الطلبات: ${err.message}</td></tr>`;
       }
-
-      tbody.innerHTML = '';
-      snap.forEach(doc => {
-        const o = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-4 font-bold text-white">${o.student_name || 'طالب'}</td>
-          <td class="p-4">${o.phone || '--'}</td>
-          <td class="p-4 font-bold text-cyan-400">${ACADEMY_DATA[o.subject_id]?.title || o.subject_id}</td>
-          <td class="p-4 font-mono text-amber-300">${o.sender_number || '--'}</td>
-          <td class="p-4 text-center">
-            <button onclick="approveEnrollment('${doc.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل المادة ✅</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
     }
 
     async function approveEnrollment(docId) {
-      await db.collection('enrollments').doc(docId).update({ status: 'active' });
-      alert('تم تفعيل المادة للطالب بنجاح!');
-      loadPendingEnrollments();
+      try {
+        await promiseWithTimeout(db.collection('enrollments').doc(docId).update({ status: 'active' }), 5000);
+        alert('تم تفعيل المادة للطالب بنجاح!');
+        loadPendingEnrollments();
+      } catch (err) { alert('خطأ في التفعيل: ' + err.message); }
     }
 
-    // 3. إدارة واعتماد المحاضرين
     async function loadPendingDoctors() {
       const tbody = document.getElementById('doctorsApprovalTableBody');
-      tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">جاري جلب طلبات المحاضرين...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-purple-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات المحاضرين...</td></tr>';
 
-      const snap = await db.collection('profiles').where('role', '==', 'doctor').where('is_approved', '==', false).get();
-      if (snap.empty) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
-        return;
+      try {
+        const snap = await promiseWithTimeout(db.collection('profiles').where('role', '==', 'doctor').where('is_approved', '==', false).get(), 6000);
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-4 font-bold text-white">${d.full_name || '--'}</td>
+            <td class="p-4">${d.phone || '--'} <span class="block text-slate-500 text-[10px]">${d.email || ''}</span></td>
+            <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
+            <td class="p-4 text-center">
+              <button onclick="approveDoctor('${doc.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-400 font-bold">تعذر تحميل المحاضرين: ${err.message}</td></tr>`;
       }
-
-      tbody.innerHTML = '';
-      snap.forEach(doc => {
-        const d = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-4 font-bold text-white">${d.full_name || '--'}</td>
-          <td class="p-4">${d.phone || '--'} <span class="block text-slate-500 text-[10px]">${d.email || ''}</span></td>
-          <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
-          <td class="p-4 text-center">
-            <button onclick="approveDoctor('${doc.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
     }
 
     async function approveDoctor(docId) {
-      await db.collection('profiles').doc(docId).update({ is_approved: true });
-      alert('تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!');
-      loadPendingDoctors();
+      try {
+        await promiseWithTimeout(db.collection('profiles').doc(docId).update({ is_approved: true }), 5000);
+        alert('تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!');
+        loadPendingDoctors();
+      } catch (err) { alert('خطأ في الاعتماد: ' + err.message); }
     }
 
-    // نشر محاضرة فيديو (مع معالجة الأخطاء والتنبيهات المباشرة)
     async function handleUploadLecture(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadLectureSubmit');
-      const originalText = btn.innerHTML;
+      const originalText = 'نشر المحاضرة الآن 🚀';
 
       const sub = document.getElementById('uploadSubjectSelect').value;
       const title = document.getElementById('lectureTitle').value.trim();
@@ -1066,23 +1353,20 @@
       const url = document.getElementById('lectureVideoUrl').value.trim();
       const isFree = document.getElementById('lectureType').value === 'true';
 
-      if (!title || !url) {
-        alert('يرجى ملء جميع الحقول المطلوبة');
-        return;
-      }
+      if (!title || !url) return alert('يرجى ملء جميع الحقول المطلوبة');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
 
       try {
-        await db.collection('lectures').add({
+        await promiseWithTimeout(db.collection('lectures').add({
           subject_id: sub,
           title: title,
           duration: duration || 'غير محدد',
           video_url: url,
           is_free: isFree,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        }), 8000);
 
         alert('✅ تم نشر المحاضرة بنجاح على المنصة!');
         document.getElementById('lectureTitle').value = '';
@@ -1090,49 +1374,43 @@
         document.getElementById('lectureVideoUrl').value = '';
         loadGlobalStats();
       } catch (err) {
-        console.error("Upload Lecture Error:", err);
-        alert('❌ حدث خطأ أثناء النشر: ' + err.message + '\n\nتأكد من فتح صلاحيات قواعد Firestore (Rules) إلى allow read, write: if true;');
+        alert('❌ حدث خطأ: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     }
 
-    // رفع مذكرة شرح PDF (مع معالجة الأخطاء والتنبيهات المباشرة)
     async function handleUploadPdf(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadPdfSubmit');
-      const originalText = btn.innerHTML;
+      const originalText = 'إضافة المذكرة للمادة ⚡';
 
       const sub = document.getElementById('pdfSubjectSelect').value;
       const title = document.getElementById('pdfDocTitle').value.trim();
       const url = document.getElementById('pdfDocUrl').value.trim();
       const isFree = document.getElementById('pdfDocType').value === 'true';
 
-      if (!title || !url) {
-        alert('يرجى ملء جميع الحقول المطلوبة');
-        return;
-      }
+      if (!title || !url) return alert('يرجى ملء جميع الحقول المطلوبة');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإضافة...';
 
       try {
-        await db.collection('lectures').add({
+        await promiseWithTimeout(db.collection('lectures').add({
           subject_id: sub,
           title: title,
           pdf_url: url,
           is_free: isFree,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        }), 8000);
 
         alert('✅ تم إضافة مذكرة الـ PDF بنجاح وأصبحت متاحة للطلاب!');
         document.getElementById('pdfDocTitle').value = '';
         document.getElementById('pdfDocUrl').value = '';
         loadGlobalStats();
       } catch (err) {
-        console.error("Upload PDF Error:", err);
-        alert('❌ حدث خطأ أثناء إضافة المذكرة: ' + err.message + '\n\nتأكد من فتح صلاحيات قواعد Firestore (Rules) إلى allow read, write: if true;');
+        alert('❌ حدث خطأ: ' + err.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -1140,18 +1418,29 @@
     }
 
     function updateUserUI() {
-      if (currentUser) {
-        document.getElementById('authButtonsDesktop').classList.add('hidden');
-        document.getElementById('authButtonsMobile').classList.add('hidden');
-        document.getElementById('userProfileTagDesktop').classList.remove('hidden');
-        document.getElementById('userProfileTagMobile').classList.remove('hidden');
-        document.getElementById('userNameBadgeDesktop').innerText = `${currentUser.full_name || 'حسابي'} ⚙️`;
-        document.getElementById('userNameBadgeMobile').innerText = `${currentUser.full_name || 'حسابي'} ⚙️`;
+      const authDesktop = document.getElementById('authButtonsDesktop');
+      const authMobile = document.getElementById('authButtonsMobile');
+      const userTagDesktop = document.getElementById('userProfileTagDesktop');
+      const userTagMobile = document.getElementById('userProfileTagMobile');
+      const badgeDesktop = document.getElementById('userNameBadgeDesktop');
+      const badgeMobile = document.getElementById('userNameBadgeMobile');
+
+      if (currentUser && currentUser.full_name) {
+        if (authDesktop) authDesktop.classList.add('hidden');
+        if (authMobile) authMobile.classList.add('hidden');
+        
+        if (userTagDesktop) userTagDesktop.classList.remove('hidden');
+        if (userTagMobile) userTagMobile.classList.remove('hidden');
+        
+        const label = currentUser.role === 'super_admin' ? `${currentUser.full_name} ⚙️` : currentUser.full_name;
+        if (badgeDesktop) badgeDesktop.innerText = label;
+        if (badgeMobile) badgeMobile.innerText = label;
       } else {
-        document.getElementById('authButtonsDesktop').classList.remove('hidden');
-        document.getElementById('authButtonsMobile').classList.remove('hidden');
-        document.getElementById('userProfileTagDesktop').classList.add('hidden');
-        document.getElementById('userProfileTagMobile').classList.add('hidden');
+        if (authDesktop) authDesktop.classList.remove('hidden');
+        if (authMobile) authMobile.classList.remove('hidden');
+        
+        if (userTagDesktop) userTagDesktop.classList.add('hidden');
+        if (userTagMobile) userTagMobile.classList.add('hidden');
       }
     }
 
@@ -1161,9 +1450,9 @@
       if (!localDev) return;
 
       try {
-        const doc = await db.collection('profiles').doc(currentUser.id).get();
+        const doc = await promiseWithTimeout(db.collection('profiles').doc(currentUser.id).get(), 3000);
         if (doc.exists && doc.data().device_session && doc.data().device_session !== localDev) {
-          alert('⚠️ تنبيه أمني: تم تسجيل الدخول إلى حسابك من جهاز آخر. تم إنهاء الجلسة لحماية المحتوى.');
+          alert('⚠️ تنبيه أمني: تم تسجيل الدخول إلى حسابك من جهاز آخر.');
           handleLogout();
         }
       } catch(e) {}
@@ -1172,8 +1461,11 @@
     async function handleLogout() {
       await auth.signOut();
       localStorage.removeItem('dr_success_device_id');
+      localStorage.removeItem('dr_success_cached_user');
+      localStorage.removeItem('dr_success_cached_subs');
       currentUser = null;
       userUnlockedSubjects = [];
+      updateUserUI();
       navigate('landing');
     }
 
