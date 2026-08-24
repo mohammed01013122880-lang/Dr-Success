@@ -167,7 +167,6 @@
           </div>
         </div>
 
-        <!-- قسم آراء وتقييمات الطلاب الفعلية (مجهز لوضع الداتا الخاصة بك) -->
         <div class="space-y-6">
           <div class="text-center md:text-right">
             <h3 class="text-xl font-black text-white flex items-center justify-center md:justify-start gap-2">
@@ -175,10 +174,7 @@
             </h3>
             <p class="text-xs text-slate-400 mt-1">تجارب حقيقية لطلاب الدفعات السابقة في المواد والشروحات</p>
           </div>
-          
-          <div id="studentReviewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- سيتم ملء الآراء هنا تلقائياً فور إرسالك لها -->
-          </div>
+          <div id="studentReviewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
 
       </div>
@@ -383,7 +379,6 @@
           </div>
 
           <div class="w-full max-w-4xl bg-[#111a2e] border border-slate-800 rounded-2xl p-3 mt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <!-- أزرار السرعات حتى 4x مع التظليل الديناميكي -->
             <div class="flex items-center gap-1 bg-[#090e1a] p-1 rounded-xl border border-slate-800 overflow-x-auto max-w-full">
               <span class="text-slate-400 text-[10px] font-bold px-1 whitespace-nowrap">السرعة:</span>
               <button onclick="setPlayerSpeed(1.0, this)" class="speed-btn px-2 py-1 rounded-lg bg-cyan-600 text-white font-black text-[11px]">1x</button>
@@ -795,8 +790,11 @@
         const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) throw error;
         if (data.user) {
+          const newSessionId = 'dev_' + Math.random().toString(36).substring(2, 12) + Date.now();
+          localStorage.setItem('my_device_session', newSessionId);
+
           await supabaseClient.from('profiles').upsert([{
-            id: data.user.id, full_name: fullName, phone: phone, university: university, faculty: faculty, role: 'student', is_approved: true, email: email
+            id: data.user.id, full_name: fullName, phone: phone, university: university, faculty: faculty, role: 'student', is_approved: true, email: email, device_session: newSessionId
           }]);
           await loadUserProfile(data.user.id, email);
           alert("تم إنشاء حسابك بنجاح!");
@@ -813,6 +811,13 @@
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        
+        // نظام قفل الحساب على جهاز واحد: إنشاء معرف جلسة جديد
+        const newSessionId = 'dev_' + Math.random().toString(36).substring(2, 12) + Date.now();
+        localStorage.setItem('my_device_session', newSessionId);
+
+        await supabaseClient.from('profiles').update({ device_session: newSessionId }).eq('id', data.user.id);
+
         await loadUserProfile(data.user.id, email);
         navigate('courses-grid');
       } catch (err) { alert("خطأ: " + err.message); }
@@ -865,7 +870,7 @@
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    // تشغيل المحاضرة
+    // المشغل
     async function playLecture(lec) {
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
@@ -920,7 +925,6 @@
       }
     }
 
-    // نظام سرعة الفيديو
     function setPlayerSpeed(speed, btnElement) {
       if (currentVideoElement) {
         currentVideoElement.playbackRate = speed;
@@ -933,7 +937,6 @@
       }
     }
 
-    // تتبع التقدم والإنجاز في المحاضرات
     function getCompletedLectures() {
       const key = `completed_lecs_${currentUser?.id || 'guest'}`;
       return JSON.parse(localStorage.getItem(key) || '[]');
@@ -987,7 +990,6 @@
       document.getElementById('progressBarFill').style.width = `${percent}%`;
     }
 
-    // إدارة التنزيلات الأوفلاين
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) { alert('اختر محاضرة أولاً!'); return; }
       const btn = document.getElementById('btnDownloadOffline');
@@ -1088,7 +1090,6 @@
       else document.exitFullscreen();
     }
 
-    // استوديو PDF
     async function openPdfStudio(doc) {
       document.getElementById('videoContainerWrapper').classList.add('hidden');
       document.getElementById('pdfStudioContainer').classList.remove('hidden');
@@ -1401,10 +1402,31 @@
       }
     }
 
+    // مراقب الجلسة الحي: فحص تطابق الجهاز وطرد الحسابات المتعددة فورياً
+    setInterval(async () => {
+      if (!currentUser || currentUser.role === 'super_admin') return;
+      const localSession = localStorage.getItem('my_device_session');
+      if (!localSession) return;
+
+      try {
+        const { data } = await supabaseClient
+          .from('profiles')
+          .select('device_session')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (data && data.device_session && data.device_session !== localSession) {
+          alert('⚠️ تنبيه أمني: تم تسجيل الدخول إلى هذا الحساب من جهاز آخر. تم إنهاء الجلسة لحماية بياناتك.');
+          handleLogout();
+        }
+      } catch (e) {}
+    }, 4000);
+
     async function handleLogout() {
       try { await supabaseClient.auth.signOut(); } catch(e) {}
       localStorage.removeItem('dr_success_cached_user');
       localStorage.removeItem('dr_success_cached_subjects');
+      localStorage.removeItem('my_device_session');
       currentUser = null;
       userUnlockedSubjects = [];
       navigate('landing');
