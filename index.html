@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr Success Academy | كورسات طب الأسنان</title>
+    <title>Dr Success Academy | منصة طب الأسنان</title>
     <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -32,79 +32,186 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <button id="btnCoursesGrid" onclick="navigate('courses-grid')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5">
-                <i class="fa-solid fa-layer-group"></i> الكورسات المتاحة
+            <button onclick="navigate('courses-grid')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-layer-group"></i> الكورسات
             </button>
-            <button id="btnInstructorNav" onclick="navigate('instructor-login')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center gap-1.5">
-                <i class="fa-solid fa-user-doctor"></i> لوحة المحاضر
-            </button>
-            <div id="userProfileTag" class="hidden text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-cyan-300 font-bold"></div>
+            <div id="authButtons" class="flex items-center gap-2">
+                <button onclick="navigate('student-auth')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-cyan-600 text-white shadow-lg shadow-cyan-600/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-graduation-cap"></i> بوابة الطالب
+                </button>
+                <button onclick="navigate('instructor-auth')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow-lg shadow-purple-600/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-doctor"></i> بوابة المحاضر
+                </button>
+            </div>
+            <div id="userProfileTag" class="hidden flex items-center gap-2">
+                <span id="userNameBadge" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-cyan-300 font-bold"></span>
+                <button onclick="logout()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl hover:bg-rose-500/20 font-bold">خروج</button>
+            </div>
         </div>
     </header>
 
-    <!-- Main Container -->
+    <!-- Main Body Container -->
     <main class="flex-1 flex overflow-hidden">
 
-        <!-- ================= 1. تسجيل الطالب ================= -->
-        <section id="viewStudentRegister" class="w-full flex items-center justify-center p-6 overflow-y-auto">
+        <!-- ================= 1. شاشة الطالب (دخول / حساب جديد) ================= -->
+        <section id="viewStudentAuth" class="w-full flex items-center justify-center p-6 overflow-y-auto">
             <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl shadow-cyan-950/40 relative">
-                <div class="text-center mb-6">
-                    <div class="w-14 h-14 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-cyan-500/20">
-                        <i class="fa-solid fa-address-card"></i>
-                    </div>
-                    <h2 class="text-2xl font-black text-white">تسجيل حساب طالب جديد</h2>
-                    <p class="text-xs text-slate-400 mt-1">سجل بياناتك لاستعراض الكورسات والمعاينات المجانية</p>
+                
+                <!-- تبديل تسجيل الدخول / حساب جديد -->
+                <div class="flex bg-[#090e1a] p-1 rounded-2xl mb-6 border border-slate-800 text-xs font-bold">
+                    <button id="tabStudentLogin" onclick="toggleStudentAuth('login')" class="flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow">
+                        تسجيل الدخول
+                    </button>
+                    <button id="tabStudentRegister" onclick="toggleStudentAuth('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">
+                        إنشاء حساب جديد
+                    </button>
                 </div>
 
-                <form onsubmit="handleRegister(event)" class="space-y-4">
+                <!-- نموذج 1: تسجيل دخول الطالب -->
+                <form id="formStudentLogin" onsubmit="handleStudentLogin(event)" class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-black text-white">مرحباً بك مجدداً</h2>
+                        <p class="text-xs text-slate-400 mt-1">سجل دخولك لمتابعة محاضراتك المفعلة</p>
+                    </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">الاسم ثلاثي</label>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+                        <input type="email" id="loginStudentEmail" required placeholder="student@example.com" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+                        <input type="password" id="loginStudentPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-cyan-600/30 text-xs">
+                        تسجيل الدخول ومتابعة المنهج 🚀
+                    </button>
+                </form>
+
+                <!-- نموذج 2: تسجيل حساب طالب جديد -->
+                <form id="formStudentRegister" onsubmit="handleStudentRegister(event)" class="space-y-3.5 hidden">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-black text-white">إنشاء حساب طالب جديد</h2>
+                        <p class="text-xs text-slate-400 mt-1">سجل بياناتك للوصول للمعاينات وبنوك الأسئلة</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
                         <input type="text" id="regName" required placeholder="مثال: أحمد محمد علي" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1.5">البريد الإلكتروني</label>
-                            <input type="email" id="regEmail" required placeholder="student@example.com" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                            <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+                            <input type="email" id="regEmail" required placeholder="student@example.com" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1.5">رقم الواتساب</label>
-                            <input type="tel" id="regPhone" required placeholder="010XXXXXXXX" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                            <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+                            <input type="password" id="regPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">رقم الواتساب</label>
+                        <input type="tel" id="regPhone" required placeholder="010XXXXXXXX" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1.5">الجامعة</label>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">الجامعة</label>
                             <select id="regUniv" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500 font-semibold">
                                 <option value="كفر الشيخ الحكومية">جامعة كفر الشيخ الحكومية</option>
                                 <option value="كفر الشيخ الأهلية">جامعة كفر الشيخ الأهلية</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-1.5">الكلية</label>
-                            <input type="text" value="كلية طب الأسنان" readonly class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-cyan-400 font-bold cursor-not-allowed">
+                            <label class="block text-xs font-bold text-slate-300 mb-1">الكلية</label>
+                            <input type="text" value="طب الأسنان" readonly class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-cyan-400 font-bold cursor-not-allowed">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1.5">الفرقة الدراسية</label>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">الفرقة الدراسية</label>
                         <select id="regYear" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
                             <option value="الفرقة الأولى">الفرقة الأولى</option>
                             <option value="الفرقة الثانية">الفرقة الثانية</option>
                             <option value="الفرقة الثالثة">الفرقة الثالثة</option>
                         </select>
                     </div>
-
-                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-cyan-600/30 text-sm mt-2">
-                        استعراض كورسات الترم 🚀
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-cyan-600/30 text-xs mt-2">
+                        إنشاء الحساب ودخول المنصة 🚀
                     </button>
                 </form>
+
             </div>
         </section>
 
-        <!-- ================= 2. شبكة الكروت البصرية للكورسات (Canva-Style Cards) ================= -->
+        <!-- ================= 2. شاشة المحاضر (دخول / تسجيل محاضر جديد) ================= -->
+        <section id="viewInstructorAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
+            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+                
+                <div class="flex bg-[#090e1a] p-1 rounded-2xl mb-6 border border-slate-800 text-xs font-bold">
+                    <button id="tabDocLogin" onclick="toggleDoctorAuth('login')" class="flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow">
+                        تسجيل دخول المحاضر
+                    </button>
+                    <button id="tabDocRegister" onclick="toggleDoctorAuth('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white">
+                        طلب انضمام محاضر
+                    </button>
+                </div>
+
+                <!-- نموذج دخول دكتور مسجل -->
+                <form id="formDoctorLogin" onsubmit="handleDoctorLogin(event)" class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-black text-white">بوابة المحاضرين</h2>
+                        <p class="text-xs text-slate-400 mt-1">سجل دخولك لإدارة الطلاب والمحتوى وتفعيل الاشتراكات</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني المعتمد</label>
+                        <input type="email" id="docLoginEmail" required placeholder="doctor@drsuccess.academy" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+                        <input type="password" id="docLoginPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-purple-600/30 text-xs">
+                        دخول لوحة التحكم والاعتمادات
+                    </button>
+                </form>
+
+                <!-- نموذج تسجيل دكتور جديد -->
+                <form id="formDoctorRegister" onsubmit="handleDoctorRegister(event)" class="space-y-3.5 hidden">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-black text-white">طلب انضمام عضو هيئة تدريس</h2>
+                        <p class="text-xs text-slate-400 mt-1">سجل بياناتك لإضافة مادتك ضمن منصة Dr Success</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">الاسم واللقب الأكاديمي</label>
+                        <input type="text" id="newDocName" required placeholder="مثال: د. مصطفى الشامي" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">المادة الأكاديمية</label>
+                            <input type="text" id="newDocSubject" required placeholder="مثال: Pathology" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">رقم الهاتف للتواصل</label>
+                            <input type="tel" id="newDocPhone" required placeholder="010XXXXXXXX" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+                        <input type="email" id="newDocEmail" required placeholder="doc@academy.com" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور المقترحة</label>
+                        <input type="password" id="newDocPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black py-3 rounded-xl transition shadow-lg text-xs mt-2">
+                        إرسال طلب الانضمام
+                    </button>
+                </form>
+
+            </div>
+        </section>
+
+        <!-- ================= 3. شبكة الكروت البصرية للمواد ================= -->
         <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
             <div class="max-w-7xl mx-auto space-y-8">
                 
-                <!-- بانر الباقة الشاملة العلوي -->
+                <!-- بانر الباقة الشاملة -->
                 <div class="bg-gradient-to-r from-blue-900/60 via-indigo-900/50 to-cyan-900/60 border border-cyan-500/40 rounded-3xl p-6 lg:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
                     <div class="space-y-2 text-center md:text-right">
                         <div class="inline-flex items-center gap-2 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-3 py-1 rounded-full text-xs font-black">
@@ -122,7 +229,6 @@
                     </div>
                 </div>
 
-                <!-- عنوان شبكة الكروت -->
                 <div>
                     <h3 class="text-xl font-black text-white flex items-center gap-2">
                         <i class="fa-solid fa-shapes text-cyan-400"></i> مواد الترم الدراسي
@@ -130,15 +236,11 @@
                     <p class="text-xs text-slate-400 mt-1">اختر المادة للاستعراض أو الاشتراك المنفرد بسعر 400 ج.م</p>
                 </div>
 
-                <!-- شبكة الكروت البصرية -->
-                <div id="cardsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- تتولد الكروت برمجياً -->
-                </div>
-
+                <div id="cardsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
         </section>
 
-        <!-- ================= 3. شاشة المنهج والشريط الجانبي للمادة المختارة ================= -->
+        <!-- ================= 4. واجهة استعراض المادة والشريط الجانبي ================= -->
         <section id="viewStudentPlatform" class="hidden w-full flex flex-1 overflow-hidden">
             <aside class="w-88 bg-[#0f172a] border-l border-slate-800 flex flex-col flex-shrink-0 z-10 shadow-2xl">
                 <div class="p-4 border-b border-slate-800 bg-[#111a2e] flex items-center justify-between">
@@ -155,14 +257,12 @@
                         </span>
                         <div id="lectureList" class="space-y-2"></div>
                     </div>
-
                     <div>
                         <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
                             <i class="fa-solid fa-file-pdf text-blue-400"></i> المذكرات & PDF
                         </span>
                         <div id="notesList" class="space-y-2"></div>
                     </div>
-
                     <div>
                         <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
                             <i class="fa-solid fa-brain text-purple-400"></i> بنك الأسئلة والكويزات
@@ -186,35 +286,7 @@
             </section>
         </section>
 
-        <!-- ================= 4. بوابة المحاضر ولوحة الإدارة ================= -->
-        <section id="viewInstructorLogin" class="hidden w-full flex items-center justify-center p-6">
-            <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl">
-                <div class="text-center mb-6">
-                    <div class="w-14 h-14 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 border border-purple-500/20">
-                        <i class="fa-solid fa-user-shield"></i>
-                    </div>
-                    <h2 class="text-xl font-black text-white">بوابة دخول المحاضر</h2>
-                    <p class="text-xs text-slate-400 mt-1">لتفعيل اشتراكات الطلاب يدوياً بعد مراجعة الإيصالات</p>
-                </div>
-
-                <form onsubmit="handleDoctorLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني المعتمد</label>
-                        <input type="email" id="docEmail" required placeholder="doctor@drsuccess.academy" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
-                        <input type="password" id="docPass" required placeholder="••••••••" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500">
-                    </div>
-
-                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-purple-600/30 text-xs">
-                        دخول لوحة الاعتمادات
-                    </button>
-                </form>
-            </div>
-        </section>
-
-        <!-- لوحة التحكم -->
+        <!-- ================= 5. لوحة تحكم المحاضر ================= -->
         <section id="viewInstructorDash" class="hidden w-full flex-1 p-8 overflow-y-auto custom-scrollbar">
             <div class="max-w-6xl mx-auto space-y-6">
                 <div class="flex items-center justify-between bg-[#111a2e] p-6 rounded-3xl border border-slate-800">
@@ -222,7 +294,7 @@
                         <span>لوحة تفعيل الاشتراكات</span>
                         <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold"></span>
                     </h2>
-                    <button onclick="navigate('instructor-login')" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl">خروج</button>
+                    <button onclick="logout()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl">خروج</button>
                 </div>
 
                 <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden">
@@ -381,61 +453,131 @@
             }
         };
 
-        let studentUser = {
-            name: 'طالب طب أسنان',
-            univ: 'كفر الشيخ الحكومية',
-            unlocked: []
-        };
-
-        let pendingOrders = [];
+        let currentUser = JSON.parse(localStorage.getItem('ds_user')) || null;
+        let pendingOrders = JSON.parse(localStorage.getItem('ds_orders')) || [];
         let currentSubjectKey = 'dental_anatomy';
         let activeModalKey = 'dental_anatomy';
 
         function navigate(view) {
-            document.getElementById('viewStudentRegister').classList.add('hidden');
+            document.getElementById('viewStudentAuth').classList.add('hidden');
+            document.getElementById('viewInstructorAuth').classList.add('hidden');
             document.getElementById('viewCoursesGrid').classList.add('hidden');
             document.getElementById('viewStudentPlatform').classList.add('hidden');
-            document.getElementById('viewInstructorLogin').classList.add('hidden');
             document.getElementById('viewInstructorDash').classList.add('hidden');
 
-            if (view === 'courses-grid') {
+            if (view === 'student-auth') {
+                document.getElementById('viewStudentAuth').classList.remove('hidden');
+            } else if (view === 'instructor-auth') {
+                document.getElementById('viewInstructorAuth').classList.remove('hidden');
+            } else if (view === 'courses-grid') {
                 document.getElementById('viewCoursesGrid').classList.remove('hidden');
                 renderCoursesGrid();
             } else if (view === 'course-view') {
                 document.getElementById('viewStudentPlatform').classList.remove('hidden');
                 renderCoursePlatform();
-            } else if (view === 'instructor-login') {
-                document.getElementById('viewInstructorLogin').classList.remove('hidden');
             } else if (view === 'instructor-dash') {
                 document.getElementById('viewInstructorDash').classList.remove('hidden');
                 renderInstructorDash();
             }
+            updateUserUI();
         }
 
-        function handleRegister(e) {
+        function toggleStudentAuth(mode) {
+            const isLogin = mode === 'login';
+            document.getElementById('formStudentLogin').classList.toggle('hidden', !isLogin);
+            document.getElementById('formStudentRegister').classList.toggle('hidden', isLogin);
+            document.getElementById('tabStudentLogin').className = isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
+            document.getElementById('tabStudentRegister').className = !isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-cyan-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
+        }
+
+        function toggleDoctorAuth(mode) {
+            const isLogin = mode === 'login';
+            document.getElementById('formDoctorLogin').classList.toggle('hidden', !isLogin);
+            document.getElementById('formDoctorRegister').classList.toggle('hidden', isLogin);
+            document.getElementById('tabDocLogin').className = isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
+            document.getElementById('tabDocRegister').className = !isLogin ? 'flex-1 py-2.5 rounded-xl transition bg-purple-600 text-white shadow' : 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white';
+        }
+
+        function handleStudentRegister(e) {
             e.preventDefault();
-            studentUser.name = document.getElementById('regName').value;
-            studentUser.univ = document.getElementById('regUniv').value;
-
-            document.getElementById('userProfileTag').classList.remove('hidden');
-            document.getElementById('userProfileTag').innerHTML = `<i class="fa-solid fa-user-graduate ml-1"></i> ${studentUser.name} (${studentUser.univ})`;
-
+            currentUser = {
+                role: 'student',
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                phone: document.getElementById('regPhone').value,
+                univ: document.getElementById('regUniv').value,
+                year: document.getElementById('regYear').value,
+                unlocked: []
+            };
+            localStorage.setItem('ds_user', JSON.stringify(currentUser));
             navigate('courses-grid');
         }
 
-        // رسم كروت الكورسات البصرية الشبيهة بكانفا
+        function handleStudentLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginStudentEmail').value;
+            currentUser = {
+                role: 'student',
+                name: email.split('@')[0],
+                email: email,
+                univ: 'كفر الشيخ الحكومية',
+                unlocked: []
+            };
+            localStorage.setItem('ds_user', JSON.stringify(currentUser));
+            navigate('courses-grid');
+        }
+
+        function handleDoctorLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('docLoginEmail').value;
+            let name = "د. محمد رجب";
+            if (email.includes('fawzy')) name = "د. محمد فوزي";
+            else if (email.includes('gammal')) name = "د. محمد الجمال";
+            else if (email.includes('taher')) name = "د. أحمد الطاهر";
+
+            currentUser = { role: 'doctor', name: name, email: email };
+            localStorage.setItem('ds_user', JSON.stringify(currentUser));
+            document.getElementById('docTag').innerText = name;
+            navigate('instructor-dash');
+        }
+
+        function handleDoctorRegister(e) {
+            e.preventDefault();
+            alert('تم استلام طلب انضمامك كمحاضر بنجاح! سيتم مراجعة الطلب والتواصل معك.');
+            toggleDoctorAuth('login');
+        }
+
+        function updateUserUI() {
+            const authButtons = document.getElementById('authButtons');
+            const profileTag = document.getElementById('userProfileTag');
+            if (currentUser) {
+                authButtons.classList.add('hidden');
+                profileTag.classList.remove('hidden');
+                document.getElementById('userNameBadge').innerText = `${currentUser.name} (${currentUser.role === 'doctor' ? 'محاضر' : 'طالب'})`;
+            } else {
+                authButtons.classList.remove('hidden');
+                profileTag.classList.add('hidden');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('ds_user');
+            currentUser = null;
+            navigate('courses-grid');
+        }
+
         function renderCoursesGrid() {
             const container = document.getElementById('cardsGridContainer');
             container.innerHTML = '';
+            const unlockedList = currentUser ? (currentUser.unlocked || []) : [];
 
             Object.values(ACADEMY_DATA).forEach(course => {
-                const isUnlocked = studentUser.unlocked.includes(course.id) || studentUser.unlocked.includes('all');
+                const isUnlocked = unlockedList.includes(course.id) || unlockedList.includes('all');
                 const card = document.createElement('div');
                 card.className = "course-card bg-[#111a2e] border border-slate-800 hover:border-cyan-500/50 rounded-3xl overflow-hidden shadow-xl transition duration-300 flex flex-col justify-between group";
 
                 card.innerHTML = `
                     <div>
-                        <!-- صورة المادة العلوية مع التدرج والأيقونة -->
                         <div class="relative h-44 w-full overflow-hidden">
                             <img src="${course.image}" alt="${course.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#111a2e] via-transparent to-black/40"></div>
@@ -447,7 +589,6 @@
                             </span>
                         </div>
 
-                        <!-- تفاصيل المحاضر والمحتوى -->
                         <div class="p-5 space-y-3">
                             <div class="flex items-center gap-2 text-cyan-400 font-extrabold text-xs">
                                 <i class="fa-solid fa-chalkboard-user"></i>
@@ -463,7 +604,6 @@
                         </div>
                     </div>
 
-                    <!-- أزرار الإجراء السريع والسعر -->
                     <div class="p-5 pt-0 flex items-center justify-between border-t border-slate-800/80 mt-2">
                         <div>
                             <span class="text-[10px] text-slate-400 block">قيمة الاشتراك</span>
@@ -496,7 +636,8 @@
 
         function renderCoursePlatform() {
             const data = ACADEMY_DATA[currentSubjectKey];
-            const isUnlocked = studentUser.unlocked.includes(currentSubjectKey) || studentUser.unlocked.includes('all');
+            const unlockedList = currentUser ? (currentUser.unlocked || []) : [];
+            const isUnlocked = unlockedList.includes(currentSubjectKey) || unlockedList.includes('all');
 
             const hero = document.getElementById('heroCard');
             hero.style.backgroundImage = `linear-gradient(to top, rgba(9, 14, 26, 0.95) 15%, rgba(9, 14, 26, 0.5) 100%), url('${data.image}')`;
@@ -515,7 +656,6 @@
                 </div>
             `;
 
-            // المحاضرات
             const lecBox = document.getElementById('lectureList');
             lecBox.innerHTML = '';
             data.lectures.forEach(l => {
@@ -526,7 +666,6 @@
                 lecBox.appendChild(d);
             });
 
-            // المذكرات
             const noteBox = document.getElementById('notesList');
             noteBox.innerHTML = '';
             data.notes.forEach(n => {
@@ -536,7 +675,6 @@
                 noteBox.appendChild(d);
             });
 
-            // الكويزات
             const quizBox = document.getElementById('quizList');
             quizBox.innerHTML = '';
             data.quizzes.forEach(q => {
@@ -548,6 +686,11 @@
         }
 
         function triggerCheckout(key) {
+            if (!currentUser) {
+                alert('يرجى تسجيل الدخول أو إنشاء حساب طالب أولاً لإتمام الاشتراك.');
+                navigate('student-auth');
+                return;
+            }
             activeModalKey = key;
             if (key === 'all') {
                 document.getElementById('checkoutTitle').innerText = 'باقة الترم الشاملة (5 مواد)';
@@ -565,19 +708,15 @@
             e.preventDefault();
             pendingOrders.push({
                 id: Date.now(),
-                name: studentUser.name || 'طالب جديد',
-                univ: studentUser.univ || 'كفر الشيخ',
+                name: currentUser.name,
+                univ: currentUser.univ || 'كفر الشيخ',
                 itemKey: activeModalKey,
                 itemTitle: activeModalKey === 'all' ? 'الباقة الشاملة' : ACADEMY_DATA[activeModalKey].title,
                 amount: activeModalKey === 'all' ? 1625 : 400
             });
-            alert('تم استلام الطلب! سيتم التفعيل فور التحقق.');
+            localStorage.setItem('ds_orders', JSON.stringify(pendingOrders));
+            alert('تم إرسال طلب الاشتراك بنجاح! سيتم التفعيل بعد مراجعة المحاضر.');
             closeModal();
-        }
-
-        function handleDoctorLogin(e) {
-            e.preventDefault();
-            navigate('instructor-dash');
         }
 
         function renderInstructorDash() {
@@ -600,15 +739,20 @@
 
         function approveOrder(id) {
             const ord = pendingOrders.find(o => o.id === id);
-            if(ord) {
-                studentUser.unlocked.push(ord.itemKey);
+            if (ord) {
+                if (currentUser && currentUser.name === ord.name) {
+                    currentUser.unlocked.push(ord.itemKey);
+                    localStorage.setItem('ds_user', JSON.stringify(currentUser));
+                }
+                pendingOrders = pendingOrders.filter(o => o.id !== id);
+                localStorage.setItem('ds_orders', JSON.stringify(pendingOrders));
                 alert(`تم تفعيل الكورس للطالب ${ord.name}`);
-                navigate('courses-grid');
+                renderInstructorDash();
             }
         }
 
-        // تشغيل أولي على شاشة التسجيل
-        document.getElementById('viewStudentRegister').classList.remove('hidden');
+        // بدء التشغيل التلقائي على شبكة الكورسات
+        navigate('courses-grid');
     </script>
 </body>
 </html>
