@@ -135,7 +135,7 @@
               طريقك نحو الامتياز مع <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Dr Success</span>
             </h2>
             <p class="text-sm text-slate-300 leading-relaxed">
-              شروحات منهجية مبسطة، أطالس تشريح وكارفينج عملية، مذكرات ذكية للتدوين والشخبطة، وبنوك أسئلة بنظام التصحيح الفوري لطلاب جامعة كفر الشيخ.
+              شروحات منهجية مبسطة، أطالس تشريح وكارفينج عملية، مذكرات ذكية للتدوين والشخبطة، وبنوك أسئلة بنظام التصحيح الفوري لطلاب كليات طب الأسنان.
             </p>
             <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
               <button onclick="navigate('courses-grid')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black px-6 py-3 rounded-2xl text-xs shadow-xl shadow-cyan-600/30 transition">
@@ -166,6 +166,21 @@
             </div>
           </div>
         </div>
+
+        <!-- قسم آراء وتقييمات الطلاب الفعلية (مجهز لوضع الداتا الخاصة بك) -->
+        <div class="space-y-6">
+          <div class="text-center md:text-right">
+            <h3 class="text-xl font-black text-white flex items-center justify-center md:justify-start gap-2">
+              <i class="fa-solid fa-comments text-cyan-400"></i> آراء وانطباعات طلابنا
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">تجارب حقيقية لطلاب الدفعات السابقة في المواد والشروحات</p>
+          </div>
+          
+          <div id="studentReviewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- سيتم ملء الآراء هنا تلقائياً فور إرسالك لها -->
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -194,8 +209,20 @@
         <form id="formStudentRegister" onsubmit="handleStudentRegister(event)" class="space-y-3 hidden">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
-            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="مثال: أحمد محمد علي">
           </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">الجامعة</label>
+              <input type="text" id="regUniversity" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" placeholder="مثال: كفر الشيخ / طنطا">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">الكلية والفرقة</label>
+              <input type="text" id="regFaculty" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" placeholder="مثال: طب أسنان - ثانية">
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
@@ -206,10 +233,12 @@
               <input type="password" id="regPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
           </div>
+
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">رقم الواتساب</label>
-            <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white">
+            <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white" placeholder="010XXXXXXXX">
           </div>
+
           <button type="submit" id="btnRegSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
             إنشاء الحساب وبدء المذاكرة 🚀
           </button>
@@ -302,15 +331,28 @@
       </div>
     </section>
 
-    <!-- 6. مشغل المادة واستوديو الـ PDF المتجاوب -->
+    <!-- 6. مشغل المادة واستوديو الـ PDF مع خاصية التقدم -->
     <section id="viewStudentPlatform" class="hidden w-full flex flex-col md:flex-row flex-1 overflow-hidden">
-      <!-- القائمة الجانبية للمحاضرات -->
-      <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-52 md:max-h-full">
-        <div class="p-3 border-b border-slate-800 bg-[#111a2e] flex items-center justify-between">
-          <button onclick="navigate('courses-grid')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-bold">
-            <i class="fa-solid fa-arrow-right"></i> كل المواد
-          </button>
-          <span id="platformSubjectTitle" class="text-xs font-black text-cyan-400"></span>
+      <!-- القائمة الجانبية للمحاضرات وشريط التقدم -->
+      <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
+        <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
+          <div class="flex items-center justify-between">
+            <button onclick="navigate('courses-grid')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-bold">
+              <i class="fa-solid fa-arrow-right"></i> كل المواد
+            </button>
+            <span id="platformSubjectTitle" class="text-xs font-black text-cyan-400"></span>
+          </div>
+
+          <!-- شريط ونسبة التقدم والإنجاز -->
+          <div class="bg-[#090e1a] p-2 rounded-xl border border-slate-800 space-y-1.5">
+            <div class="flex justify-between items-center text-[10px] font-bold">
+              <span class="text-slate-400">نسبة الإنجاز:</span>
+              <span id="progressPercentText" class="text-cyan-400">0% (0 / 0)</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div id="progressBarFill" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+          </div>
         </div>
 
         <div class="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
@@ -353,6 +395,9 @@
             </div>
 
             <div class="flex items-center gap-2">
+              <button id="btnToggleCompleted" onclick="toggleCurrentLectureCompleted()" class="bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 text-xs transition">
+                <i class="fa-solid fa-check"></i> تحديد كمكتملة
+              </button>
               <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 text-xs transition">
                 <i class="fa-solid fa-cloud-arrow-down"></i> حفظ للمشاهدة بدون نت
               </button>
@@ -520,19 +565,22 @@
           <div class="p-4 bg-[#0f172a] border-b border-slate-800 font-bold text-xs text-cyan-400">
             طلبات الطلاب الذين قاموا بالتحويل
           </div>
-          <table class="w-full text-right text-xs">
-            <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
-              <tr>
-                <th class="p-4">الطالب</th>
-                <th class="p-4">الهاتف</th>
-                <th class="p-4">المادة</th>
-                <th class="p-4">المبلغ</th>
-                <th class="p-4">بيانات المحول</th>
-                <th class="p-4 text-center">القرار والتفعيل</th>
-              </tr>
-            </thead>
-            <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
-          </table>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-4">الطالب</th>
+                  <th class="p-4">الجامعة والكلية</th>
+                  <th class="p-4">الهاتف</th>
+                  <th class="p-4">المادة</th>
+                  <th class="p-4">المبلغ</th>
+                  <th class="p-4">بيانات المحول</th>
+                  <th class="p-4 text-center">القرار والتفعيل</th>
+                </tr>
+              </thead>
+              <tbody id="dashTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
         </div>
 
         <!-- جدول المحاضرين المعلقين -->
@@ -540,17 +588,19 @@
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين الجدد المعلقة للاعتماد (خاص بالمالك)
           </div>
-          <table class="w-full text-right text-xs">
-            <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
-              <tr>
-                <th class="p-4">اسم المحاضر</th>
-                <th class="p-4">الهاتف والبريد</th>
-                <th class="p-4">المادة المخصصة</th>
-                <th class="p-4 text-center">الإجراء</th>
-              </tr>
-            </thead>
-            <tbody id="doctorsApprovalTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
-          </table>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-4">اسم المحاضر</th>
+                  <th class="p-4">الهاتف والبريد</th>
+                  <th class="p-4">المادة المخصصة</th>
+                  <th class="p-4 text-center">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="doctorsApprovalTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
         </div>
 
       </div>
@@ -578,6 +628,7 @@
     let currentSubjectKey = 'dental_anatomy';
     let currentActiveLecture = null;
     let currentVideoElement = null;
+    let currentSubjectLectures = [];
 
     let pdfDoc = null;
     let pdfPageNum = 1;
@@ -601,7 +652,6 @@
     }
 
     async function initAuth() {
-      // قراءة الحساب المخزن محلياً لفتح التطبيق بدون إنترنت
       const cachedUser = localStorage.getItem('dr_success_cached_user');
       if (cachedUser) {
         currentUser = JSON.parse(cachedUser);
@@ -616,7 +666,7 @@
         }
         loadGlobalStats();
       } catch (err) {
-        console.log("العمل في وضع عدم الاتصال بالإنترنت.");
+        console.log("Offline mode ready.");
       }
       navigate('landing');
     }
@@ -647,6 +697,8 @@
             role: isOwner ? 'super_admin' : profile.role,
             full_name: isOwner ? 'د. محمد رجب (المالك)' : profile.full_name,
             phone: profile.phone || '',
+            university: profile.university || '',
+            faculty: profile.faculty || '',
             is_approved: isOwner ? true : profile.is_approved,
             assigned_subject: profile.assigned_subject
           };
@@ -656,7 +708,6 @@
           userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
         }
 
-        // حفظ بيانات المستخدم للدخول بدون نت
         localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
         localStorage.setItem('dr_success_cached_subjects', JSON.stringify(userUnlockedSubjects));
         updateUserUI();
@@ -697,7 +748,6 @@
       updateUserUI();
     }
 
-    // التبديل وتنسيق أزرار بوابة الطلاب
     function openStudentTab(mode) {
       navigate('student-auth');
       const isLogin = mode === 'login';
@@ -715,7 +765,6 @@
       }
     }
 
-    // التبديل وتنسيق أزرار بوابة المحاضرين
     function openDoctorTab(mode) {
       navigate('instructor-auth');
       const isLogin = mode === 'login';
@@ -739,13 +788,15 @@
       const password = document.getElementById('regPass').value;
       const fullName = document.getElementById('regName').value;
       const phone = document.getElementById('regPhone').value;
+      const university = document.getElementById('regUniversity').value;
+      const faculty = document.getElementById('regFaculty').value;
 
       try {
         const { data, error } = await supabaseClient.auth.signUp({ email, password });
         if (error) throw error;
         if (data.user) {
           await supabaseClient.from('profiles').upsert([{
-            id: data.user.id, full_name: fullName, phone: phone, role: 'student', is_approved: true, email: email
+            id: data.user.id, full_name: fullName, phone: phone, university: university, faculty: faculty, role: 'student', is_approved: true, email: email
           }]);
           await loadUserProfile(data.user.id, email);
           alert("تم إنشاء حسابك بنجاح!");
@@ -814,7 +865,7 @@
       } catch (err) { alert("خطأ: " + err.message); }
     }
 
-    // المشغل الآمن والمعدل لعرض الموبايل بنسبة 100%
+    // تشغيل المحاضرة
     async function playLecture(lec) {
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
@@ -824,11 +875,12 @@
         document.getElementById('playerWatermark').innerText = `${currentUser.full_name || 'Dr Success'} • ${currentUser.phone || ''}`;
       }
 
+      updateCompletedButtonState();
+
       const screen = document.getElementById('screenPlayer');
       screen.innerHTML = '';
       let url = (lec.video_url || '').trim();
 
-      // فحص وجود نسخة بدون نت
       const offlineBlob = await getOfflineVideoBlob(lec.id);
       if (offlineBlob) {
         screen.innerHTML = `<video id="nativeVideo" src="${offlineBlob}" controlsList="nodownload" class="w-full h-full object-contain bg-black rounded-2xl" controls autoplay playsinline></video>`;
@@ -868,7 +920,7 @@
       }
     }
 
-    // نظام سرعة الفيديو التفاعلي وتظليل الزر المضغوط
+    // نظام سرعة الفيديو
     function setPlayerSpeed(speed, btnElement) {
       if (currentVideoElement) {
         currentVideoElement.playbackRate = speed;
@@ -881,7 +933,61 @@
       }
     }
 
-    // إدارة التنزيلات والمشاهدة بدون إنترنت (Offline Storage)
+    // تتبع التقدم والإنجاز في المحاضرات
+    function getCompletedLectures() {
+      const key = `completed_lecs_${currentUser?.id || 'guest'}`;
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    }
+
+    function toggleCurrentLectureCompleted() {
+      if (!currentActiveLecture) return;
+      const key = `completed_lecs_${currentUser?.id || 'guest'}`;
+      let completed = getCompletedLectures();
+      
+      if (completed.includes(currentActiveLecture.id)) {
+        completed = completed.filter(id => id !== currentActiveLecture.id);
+      } else {
+        completed.push(currentActiveLecture.id);
+      }
+      localStorage.setItem(key, JSON.stringify(completed));
+      
+      updateCompletedButtonState();
+      updateProgressDisplay();
+      renderLectureListUI();
+    }
+
+    function updateCompletedButtonState() {
+      const btn = document.getElementById('btnToggleCompleted');
+      if (!currentActiveLecture) return;
+      const completed = getCompletedLectures();
+      const isDone = completed.includes(currentActiveLecture.id);
+
+      if (isDone) {
+        btn.className = 'bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 text-xs shadow-lg transition';
+        btn.innerHTML = '<i class="fa-solid fa-circle-check"></i> تم إنهاء المحاضرة ✅';
+      } else {
+        btn.className = 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-600 hover:text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 text-xs transition';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> تحديد كمكتملة';
+      }
+    }
+
+    function updateProgressDisplay() {
+      const total = currentSubjectLectures.length;
+      if (total === 0) {
+        document.getElementById('progressPercentText').innerText = `0% (0 / 0)`;
+        document.getElementById('progressBarFill').style.width = `0%`;
+        return;
+      }
+
+      const completed = getCompletedLectures();
+      const completedInSubject = currentSubjectLectures.filter(l => completed.includes(l.id)).length;
+      const percent = Math.round((completedInSubject / total) * 100);
+
+      document.getElementById('progressPercentText').innerText = `${percent}% (${completedInSubject} من ${total})`;
+      document.getElementById('progressBarFill').style.width = `${percent}%`;
+    }
+
+    // إدارة التنزيلات الأوفلاين
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) { alert('اختر محاضرة أولاً!'); return; }
       const btn = document.getElementById('btnDownloadOffline');
@@ -907,7 +1013,7 @@
         alert('تم حفظ المحاضرة داخل التطبيق بنجاح! يمكنك تشغيلها من قسم التنزيلات حتى لو انقطع النت.');
       } catch (e) {
         btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> حفظ للمشاهدة بدون نت`;
-        alert('تنبيه: التنزيل الأوفلاين متاح للفيديوهات المباشرة، أما روابط التضمين فيتم تشغيلها بسلاسة من المشغل.');
+        alert('تنبيه: التنزيل متاح للفيديوهات المباشرة، أما روابط التضمين فيتم تشغيلها بسلاسة من المشغل.');
       }
     }
 
@@ -1074,30 +1180,11 @@
     async function renderCoursePlatform() {
       const data = ACADEMY_DATA[currentSubjectKey];
       document.getElementById('platformSubjectTitle').innerText = data.title;
-      const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
 
       const { data: dbLecs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey);
-      const lecBox = document.getElementById('lectureList');
-      lecBox.innerHTML = '';
-
-      if (!dbLecs || dbLecs.length === 0) {
-        lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
-      } else {
-        dbLecs.forEach(l => {
-          const can = l.is_free || isUnlocked;
-          const d = document.createElement('div');
-          d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
-          d.onclick = () => { if (can) playLecture(l); else alert('المحتوى مخصص للمشتركين'); };
-          d.innerHTML = `
-            <div class="flex items-center gap-2">
-              <i class="fa-solid ${can ? 'fa-play text-cyan-400' : 'fa-lock text-amber-400'}"></i>
-              <span class="font-bold">${l.title}</span>
-            </div>
-            <span class="text-[10px] text-slate-500">${l.duration || ''}</span>
-          `;
-          lecBox.appendChild(d);
-        });
-      }
+      currentSubjectLectures = dbLecs || [];
+      renderLectureListUI();
+      updateProgressDisplay();
 
       const { data: dbPdfs } = await supabaseClient.from('lectures').select('*').eq('subject_id', currentSubjectKey).not('pdf_url', 'is', null);
       const noteBox = document.getElementById('notesList');
@@ -1114,6 +1201,35 @@
           noteBox.appendChild(d);
         });
       }
+    }
+
+    function renderLectureListUI() {
+      const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
+      const lecBox = document.getElementById('lectureList');
+      lecBox.innerHTML = '';
+
+      if (!currentSubjectLectures || currentSubjectLectures.length === 0) {
+        lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
+        return;
+      }
+
+      const completed = getCompletedLectures();
+
+      currentSubjectLectures.forEach(l => {
+        const can = l.is_free || isUnlocked;
+        const isDone = completed.includes(l.id);
+        const d = document.createElement('div');
+        d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+        d.onclick = () => { if (can) playLecture(l); else alert('المحتوى مخصص للمشتركين'); };
+        d.innerHTML = `
+          <div class="flex items-center gap-2">
+            <i class="fa-solid ${isDone ? 'fa-circle-check text-emerald-400' : (can ? 'fa-play text-cyan-400' : 'fa-lock text-amber-400')}"></i>
+            <span class="font-bold ${isDone ? 'text-slate-400 line-through' : ''}">${l.title}</span>
+          </div>
+          <span class="text-[10px] text-slate-500">${l.duration || ''}</span>
+        `;
+        lecBox.appendChild(d);
+      });
     }
 
     function openDashboardIfStaff() {
@@ -1156,23 +1272,34 @@
 
     async function loadPendingEnrollments() {
       const tbody = document.getElementById('dashTableBody');
-      tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4">جاري التحميل...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4">جاري التحميل...</td></tr>';
 
-      const { data: enrollments } = await supabaseClient.from('enrollments').select('*, profiles:user_id(full_name, phone)').eq('status', 'pending');
+      const isOwner = currentUser && (currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase() || currentUser.role === 'super_admin');
+
+      let query = supabaseClient.from('enrollments').select('*, profiles:user_id(full_name, phone, university, faculty)').eq('status', 'pending');
+      
+      if (!isOwner && currentUser?.assigned_subject) {
+        query = query.eq('subject_id', currentUser.assigned_subject);
+      }
+
+      const { data: enrollments } = await query;
+
       if (!enrollments || enrollments.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center p-4 text-slate-500">لا توجد طلبات تحويل معلقة حالياً</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-slate-500">لا توجد طلبات تحويل معلقة لهذه المادة حالياً</td></tr>';
         return;
       }
 
       tbody.innerHTML = '';
       enrollments.forEach(o => {
         const sName = o.profiles ? o.profiles.full_name : 'طالب';
+        const sUniv = o.profiles ? `${o.profiles.university || 'غير محدد'} (${o.profiles.faculty || ''})` : '--';
         const sPhone = o.profiles ? o.profiles.phone : '';
         const subName = o.subject_id === 'all' ? 'كل المواد' : (ACADEMY_DATA[o.subject_id]?.title || o.subject_id);
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="p-4 font-bold text-white">${sName}</td>
+          <td class="p-4 text-slate-400 text-[11px]">${sUniv}</td>
           <td class="p-4">${sPhone}</td>
           <td class="p-4 font-bold text-cyan-400">${subName}</td>
           <td class="p-4 font-bold">${o.amount} ج.م</td>
