@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Dr Success Academy | منصة كورسات طب الأسنان</title>
+  <title>Dr Success Academy | كورسات لكلية طب الأسنان - جامعة كفر الشيخ الحكومية والأهلية</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -48,7 +48,9 @@
           <h1 class="font-black text-sm sm:text-base md:text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 leading-tight">
             DR SUCCESS ACADEMY
           </h1>
-          <p class="text-[9px] sm:text-[11px] text-slate-400 hidden xs:block">كلية طب الأسنان — قاعدة بيانات Firebase</p>
+          <p class="text-[9px] sm:text-[11px] text-slate-300 font-bold hidden xs:block">
+            كورسات لكلية طب الأسنان — جامعة كفر الشيخ (الحكومية والأهلية)
+          </p>
         </div>
       </div>
 
@@ -130,13 +132,13 @@
         <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="space-y-4 text-center md:text-right max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
-              <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية الأولى لطب الأسنان
+              <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية لطب الأسنان
             </div>
             <h2 class="text-3xl lg:text-5xl font-black text-white leading-tight">
               طريقك نحو الامتياز مع <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Dr Success</span>
             </h2>
             <p class="text-sm text-slate-300 leading-relaxed">
-              شروحات منهجية مبسطة، أطالس تشريح وكارفينج عملية، مذكرات ذكية للتدوين والشخبطة لطلاب كليات طب الأسنان.
+              شروحات منهجية متكاملة لطلاب <strong>كلية طب الأسنان — جامعة كفر الشيخ (الحكومية والأهلية)</strong>، أطالس تشريح وكارفينج عملية، ومذكرات ذكية للتدوين والشخبطة.
             </p>
             <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
               <button onclick="navigate('courses-grid')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black px-6 py-3 rounded-2xl text-xs shadow-xl shadow-cyan-600/30 transition">
@@ -195,18 +197,29 @@
         <form id="formStudentRegister" onsubmit="handleStudentRegister(event)" class="space-y-3 hidden">
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
-            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white" placeholder="مثال: أحمد محمد علي">
+            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="مثال: أحمد محمد علي">
           </div>
+          
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1">الجامعة</label>
-              <input type="text" id="regUniversity" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" placeholder="كفر الشيخ / طنطا">
+              <select id="regUniversity" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-cyan-500">
+                <option value="جامعة كفر الشيخ (حكومي)">كفر الشيخ (حكومي)</option>
+                <option value="جامعة كفر الشيخ (أهلية)">كفر الشيخ (أهلية)</option>
+              </select>
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">الكلية والفرقة</label>
-              <input type="text" id="regFaculty" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white" placeholder="طب أسنان - ثانية">
+              <label class="block text-xs font-bold text-slate-300 mb-1">الفرقة الدراسية</label>
+              <select id="regFaculty" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-cyan-500">
+                <option value="طب أسنان - الفرقة الأولى">طب أسنان - الفرقة الأولى</option>
+                <option value="طب أسنان - الفرقة الثانية">طب أسنان - الفرقة الثانية</option>
+                <option value="طب أسنان - الفرقة الثالثة">طب أسنان - الفرقة الثالثة</option>
+                <option value="طب أسنان - الفرقة الرابعة">طب أسنان - الفرقة الرابعة</option>
+                <option value="طب أسنان - الفرقة الخامسة">طب أسنان - الفرقة الخامسة</option>
+              </select>
             </div>
           </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
@@ -217,10 +230,12 @@
               <input type="password" id="regPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
             </div>
           </div>
+
           <div>
             <label class="block text-xs font-bold text-slate-300 mb-1">رقم الواتساب</label>
             <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white" placeholder="010XXXXXXXX">
           </div>
+
           <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
             إنشاء الحساب وبدء المذاكرة 🚀
           </button>
@@ -412,7 +427,7 @@
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
             <h3 class="text-cyan-400 font-bold text-sm">نشر محاضرة فيديو</h3>
             <form onsubmit="handleUploadLecture(event)" class="space-y-3">
-              <select id="uploadSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <select id="uploadSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
                 <option value="anatomy">General Anatomy</option>
                 <option value="histology">Histology</option>
@@ -429,7 +444,7 @@
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
             <h3 class="text-rose-400 font-bold text-sm">رفع مذكرة PDF للشخبطة</h3>
             <form onsubmit="handleUploadPdf(event)" class="space-y-3">
-              <select id="pdfSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <select id="pdfSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
                 <option value="anatomy">General Anatomy</option>
                 <option value="histology">Histology</option>
@@ -460,7 +475,7 @@
                   <th class="p-4">النوع</th>
                   <th class="p-4">البريد الإلكتروني</th>
                   <th class="p-4">الواتساب</th>
-                  <th class="p-4">الجامعة والكلية</th>
+                  <th class="p-4">الجامعة والفرقة</th>
                 </tr>
               </thead>
               <tbody id="usersTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
@@ -822,7 +837,7 @@
           <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${u.role==='doctor'?'bg-purple-500/20 text-purple-300':'bg-cyan-500/20 text-cyan-300'}">${u.role==='doctor'?'محاضر':'طالب'}</span></td>
           <td class="p-4 text-slate-400">${u.email || '--'}</td>
           <td class="p-4 text-cyan-300">${u.phone || '--'}</td>
-          <td class="p-4">${u.university ? `${u.university} (${u.faculty||''})` : '--'}</td>
+          <td class="p-4">${u.university ? `${u.university} - ${u.faculty||''}` : '--'}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -832,15 +847,16 @@
       const q = document.getElementById('searchUserInput').value.toLowerCase();
       const filtered = allPlatformUsers.filter(u => 
         (u.full_name && u.full_name.toLowerCase().includes(q)) ||
-        (u.phone && u.phone.includes(q))
+        (u.phone && u.phone.includes(q)) ||
+        (u.university && u.university.toLowerCase().includes(q))
       );
       renderUsersTable(filtered);
     }
 
     function exportUsersToCSV() {
-      let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة\n";
+      let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة\n";
       allPlatformUsers.forEach(u => {
-        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}"\n`;
+        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
