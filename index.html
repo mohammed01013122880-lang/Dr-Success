@@ -261,7 +261,7 @@
             <input type="password" id="docLoginPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white">
           </div>
           <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg text-xs">
-            دخول لوحة التحكم
+            دخول لوحة التحكم والاعتمادات
           </button>
         </form>
 
@@ -272,7 +272,7 @@
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-bold text-slate-300 mb-1">المادة</label>
+              <label class="block text-xs font-bold text-slate-300 mb-1">المادة المخصصة</label>
               <select id="newDocSubject" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
                 <option value="anatomy">General Anatomy</option>
@@ -297,7 +297,7 @@
             </div>
           </div>
           <button type="submit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition text-xs mt-2">
-            إرسال طلب الانضمام ⚡
+            إرسال طلب الانضمام للمالك ⚡
           </button>
         </form>
       </div>
@@ -318,6 +318,7 @@
             <h2 class="text-lg font-black text-white flex items-center gap-2">
               <i class="fa-solid fa-circle-down text-cyan-400"></i> المحاضرات المحفوظة (أوفلاين)
             </h2>
+            <p class="text-xs text-slate-400 mt-1">المحاضرات المحفوظة على جهازك للمشاهدة بدون إنترنت</p>
           </div>
           <button onclick="clearAllOfflineDownloads()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold">
             مسح الكل
@@ -348,7 +349,7 @@
           </div>
           <div>
             <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
-              <i class="fa-solid fa-file-pdf text-rose-400"></i> المذكرات
+              <i class="fa-solid fa-file-pdf text-rose-400"></i> المذكرات (التدوين والشخبطة)
             </span>
             <div id="notesList" class="space-y-2"></div>
           </div>
@@ -400,32 +401,42 @@
       </section>
     </section>
 
-    <!-- 7. لوحة تحكم Firebase المركزية مع تصدير Excel -->
+    <!-- 7. لوحة تحكم المالك المركزية (SUPER ADMIN DASHBOARD) -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
-        <div class="bg-[#111a2e] p-6 rounded-3xl border border-slate-800 flex justify-between items-center">
+        
+        <div class="bg-[#111a2e] p-6 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
           <div>
-            <h2 class="text-xl font-black text-white" id="dashTitle">لوحة تحكم Firebase المركزية</h2>
-            <span id="docTag" class="text-xs text-purple-300 font-bold"></span>
+            <h2 class="text-xl font-black text-white flex items-center gap-2" id="dashTitle">
+              لوحة التحكم المركزية
+            </h2>
+            <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold mt-1 inline-block">المالك (Super Admin)</span>
           </div>
           <button onclick="navigate('courses-grid')" class="text-xs bg-cyan-600/10 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-xl font-bold">
             معاينة كطالب 👁️
           </button>
         </div>
 
+        <!-- أزرار التبويبات الأربعة المقسمة بدقة -->
         <div class="flex flex-wrap bg-[#090e1a] p-1.5 rounded-2xl border border-slate-800 text-xs font-bold gap-1">
-          <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black">
-            رفع محتوى ومذكرات
+          <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap">
+            رفع المحتوى والمذكرات 🚀
           </button>
-          <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold">
-            سجل الطلاب والحسابات (Excel) 📊
+          <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            سجل الحسابات وإدارة الأجهزة (Excel) 📱
+          </button>
+          <button onclick="switchDashTab('tab-enrollments', this)" id="btnTabEnrollments" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            طلبات الاشتراكات والتحويل 💰
+          </button>
+          <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            اعتماد المحاضرين الجدد 👨‍🏫
           </button>
         </div>
 
-        <!-- تبويب الرفع -->
+        <!-- تبويب 1: رفع محتوى -->
         <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
-            <h3 class="text-cyan-400 font-bold text-sm">نشر محاضرة فيديو</h3>
+            <h3 class="text-cyan-400 font-bold text-sm border-b border-slate-800 pb-2">نشر محاضرة فيديو جديدة</h3>
             <form onsubmit="handleUploadLecture(event)" class="space-y-3">
               <select id="uploadSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
@@ -435,14 +446,20 @@
                 <option value="microbiology">Microbiology</option>
               </select>
               <input type="text" id="lectureTitle" placeholder="عنوان المحاضرة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <input type="text" id="lectureDuration" placeholder="المدة (مثال: 45 دقيقة)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="lectureDuration" placeholder="المدة (مثال: 50 دقيقة)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                <select id="lectureType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                  <option value="false">🔒 مقفولة للمشتركين</option>
+                  <option value="true">👁️ مجانية للجميع</option>
+                </select>
+              </div>
               <input type="url" id="lectureVideoUrl" placeholder="رابط الفيديو (Direct MP4 / YouTube)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs">نشر الآن</button>
+              <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20">نشر المحاضرة الآن 🚀</button>
             </form>
           </div>
 
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
-            <h3 class="text-rose-400 font-bold text-sm">رفع مذكرة PDF للشخبطة</h3>
+            <h3 class="text-rose-400 font-bold text-sm border-b border-slate-800 pb-2">رفع مذكرة شرح PDF للتدوين</h3>
             <form onsubmit="handleUploadPdf(event)" class="space-y-3">
               <select id="pdfSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
@@ -452,33 +469,79 @@
                 <option value="microbiology">Microbiology</option>
               </select>
               <input type="text" id="pdfDocTitle" placeholder="عنوان المذكرة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <select id="pdfDocType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                <option value="false">🔒 مقفولة للمشتركين</option>
+                <option value="true">👁️ مجانية للجميع</option>
+              </select>
               <input type="url" id="pdfDocUrl" placeholder="رابط الـ PDF المباشر" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs">إضافة المذكرة</button>
+              <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/20">إضافة المذكرة للمادة ⚡</button>
             </form>
           </div>
         </div>
 
-        <!-- تبويب سجل الطلاب مع Excel -->
+        <!-- تبويب 2: سجل الحسابات وتغيير الأجهزة -->
         <div id="dashSectionUsers" class="hidden space-y-4">
-          <div class="flex justify-between items-center bg-[#111a2e] p-4 rounded-2xl border border-slate-800">
+          <div class="flex flex-wrap justify-between items-center bg-[#111a2e] p-4 rounded-2xl border border-slate-800 gap-3">
             <input type="text" id="searchUserInput" oninput="filterUsersTable()" placeholder="ابحث باسم الطالب أو الهاتف..." class="bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white w-64">
-            <button onclick="exportUsersToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5">
+            <button onclick="exportUsersToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
               <i class="fa-solid fa-file-excel"></i> تنزيل شيت Excel (CSV)
             </button>
           </div>
 
-          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden">
+          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
             <table class="w-full text-right text-xs">
-              <thead class="bg-[#090e1a] text-slate-400 font-black border-b border-slate-800">
+              <thead class="bg-[#090e1a] text-slate-400 font-black border-b border-slate-800 text-[11px]">
                 <tr>
                   <th class="p-4">الاسم</th>
                   <th class="p-4">النوع</th>
-                  <th class="p-4">البريد الإلكتروني</th>
+                  <th class="p-4">البريد</th>
                   <th class="p-4">الواتساب</th>
                   <th class="p-4">الجامعة والفرقة</th>
+                  <th class="p-4 text-center">إدارة الجهاز</th>
                 </tr>
               </thead>
               <tbody id="usersTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- تبويب 3: طلبات اشتراك الطلاب والتحويل -->
+        <div id="dashSectionEnrollments" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+          <div class="p-4 bg-[#0f172a] border-b border-slate-800 font-bold text-xs text-cyan-400">
+            طلبات الطلاب الذين قاموا بالتحويل المالي
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-4">الطالب</th>
+                  <th class="p-4">الهاتف</th>
+                  <th class="p-4">المادة المطلوبة</th>
+                  <th class="p-4">رقم المحول منه</th>
+                  <th class="p-4 text-center">القرار والتفعيل</th>
+                </tr>
+              </thead>
+              <tbody id="enrollmentsTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- تبويب 4: طلبات اعتماد المحاضرين -->
+        <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+          <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
+            طلبات المحاضرين الجدد المعلقة للاعتماد
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-4">اسم المحاضر</th>
+                  <th class="p-4">الهاتف والبريد</th>
+                  <th class="p-4">المادة المخصصة</th>
+                  <th class="p-4 text-center">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="doctorsApprovalTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
             </table>
           </div>
         </div>
@@ -515,6 +578,7 @@
     };
 
     let currentUser = null;
+    let userUnlockedSubjects = [];
     let currentSubjectKey = 'dental_anatomy';
     let currentActiveLecture = null;
     let currentVideoElement = null;
@@ -528,23 +592,42 @@
       m.classList.toggle('hidden');
     }
 
+    // مراقبة الجلسة وحصر الجهاز الواحد
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         const isOwner = user.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
         const doc = await db.collection('profiles').doc(user.uid).get();
+        
         if (doc.exists) {
           currentUser = { id: user.uid, email: user.email, ...doc.data() };
-          if (isOwner) currentUser.role = 'super_admin';
+          if (isOwner) {
+            currentUser.role = 'super_admin';
+            currentUser.full_name = 'د. محمد رجب (المالك)';
+            userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
+          } else {
+            await loadUserUnlockedSubjects(user.uid);
+          }
         } else if (isOwner) {
           currentUser = { id: user.uid, email: user.email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
+          userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
         }
+
         updateUserUI();
       } else {
         currentUser = null;
+        userUnlockedSubjects = [];
         updateUserUI();
       }
       loadGlobalStats();
     });
+
+    async function loadUserUnlockedSubjects(userId) {
+      try {
+        const snap = await db.collection('enrollments').where('user_id', '==', userId).where('status', '==', 'active').get();
+        userUnlockedSubjects = [];
+        snap.forEach(d => userUnlockedSubjects.push(d.data().subject_id));
+      } catch(e) {}
+    }
 
     async function loadGlobalStats() {
       try {
@@ -595,6 +678,9 @@
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
+        const deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
+        localStorage.setItem('dr_success_device_id', deviceId);
+
         await db.collection('profiles').doc(cred.user.uid).set({
           full_name: fullName,
           email: email,
@@ -602,9 +688,11 @@
           university: university,
           faculty: faculty,
           role: 'student',
+          device_session: deviceId,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert('تم إنشاء الحساب بنجاح!');
+
+        alert('تم إنشاء حسابك بنجاح!');
         navigate('courses-grid');
       } catch (err) { alert('خطأ: ' + err.message); }
     }
@@ -615,7 +703,16 @@
       const password = document.getElementById('loginStudentPass').value;
 
       try {
-        await auth.signInWithEmailAndPassword(email, password);
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const userDoc = await db.collection('profiles').doc(cred.user.uid).get();
+
+        const newDeviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
+        localStorage.setItem('dr_success_device_id', newDeviceId);
+
+        await db.collection('profiles').doc(cred.user.uid).update({
+          device_session: newDeviceId
+        });
+
         navigate('courses-grid');
       } catch (err) { alert('خطأ: ' + err.message); }
     }
@@ -639,7 +736,7 @@
           is_approved: false,
           created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert('تم إرسال طلب الانضمام بنجاح!');
+        alert('تم إرسال طلب الانضمام وسيتم مراجعته واعتماده من المالك!');
         openDoctorTab('login');
       } catch (err) { alert('خطأ: ' + err.message); }
     }
@@ -660,6 +757,7 @@
       container.innerHTML = '';
 
       Object.values(ACADEMY_DATA).forEach(course => {
+        const isUnlocked = userUnlockedSubjects.includes(course.id) || userUnlockedSubjects.includes('all');
         const card = document.createElement('div');
         card.className = "course-card bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-xl p-5 flex flex-col justify-between";
         card.innerHTML = `
@@ -688,6 +786,7 @@
     async function renderCoursePlatform() {
       const data = ACADEMY_DATA[currentSubjectKey];
       document.getElementById('platformSubjectTitle').innerText = data.title;
+      const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
 
       const lecsSnap = await db.collection('lectures').where('subject_id', '==', currentSubjectKey).get();
       const lecBox = document.getElementById('lectureList');
@@ -696,22 +795,24 @@
       noteBox.innerHTML = '';
 
       if (lecsSnap.empty) {
-        lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة.</p>';
+        lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
       } else {
         lecsSnap.forEach(doc => {
           const l = doc.data();
+          const can = l.is_free || isUnlocked;
+
           if (l.video_url) {
             const d = document.createElement('div');
-            d.className = 'p-3 rounded-xl border border-slate-800 bg-[#111a2e] text-xs flex justify-between items-center cursor-pointer hover:border-cyan-500';
-            d.onclick = () => playLecture(l);
-            d.innerHTML = `<span><i class="fa-solid fa-play text-cyan-400 ml-1"></i> ${l.title}</span><span class="text-[10px] text-slate-500">${l.duration || ''}</span>`;
+            d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+            d.onclick = () => { if (can) playLecture(l); else alert('هذه المحاضرة مقفولة للمشتركين'); };
+            d.innerHTML = `<span><i class="fa-solid ${can ? 'fa-play text-cyan-400' : 'fa-lock text-amber-400'} ml-1"></i> ${l.title}</span><span class="text-[10px] text-slate-500">${l.duration || ''}</span>`;
             lecBox.appendChild(d);
           }
           if (l.pdf_url) {
             const d = document.createElement('div');
-            d.className = 'p-2.5 rounded-xl border border-slate-800 bg-[#111a2e] text-xs flex justify-between items-center cursor-pointer hover:border-rose-500';
-            d.onclick = () => openPdfStudio(l);
-            d.innerHTML = `<span><i class="fa-solid fa-file-pdf text-rose-400 ml-1"></i> ${l.title}</span>`;
+            d.className = `p-2.5 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-rose-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+            d.onclick = () => { if (can) openPdfStudio(l); else alert('هذه المذكرة مقفولة للمشتركين'); };
+            d.innerHTML = `<span><i class="fa-solid ${can ? 'fa-file-pdf text-rose-400' : 'fa-lock text-amber-400'} ml-1"></i> ${l.title}</span>`;
             noteBox.appendChild(d);
           }
         });
@@ -722,6 +823,10 @@
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
       document.getElementById('pdfStudioContainer').classList.add('hidden');
+
+      if (currentUser) {
+        document.getElementById('playerWatermark').innerText = `${currentUser.full_name || 'Dr Success'} • ${currentUser.phone || ''}`;
+      }
 
       const screen = document.getElementById('screenPlayer');
       let url = (lec.video_url || '').trim();
@@ -800,29 +905,36 @@
     }
 
     function loadInstructorDashboard() {
-      document.getElementById('docTag').innerText = currentUser.full_name;
+      const isOwner = currentUser && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+      document.getElementById('docTag').innerText = isOwner ? 'المالك (Super Admin)' : `محاضر: ${currentUser.assigned_subject || ''}`;
       switchDashTab('tab-upload', document.getElementById('btnTabUpload'));
     }
 
     function switchDashTab(tab, btn) {
-      document.getElementById('dashSectionUpload').classList.add('hidden');
-      document.getElementById('dashSectionUsers').classList.add('hidden');
-      document.getElementById('btnTabUpload').className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold';
-      document.getElementById('btnTabUsers').className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold';
+      ['dashSectionUpload', 'dashSectionUsers', 'dashSectionEnrollments', 'dashSectionDoctors'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
 
-      if (btn) btn.className = 'flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black';
+      ['btnTabUpload', 'btnTabUsers', 'btnTabEnrollments', 'btnTabDoctors'].forEach(id => {
+        document.getElementById(id).className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap';
+      });
+
+      if (btn) btn.className = 'flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap';
 
       if (tab === 'tab-upload') document.getElementById('dashSectionUpload').classList.remove('hidden');
       if (tab === 'tab-users') { document.getElementById('dashSectionUsers').classList.remove('hidden'); loadAllFirebaseUsers(); }
+      if (tab === 'tab-enrollments') { document.getElementById('dashSectionEnrollments').classList.remove('hidden'); loadPendingEnrollments(); }
+      if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
+    // 1. سجل الطلاب مع زر فك قفل الجهاز (Reset Device)
     async function loadAllFirebaseUsers() {
       const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">جاري جلب السجلات من Firebase...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">جاري جلب السجلات من Firebase...</td></tr>';
 
       const snap = await db.collection('profiles').get();
       allPlatformUsers = [];
-      snap.forEach(doc => allPlatformUsers.push(doc.data()));
+      snap.forEach(doc => allPlatformUsers.push({ id: doc.id, ...doc.data() }));
 
       renderUsersTable(allPlatformUsers);
     }
@@ -831,16 +943,28 @@
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = '';
       list.forEach(u => {
+        const isDoc = u.role === 'doctor';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="p-4 font-bold text-white">${u.full_name || '--'}</td>
-          <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${u.role==='doctor'?'bg-purple-500/20 text-purple-300':'bg-cyan-500/20 text-cyan-300'}">${u.role==='doctor'?'محاضر':'طالب'}</span></td>
-          <td class="p-4 text-slate-400">${u.email || '--'}</td>
-          <td class="p-4 text-cyan-300">${u.phone || '--'}</td>
-          <td class="p-4">${u.university ? `${u.university} - ${u.faculty||''}` : '--'}</td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] ${isDoc ? 'bg-purple-500/20 text-purple-300' : 'bg-cyan-500/20 text-cyan-300'}">${isDoc ? 'محاضر' : 'طالب'}</span></td>
+          <td class="p-4 text-slate-400 font-mono">${u.email || '--'}</td>
+          <td class="p-4 text-cyan-300 font-mono">${u.phone || '--'}</td>
+          <td class="p-4 text-slate-300">${u.university ? `${u.university} (${u.faculty || ''})` : '--'}</td>
+          <td class="p-4 text-center">
+            ${!isDoc ? `<button onclick="resetStudentDevice('${u.id}', '${u.full_name}')" class="bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition"><i class="fa-solid fa-arrows-rotate ml-1"></i> فك قفل الجهاز</button>` : '--'}
+          </td>
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    async function resetStudentDevice(userId, studentName) {
+      if (!confirm(`هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`)) return;
+      await db.collection('profiles').doc(userId).update({
+        device_session: null
+      });
+      alert('تمت إعادة تعيين الجهاز بنجاح! يستطيع الطالب الآن الدخول من جهازه الجديد.');
     }
 
     function filterUsersTable() {
@@ -861,8 +985,75 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `dr_success_firebase_users_${Date.now()}.csv`;
+      link.download = `dr_success_users_${Date.now()}.csv`;
       link.click();
+    }
+
+    // 2. إدارة طلبات التحويل المالي
+    async function loadPendingEnrollments() {
+      const tbody = document.getElementById('enrollmentsTableBody');
+      tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">جاري جلب طلبات التحويل...</td></tr>';
+
+      const snap = await db.collection('enrollments').where('status', '==', 'pending').get();
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">لا توجد طلبات تحويل معلقة حالياً</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      snap.forEach(doc => {
+        const o = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-4 font-bold text-white">${o.student_name || 'طالب'}</td>
+          <td class="p-4">${o.phone || '--'}</td>
+          <td class="p-4 font-bold text-cyan-400">${ACADEMY_DATA[o.subject_id]?.title || o.subject_id}</td>
+          <td class="p-4 font-mono text-amber-300">${o.sender_number || '--'}</td>
+          <td class="p-4 text-center">
+            <button onclick="approveEnrollment('${doc.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">تفعيل المادة ✅</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function approveEnrollment(docId) {
+      await db.collection('enrollments').doc(docId).update({ status: 'active' });
+      alert('تم تفعيل المادة للطالب بنجاح!');
+      loadPendingEnrollments();
+    }
+
+    // 3. إدارة واعتماد المحاضرين
+    async function loadPendingDoctors() {
+      const tbody = document.getElementById('doctorsApprovalTableBody');
+      tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">جاري جلب طلبات المحاضرين...</td></tr>';
+
+      const snap = await db.collection('profiles').where('role', '==', 'doctor').where('is_approved', '==', false).get();
+      if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      snap.forEach(doc => {
+        const d = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-4 font-bold text-white">${d.full_name}</td>
+          <td class="p-4">${d.phone} <span class="block text-slate-500 text-[10px]">${d.email}</span></td>
+          <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
+          <td class="p-4 text-center">
+            <button onclick="approveDoctor('${doc.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function approveDoctor(docId) {
+      await db.collection('profiles').doc(docId).update({ is_approved: true });
+      alert('تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!');
+      loadPendingDoctors();
     }
 
     async function handleUploadLecture(e) {
@@ -872,6 +1063,7 @@
         title: document.getElementById('lectureTitle').value,
         duration: document.getElementById('lectureDuration').value,
         video_url: document.getElementById('lectureVideoUrl').value,
+        is_free: document.getElementById('lectureType').value === 'true',
         created_at: firebase.firestore.FieldValue.serverTimestamp()
       });
       alert('تم نشر المحاضرة بنجاح على Firebase!');
@@ -885,6 +1077,7 @@
         subject_id: document.getElementById('pdfSubjectSelect').value,
         title: document.getElementById('pdfDocTitle').value,
         pdf_url: document.getElementById('pdfDocUrl').value,
+        is_free: document.getElementById('pdfDocType').value === 'true',
         created_at: firebase.firestore.FieldValue.serverTimestamp()
       });
       alert('تم رفع المذكرة بنجاح!');
@@ -908,9 +1101,26 @@
       }
     }
 
+    // فحص تطابق جلسة الجهاز الواحد الحي لطرد الأجهزة المتعددة
+    setInterval(async () => {
+      if (!currentUser || currentUser.role === 'super_admin') return;
+      const localDev = localStorage.getItem('dr_success_device_id');
+      if (!localDev) return;
+
+      try {
+        const doc = await db.collection('profiles').doc(currentUser.id).get();
+        if (doc.exists && doc.data().device_session && doc.data().device_session !== localDev) {
+          alert('⚠️ تنبيه أمني: تم تسجيل الدخول إلى حسابك من جهاز آخر. تم إنهاء الجلسة لحماية المحتوى.');
+          handleLogout();
+        }
+      } catch(e) {}
+    }, 4000);
+
     async function handleLogout() {
       await auth.signOut();
+      localStorage.removeItem('dr_success_device_id');
       currentUser = null;
+      userUnlockedSubjects = [];
       navigate('landing');
     }
 
