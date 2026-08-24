@@ -159,7 +159,7 @@
     }
     .admin-active .del-btn { display: block; }
 
-    /* ================= مشغل الامتحانات المدمج Native Quiz Engine ================= */
+    /* ================= مشغل الامتحانات المدمج ================= */
     .quiz-overlay {
       display: none; position: fixed; inset: 0; background: var(--bg);
       z-index: 9999; flex-direction: column; overflow-y: auto;
@@ -192,7 +192,6 @@
     .option-label:hover { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
     .option-label.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.15); color: var(--accent); }
     
-    /* النتيجة ومراجعة الإجابات */
     .result-box {
       text-align: center; background: var(--card-bg); border: 1px solid var(--border);
       border-radius: 1.5rem; padding: 2.5rem 1.5rem; margin-bottom: 2rem;
@@ -269,16 +268,34 @@
 
     <!-- التبويبات -->
     <div class="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
+      <button class="tab-btn active" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
+      <button class="tab-btn" onclick="switchTab('videos', this)"><i class="fa-solid fa-video"></i> فيديوهات الشرح</button>
       <button class="tab-btn" onclick="switchTab('pdf', this)"><i class="fa-solid fa-book-bookmark"></i> ملزمة الكورس</button>
-      <button class="tab-btn" onclick="switchTab('exams', this)"><i class="fa-solid fa-list-check"></i> بنوك الاسئلة والامتحانات</button>
       <button class="tab-btn" onclick="switchTab('offline', this)"><i class="fa-solid fa-cloud-arrow-down"></i> التنزيلات (أوفلاين)</button>
     </div>
 
     <div class="grid" id="contentGrid"></div>
   </div>
 
-  <!-- مشغل الكويزات المدمج الاحترافي بالكامل -->
+  <!-- نافذة إدخال اسم الطالب قبل الامتحان -->
+  <div class="modal" id="studentEntryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>بيانات دخول الاختبار</h3>
+        <button onclick="closeStudentEntry()" style="background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>الاسم ثلاثي:</label>
+        <input type="text" id="studentNameInput" class="form-control" placeholder="اكتب اسمك كاملاً">
+      </div>
+      <input type="hidden" id="targetExamId">
+      <button class="btn btn-success" style="width: 100%; margin-top: 0.5rem;" onclick="confirmStartQuiz()">
+        <i class="fa-solid fa-play"></i> ابدأ الامتحان فوراً
+      </button>
+    </div>
+  </div>
+
+  <!-- مشغل الكويزات المدمج الكامل -->
   <div class="quiz-overlay" id="quizOverlay">
     <div class="quiz-navbar">
       <div>
@@ -292,9 +309,7 @@
       <button class="btn btn-outline" onclick="exitQuiz()"><i class="fa-solid fa-xmark"></i> إنهاء</button>
     </div>
 
-    <div class="quiz-body" id="quizBodyArea">
-      <!-- توليد الأسئلة ديناميكياً هنا -->
-    </div>
+    <div class="quiz-body" id="quizBodyArea"></div>
   </div>
 
   <!-- لوحة تحكم المحاضر -->
@@ -327,7 +342,6 @@
           <input type="text" id="contentTitle" class="form-control" placeholder="مثال: كويز ميكرو - شابتر 1">
         </div>
 
-        <!-- حقول المحاضرة -->
         <div id="lessonInputs" style="display: none;">
           <div class="form-group">
             <label>اسم الشابتر / الوحدة:</label>
@@ -343,7 +357,6 @@
           </div>
         </div>
 
-        <!-- حقول الكويز المدمج الاحترافي -->
         <div id="quizInputs">
           <div class="form-group">
             <label>مدة الامتحان (بالدقائق):</label>
@@ -384,11 +397,10 @@ B) Gram negative bacilli"></textarea>
     let searchQuery = '';
     let isAdmin = false;
 
-    // حالة الكويز المفتوح
     let activeQuiz = null;
     let studentAnswers = {};
     let timerInterval = null;
-    let studentName = '';
+    let currentStudentName = '';
 
     async function loadData() {
       try {
@@ -421,11 +433,11 @@ B) Gram negative bacilli"></textarea>
                   <div class="card-icon icon-exam"><i class="fa-solid fa-stopwatch"></i></div>
                   <div>
                     <div class="card-title">${exam.title}</div>
-                    <span class="card-badge">امتحان تقييمي أصلي • ${exam.duration_minutes || 15} دقيقة</span>
+                    <span class="card-badge">امتحان إلكتروني • ${exam.duration_minutes || 15} دقيقة</span>
                   </div>
                 </div>
               </div>
-              <button class="btn btn-success" onclick="startQuizPrompt(${exam.id})">
+              <button class="btn btn-success" onclick="openStudentEntry(${exam.id})">
                 <i class="fa-solid fa-pen-nib"></i> ابدأ الاختبار الآن
               </button>
             </div>
@@ -484,20 +496,33 @@ B) Gram negative bacilli"></textarea>
       }
     }
 
-    // ================= محرك الكويزات المدمج الكامل =================
-    function startQuizPrompt(examId) {
+    // نافذة إدخال الاسم وبدء الامتحان
+    function openStudentEntry(examId) {
+      document.getElementById('targetExamId').value = examId;
+      document.getElementById('studentEntryModal').style.display = 'flex';
+    }
+
+    function closeStudentEntry() {
+      document.getElementById('studentEntryModal').style.display = 'none';
+    }
+
+    function confirmStartQuiz() {
+      const name = document.getElementById('studentNameInput').value.trim();
+      const examId = parseInt(document.getElementById('targetExamId').value);
+      if (!name) return alert('يرجى إدخال اسمك أولاً');
+
+      currentStudentName = name;
+      closeStudentEntry();
+
       const exam = examsData.find(e => e.id === examId);
       if (!exam) return;
-
-      const name = prompt('أدخل اسمك ثلاثي لبدء الامتحان:', studentName || '');
-      if (!name) return;
-      studentName = name;
 
       let questions = [];
       try {
         questions = JSON.parse(exam.exam_url);
       } catch (e) {
-        alert('بيانات الامتحان غير صالحة');
+        // لو الامتحان كان رابط قديم
+        alert('هذا الامتحان بتنسيق قديم، يرجى حذفه وإضافته من لوحة المحاضر بالنص المباشر');
         return;
       }
 
@@ -505,7 +530,7 @@ B) Gram negative bacilli"></textarea>
       studentAnswers = {};
       
       document.getElementById('quizTitleDisplay').innerText = exam.title;
-      document.getElementById('quizStudentDisplay').innerText = 'الطالب: ' + studentName;
+      document.getElementById('quizStudentDisplay').innerText = 'الطالب: ' + currentStudentName;
       document.getElementById('quizOverlay').style.display = 'flex';
       document.body.style.overflow = 'hidden';
 
@@ -582,10 +607,9 @@ B) Gram negative bacilli"></textarea>
 
       const percentage = Math.round((score / total) * 100);
 
-      // حفظ النتيجة في Supabase
       try {
         await db.from('quiz_submissions').insert([{
-          student_name: studentName,
+          student_name: currentStudentName,
           quiz_title: activeQuiz.title,
           score,
           total,
@@ -595,7 +619,6 @@ B) Gram negative bacilli"></textarea>
         console.error('Save score error:', err);
       }
 
-      // عرض تقرير النتيجة ومراجعة الإجابات
       const area = document.getElementById('quizBodyArea');
       let reviewHtml = `
         <div class="result-box">
@@ -638,7 +661,7 @@ B) Gram negative bacilli"></textarea>
       document.body.style.overflow = 'auto';
     }
 
-    // ================= تشغيل الفيديو والأوفلاين =================
+    // تشغيل الفيديو
     async function playVideo(id, onlineUrl, title) {
       const playerSection = document.getElementById('playerSection');
       const player = document.getElementById('mainVideoPlayer');
@@ -694,7 +717,6 @@ B) Gram negative bacilli"></textarea>
       renderCards();
     }
 
-    // الإدارة
     function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
     function closeModal() { document.getElementById('adminModal').style.display = 'none'; }
 
@@ -716,7 +738,6 @@ B) Gram negative bacilli"></textarea>
       document.getElementById('lessonInputs').style.display = type === 'lesson' ? 'block' : 'none';
     }
 
-    // معالج تحويل نصوص بنوك الأسئلة لكويز منظم
     function parseRawQuizText(raw) {
       const blocks = raw.trim().split(/\n\s*\n/);
       const questions = [];
