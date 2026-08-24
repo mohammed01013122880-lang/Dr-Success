@@ -9,9 +9,8 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Supabase & LocalForage & PDF Libraries -->
+  <!-- Supabase & PDF Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.10.0/localforage.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
   <script>window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</script>
 
@@ -21,7 +20,6 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     .course-card:hover { transform: translateY(-4px); }
     
-    /* Watermark floating animation */
     @keyframes floatMark {
       0% { top: 12%; left: 10%; }
       50% { top: 70%; left: 65%; }
@@ -36,7 +34,7 @@
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none">
 
-  <!-- Header -->
+  <!-- الهيدر -->
   <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-6 py-3.5 flex justify-between items-center backdrop-blur-md">
     <div class="flex items-center gap-3 cursor-pointer" onclick="navigate('landing')">
       <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" class="w-10 h-10 rounded-2xl object-cover border border-cyan-500/30 shadow-lg shadow-cyan-500/20" alt="Logo">
@@ -55,9 +53,6 @@
       <button onclick="navigate('courses-grid')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
         <i class="fa-solid fa-layer-group ml-1"></i> المواد الدراسية
       </button>
-      <button onclick="navigate('offline-vault')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-900">
-        <i class="fa-solid fa-cloud-arrow-down ml-1"></i> الأوفلاين
-      </button>
 
       <div id="authButtons" class="flex items-center gap-2">
         <button onclick="openStudentTab('login')" class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg shadow-cyan-600/30">
@@ -75,7 +70,7 @@
     </div>
   </header>
 
-  <!-- Main Container -->
+  <!-- جسم الصفحة الرئيسي -->
   <main class="flex-1 flex overflow-hidden">
 
     <!-- 1. الواجهة الرئيسية الشاملة -->
@@ -118,8 +113,8 @@
               <div class="text-xs text-slate-400 mt-1 font-bold">محاضرة منشورة</div>
             </div>
             <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
-              <div class="text-2xl font-black text-emerald-400">100%</div>
-              <div class="text-xs text-slate-400 mt-1 font-bold">حفظ أوفلاين</div>
+              <div class="text-2xl font-black text-emerald-400">A+</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">هدفنا الأكاديمي</div>
             </div>
           </div>
         </div>
@@ -132,10 +127,10 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
               <div class="w-12 h-12 bg-cyan-500/10 text-cyan-400 rounded-2xl flex items-center justify-center text-xl font-bold">
-                <i class="fa-solid fa-cloud-arrow-down"></i>
+                <i class="fa-solid fa-play"></i>
               </div>
-              <h4 class="text-base font-black text-white">مشاهدة أوفلاين حقيقية 100%</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">تنزيل المحاضرات مباشرة على ذاكرة جهازك للمشاهدة بدون إنترنت وبأعلى سرعات.</p>
+              <h4 class="text-base font-black text-white">مشغل فائق السرعة وبدون إعلانات</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">تحكم كامل بالسرعات وجودة العرض مع حماية متقدمة بعلامة مائية لبيانات الطالب لمنع السرقة.</p>
             </div>
             <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
               <div class="w-12 h-12 bg-rose-500/10 text-rose-400 rounded-2xl flex items-center justify-center text-xl font-bold">
@@ -146,10 +141,10 @@
             </div>
             <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
               <div class="w-12 h-12 bg-purple-500/10 text-purple-400 rounded-2xl flex items-center justify-center text-xl font-bold">
-                <i class="fa-solid fa-shield-halved"></i>
+                <i class="fa-solid fa-brain"></i>
               </div>
-              <h4 class="text-base font-black text-white">مشغل فائق الخصوصية وبدون إعلانات</h4>
-              <p class="text-xs text-slate-400 leading-relaxed">بيئة تعليمية نظيفة ومحمية بعلامة مائية متحركة وبدون أي مشتتات خارجية.</p>
+              <h4 class="text-base font-black text-white">بنوك أسئلة وتدريبات تفاعلية</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">اختبارات دورية على كل شابتر بنظام التصحيح الفوري وتوضيح الإجابات الصحيحة لضمان الـ A+.</p>
             </div>
           </div>
         </div>
@@ -171,7 +166,7 @@
               <div class="flex items-center gap-1 text-amber-400 text-xs">
                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
               </div>
-              <p class="text-xs text-slate-300 leading-relaxed">"ميزة الشخبطة والتدوين على المذكرات داخل المنصة وفرت عليا طباعة مذكرات كتير، والمشاهدة أوفلاين ممتازة."</p>
+              <p class="text-xs text-slate-300 leading-relaxed">"ميزة الشخبطة والتدوين على المذكرات داخل المنصة وفرت عليا طباعة مذكرات كتير والمذاكرة بقت أسهل وأمتع."</p>
               <div class="text-[11px] font-bold text-cyan-400 border-t border-slate-800/80 pt-2">طالبة بالفرقة الأولى — أهلية</div>
             </div>
             <div class="bg-[#111a2e] border border-slate-800 p-6 rounded-3xl space-y-3 shadow-xl">
@@ -378,14 +373,9 @@
               <button onclick="setPlayerSpeed(2.0)" class="speed-btn px-2 py-1 rounded hover:bg-slate-800 text-slate-300 font-bold">2.0x</button>
             </div>
 
-            <div class="flex items-center gap-2">
-              <button onclick="saveVideoOffline()" id="btnSaveOfflineAction" class="bg-emerald-950/60 border border-emerald-500/40 hover:bg-emerald-900 text-emerald-300 px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
-                <i class="fa-solid fa-cloud-arrow-down"></i> حفظ أوفلاين
-              </button>
-              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3 py-1.5 rounded-xl font-bold">
-                <i class="fa-solid fa-expand"></i> تكبير
-              </button>
-            </div>
+            <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold">
+              <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
+            </button>
           </div>
         </div>
 
@@ -417,25 +407,7 @@
       </section>
     </section>
 
-    <!-- 6. قسم الأوفلاين المخصص -->
-    <section id="viewOfflineVault" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
-      <div class="max-w-6xl mx-auto space-y-6">
-        <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between">
-          <div>
-            <h2 class="text-xl font-black text-white flex items-center gap-2">
-              <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i> المحاضرات المحفوظة أوفلاين
-            </h2>
-            <p class="text-xs text-slate-400 mt-1">تعمل هذه المحاضرات بدون الحاجة لاتصال بالإنترنت تماماً.</p>
-          </div>
-          <button onclick="clearAllOfflineData()" class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-rose-500/20">
-            مسح كل التنزيلات
-          </button>
-        </div>
-        <div id="offlineCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-      </div>
-    </section>
-
-    <!-- 7. لوحة تحكم المالك والمحاضرين الحقيقية -->
+    <!-- 6. لوحة تحكم المالك والمحاضرين الحقيقية -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -650,7 +622,6 @@
     const SUPABASE_URL = "https://rikyazfymdrcyvkjcfsw.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpa3lhemZ5bWRyY3l2a2pjZnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1Njc4MTYsImV4cCI6MjEwMzE0MzgxNn0.O69zMBVrwlyldCfa9IcVxag3GL5IpZ4zEgsyicY6TiI";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    localforage.config({ name: 'DrSuccessAppStorage', storeName: 'offline_media' });
 
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
@@ -738,7 +709,7 @@
     }
 
     function navigate(view) {
-      ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewStudentPlatform', 'viewInstructorDash', 'viewOfflineVault'].forEach(id => {
+      ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewStudentPlatform', 'viewInstructorDash'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
 
@@ -748,7 +719,6 @@
       if (view === 'courses-grid') { document.getElementById('viewCoursesGrid').classList.remove('hidden'); renderCoursesGrid(); }
       if (view === 'course-view') { document.getElementById('viewStudentPlatform').classList.remove('hidden'); renderCoursePlatform(); }
       if (view === 'instructor-dash') { document.getElementById('viewInstructorDash').classList.remove('hidden'); loadInstructorDashboard(); }
-      if (view === 'offline-vault') { document.getElementById('viewOfflineVault').classList.remove('hidden'); renderOfflineVault(); }
       updateUserUI();
     }
 
@@ -860,7 +830,6 @@
       const screen = document.getElementById('screenPlayer');
       let url = (lec.video_url || '').trim();
 
-      // فلترة وتضمين يوتيوب بدون اقتراحات أو شعارات مزعجة
       if (url.includes('youtube.com/watch?v=') || url.includes('youtu.be/') || url.includes('youtube.com/shorts/')) {
         let vId = '';
         if (url.includes('youtube.com/watch?v=')) vId = url.split('v=')[1]?.split('&')[0];
@@ -878,85 +847,6 @@
       } else {
         screen.innerHTML = `<video id="nativeVideo" src="${url}" class="w-full h-full rounded-2xl bg-black object-contain" controls autoplay></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
-      }
-    }
-
-    // حفظ أوفلاين حقيقي مع شريط تقدم
-    async function saveVideoOffline() {
-      if (!currentActiveLecture || !currentActiveLecture.video_url) return alert('اختر محاضرة صالحة أولاً.');
-      const btn = document.getElementById('btnSaveOfflineAction');
-      
-      try {
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التنزيل أوفلاين...';
-        
-        let offlineData = {
-          ...currentActiveLecture,
-          savedAt: new Date().toLocaleDateString('ar-EG'),
-          subjectTitle: ACADEMY_DATA[currentSubjectKey]?.title || 'كورس طب أسنان'
-        };
-
-        // محاولة تحميل ملف الفيديو كـ Blob لو كان رابط مباشر
-        if (currentActiveLecture.video_url.endsWith('.mp4') || currentActiveLecture.video_url.includes('blob')) {
-          const res = await fetch(currentActiveLecture.video_url);
-          const blob = await res.blob();
-          await localforage.setItem(`blob_${currentActiveLecture.id}`, blob);
-        }
-
-        await localforage.setItem(`meta_${currentActiveLecture.id}`, offlineData);
-        btn.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> تم الحفظ بنجاح!';
-        alert(`تم تنزيل محاضرة (${currentActiveLecture.title}) أوفلاين بنجاح وتعمل الآن بدون إنترنت!`);
-      } catch(e) {
-        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-down"></i> حفظ أوفلاين';
-        alert('تم حفظ بيانات المحاضرة في قسم الأوفلاين بنجاح!');
-      }
-    }
-
-    // استعراض قسم الأوفلاين
-    async function renderOfflineVault() {
-      const grid = document.getElementById('offlineCardsGrid');
-      grid.innerHTML = '<p class="text-xs text-slate-500 col-span-3 text-center py-6">جاري جلب المحاضرات المحفوظة أوفلاين...</p>';
-
-      const keys = await localforage.keys();
-      const metaKeys = keys.filter(k => k.startsWith('meta_'));
-
-      if (metaKeys.length === 0) {
-        grid.innerHTML = '<p class="text-xs text-slate-500 col-span-3 text-center py-6">لا توجد محاضرات محفوظة أوفلاين حتى الآن.</p>';
-        return;
-      }
-
-      grid.innerHTML = '';
-      for (const key of metaKeys) {
-        const lec = await localforage.getItem(key);
-        const card = document.createElement('div');
-        card.className = "bg-[#111a2e] border border-slate-800 p-5 rounded-3xl space-y-3 shadow-xl";
-        card.innerHTML = `
-          <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold">
-            <i class="fa-solid fa-circle-check"></i> جاهز للمشاهدة بدون إنترنت
-          </div>
-          <h3 class="font-black text-white text-sm">${lec.title}</h3>
-          <p class="text-xs text-slate-400">${lec.subjectTitle} • ${lec.duration || ''}</p>
-          <button onclick='playOfflineLecture(${JSON.stringify(lec)})' class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1">
-            <i class="fa-solid fa-play"></i> تشغيل أوفلاين الآن
-          </button>
-        `;
-        grid.appendChild(card);
-      }
-    }
-
-    async function playOfflineLecture(lec) {
-      navigate('course-view');
-      const blob = await localforage.getItem(`blob_${lec.id}`);
-      if (blob) {
-        playLecture({ ...lec, video_url: URL.createObjectURL(blob) });
-      } else {
-        playLecture(lec);
-      }
-    }
-
-    async function clearAllOfflineData() {
-      if (confirm('هل تريد حذف جميع المحاضرات المحفوظة أوفلاين؟')) {
-        await localforage.clear();
-        renderOfflineVault();
       }
     }
 
