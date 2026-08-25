@@ -428,7 +428,7 @@
           </div>
         </div>
 
-        <!-- استوديو PDF التفاعلي -->
+        <!-- استوديو PDF -->
         <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
           <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-xl">
             <div class="flex items-center gap-2">
@@ -602,7 +602,7 @@
   </main>
 
   <script>
-    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyQjrHOMYWFSXy3JJtC5jdqWH-KnpWdmXSZxiE9v15o5X4GUCe5NNsoFNgV9JVIIKJkhQ/exec";
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwZHl9dgIcvmpKklA6a65wRLNQvjWCmXaZ4N97nUihwwHU4W0mgs4NNodhXx80vPiieow/exec";
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
     const ACADEMY_DATA = {
@@ -643,12 +643,28 @@
       m.classList.toggle('hidden');
     }
 
+    async function sendToSheet(payload) {
+      const res = await fetch(SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+      });
+      return await res.json();
+    }
+
+    async function getFromSheet(action) {
+      const res = await fetch(`${SHEET_API_URL}?action=${action}`, {
+        method: 'GET',
+        redirect: 'follow'
+      });
+      return await res.json();
+    }
+
     async function loadGlobalStats() {
       try {
-        const resU = await fetch(`${SHEET_API_URL}?action=getUsers`);
-        const users = await resU.json();
-        const resL = await fetch(`${SHEET_API_URL}?action=getLectures`);
-        const lecs = await resL.json();
+        const users = await getFromSheet('getUsers');
+        const lecs = await getFromSheet('getLectures');
         if (Array.isArray(users)) document.getElementById('statStudents').innerText = users.filter(u => u.role === 'student').length;
         if (Array.isArray(lecs)) document.getElementById('statLectures').innerText = lecs.length;
       } catch(e) {}
@@ -773,12 +789,7 @@
           device_session: deviceId
         };
 
-        const res = await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
-        const result = await res.json();
+        const result = await sendToSheet(payload);
         currentUser = { id: result.id, ...payload };
         userUnlockedSubjects = [];
         localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
@@ -807,8 +818,7 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق من الشيت...';
 
       try {
-        const res = await fetch(`${SHEET_API_URL}?action=getUsers`);
-        const users = await res.json();
+        const users = await getFromSheet('getUsers');
         const user = users.find(u => u.email && u.email.toLowerCase() === email && String(u.password) === String(password));
 
         if (!user) {
@@ -859,11 +869,7 @@
           unlocked_courses: [subject]
         };
 
-        await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-
+        await sendToSheet(payload);
         alert('✅ تم إرسال طلب الانضمام وسيتم اعتماده من المالك في Google Sheets!');
         openDoctorTab('login');
       } catch (err) {
@@ -896,8 +902,7 @@
           return;
         }
 
-        const res = await fetch(`${SHEET_API_URL}?action=getUsers`);
-        const users = await res.json();
+        const users = await getFromSheet('getUsers');
         const doc = users.find(u => u.email && u.email.toLowerCase() === email && String(u.password) === String(pass) && u.role === 'doctor');
 
         if (!doc) {
@@ -965,8 +970,7 @@
       noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">جاري التحميل...</p>';
 
       try {
-        const res = await fetch(`${SHEET_API_URL}?action=getLectures`);
-        const allLecs = await res.json();
+        const allLecs = await getFromSheet('getLectures');
         const lecs = Array.isArray(allLecs) ? allLecs.filter(l => l.subject_id === currentSubjectKey) : [];
 
         lecBox.innerHTML = '';
@@ -1305,8 +1309,7 @@
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Google Sheets...</td></tr>';
 
       try {
-        const res = await fetch(`${SHEET_API_URL}?action=getUsers`);
-        allPlatformUsers = await res.json();
+        allPlatformUsers = await getFromSheet('getUsers');
 
         if (!Array.isArray(allPlatformUsers) || allPlatformUsers.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">لا يوجد أي حسابات مسجلة حتى الآن.</td></tr>';
@@ -1373,13 +1376,10 @@
       }
 
       try {
-        await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: "updateUserCourses",
-            userId: userId,
-            unlocked_courses: courses
-          })
+        await sendToSheet({
+          action: "updateUserCourses",
+          userId: userId,
+          unlocked_courses: courses
         });
         alert('تم تحديث اشتراك الطالب بنجاح في Google Sheets!');
         loadAllServerUsers();
@@ -1392,12 +1392,9 @@
     async function resetStudentDevice(userId, studentName) {
       if (!confirm(`هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`)) return;
       try {
-        await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: "resetDevice",
-            userId: userId
-          })
+        await sendToSheet({
+          action: "resetDevice",
+          userId: userId
         });
         alert('تمت إعادة تعيين الجهاز بنجاح!');
       } catch (err) { alert('فشل إعادة التعيين: ' + err.message); }
@@ -1432,8 +1429,7 @@
       tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-purple-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات المحاضرين...</td></tr>';
 
       try {
-        const res = await fetch(`${SHEET_API_URL}?action=getUsers`);
-        const all = await res.json();
+        const all = await getFromSheet('getUsers');
         const pending = Array.isArray(all) ? all.filter(u => u.role === 'doctor' && !u.is_approved) : [];
 
         if (pending.length === 0) {
@@ -1461,12 +1457,9 @@
 
     async function approveDoctor(docId) {
       try {
-        await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: "approveDoctor",
-            userId: docId
-          })
+        await sendToSheet({
+          action: "approveDoctor",
+          userId: docId
         });
         alert('تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!');
         loadPendingDoctors();
@@ -1490,16 +1483,13 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
 
       try {
-        await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: "addLecture",
-            subject_id: sub,
-            title: title,
-            duration: duration || 'غير محدد',
-            video_url: url,
-            is_free: isFree
-          })
+        await sendToSheet({
+          action: "addLecture",
+          subject_id: sub,
+          title: title,
+          duration: duration || 'غير محدد',
+          video_url: url,
+          is_free: isFree
         });
 
         alert('✅ تم نشر المحاضرة بنجاح وحفظها في Google Sheets!');
@@ -1531,15 +1521,12 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإضافة...';
 
       try {
-        await fetch(SHEET_API_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: "addLecture",
-            subject_id: sub,
-            title: title,
-            pdf_url: url,
-            is_free: isFree
-          })
+        await sendToSheet({
+          action: "addLecture",
+          subject_id: sub,
+          title: title,
+          pdf_url: url,
+          is_free: isFree
         });
 
         alert('✅ تم إضافة مذكرة الـ PDF بنجاح وأصبحت متاحة للطلاب!');
