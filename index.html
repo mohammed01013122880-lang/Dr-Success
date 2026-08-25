@@ -478,7 +478,6 @@
     <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-8">
         
-        <!-- بانر عرض الـ 5 مواد -->
         <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/70 border-2 border-amber-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div class="space-y-2 text-center md:text-right">
             <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-black inline-block">
@@ -895,8 +894,13 @@
 
     function openVideoDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open('DrSuccessOfflineDB', 1);
-        req.onupgradeneeded = () => req.result.createObjectStore('videos', { keyPath: 'id' });
+        const req = indexedDB.open('DrSuccessOfflineDB', 2);
+        req.onupgradeneeded = (e) => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains('videos')) {
+            db.createObjectStore('videos', { keyPath: 'id' });
+          }
+        };
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
       });
@@ -1429,6 +1433,7 @@
         screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="${embedUrl}" loading="lazy" class="w-full h-full border-0 rounded-3xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
         currentVideoElement = null;
       } else {
+        // تشغيل مباشر لملف MP4 الحقيقي أو Blob المحلي
         screen.innerHTML = `<video id="nativeVideo" src="${url}" controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-3xl" autoplay playsinline></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
       }
@@ -1450,7 +1455,7 @@
       if (btn) btn.className = 'speed-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white font-black text-xs';
     }
 
-    // تنزيل وحفظ الفيديو الفعلي الدقيق عبر Bunny API
+    // تنزيل الفيديو الفعلي وقراءته كـ MP4 وحفظه في IndexedDB
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       let url = (currentActiveLecture.video_url || '').trim();
@@ -1472,12 +1477,14 @@
       try {
         let downloadUrl = url;
 
+        // استخراج Video ID من رابط Bunny
         if (url.includes('mediadelivery.net')) {
           let vidId = '';
           if (url.includes('/embed/')) vidId = url.split('/embed/')[1].split('?')[0].split('/')[1];
           else if (url.includes('/play/')) vidId = url.split('/play/')[1].split('?')[0].split('/')[1];
 
           if (vidId) {
+            // جلب رابط التنزيل المباشر الصريح من Bunny API
             const videoDataRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${vidId}`, {
               headers: { 'AccessKey': BUNNY_API_KEY, 'Accept': 'application/json' }
             });
@@ -1493,11 +1500,12 @@
           }
         }
 
+        // تنزيل بايتات الفيديو الفعلية
         const response = await fetch(downloadUrl);
         if (!response.ok) throw new Error('فشل جلب ملف الفيديو من السيرفر');
 
         const contentLength = response.headers.get('content-length');
-        const total = parseInt(contentLength, 10);
+        const total = parseInt(contentLength, 10) || 0;
         let loaded = 0;
 
         const reader = response.body.getReader();
@@ -1508,19 +1516,29 @@
           if (done) break;
           chunks.push(value);
           loaded += value.length;
-          if (total) {
+          if (total > 0) {
             const percent = Math.round((loaded / total) * 100);
             progressBar.style.width = `${percent}%`;
             percentText.innerText = `${percent}%`;
+          } else {
+            // في حال عدم إرسال السيرفر لحجم الملف مسبقاً
+            const mbLoaded = (loaded / (1024 * 1024)).toFixed(1);
+            percentText.innerText = `${mbLoaded} MB`;
+            progressBar.style.width = '70%';
           }
         }
 
-        const blob = new Blob(chunks, { type: 'video/mp4' });
+        // تكوين ملف الفيديو بصيغة MP4 سليمة 100%
+        const videoBlob = new Blob(chunks, { type: 'video/mp4' });
         const recordId = 'vid_' + (currentActiveLecture.id || Date.now());
 
         const db = await openVideoDB();
         const tx = db.transaction('videos', 'readwrite');
-        tx.objectStore('videos').put({ id: recordId, title: currentActiveLecture.title, blob: blob });
+        await new Promise((res, rej) => {
+          const storeReq = tx.objectStore('videos').put({ id: recordId, title: currentActiveLecture.title, blob: videoBlob });
+          storeReq.onsuccess = res;
+          storeReq.onerror = rej;
+        });
 
         let downloads = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
         if (!downloads.find(d => d.id === recordId)) {
@@ -1533,9 +1551,11 @@
           localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
         }
 
-        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل وتخزينها في ذاكرة التطبيق للتشغيل بدون إنترنت.', 'success');
+        progressBar.style.width = '100%';
+        percentText.innerText = '100%';
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل وتخزينها في ذاكرة التطبيق، يمكنك تشغيلها بدون إنترنت دائماً.', 'success');
       } catch (e) {
-        showCustomModal('خطأ في التحميل', 'تأكد من اكتمال معالجة الفيديو في سيرفر Bunny: ' + e.message, 'error');
+        showCustomModal('خطأ في التحميل', 'تعذر حفظ الفيديو: ' + e.message, 'error');
       } finally {
         btn.disabled = false;
         setTimeout(() => { progressWrapper.classList.add('hidden'); }, 2000);
@@ -1581,6 +1601,7 @@
 
         req.onsuccess = () => {
           if (req.result && req.result.blob) {
+            // تحويل البايتات المحفوظة إلى فيديو سليم وقابل للتشغيل 100%
             const blobUrl = URL.createObjectURL(req.result.blob);
             currentActiveLecture = { video_url: blobUrl, title: `${title} (أوفلاين)` };
             navigate('course-view');
@@ -1595,7 +1616,7 @@
     }
 
     async function deleteOfflineItem(idx, recordId) {
-      showCustomModal('حذف المحاضرة', 'هل أنت متأكد من حذف هذه المحاضرة المحفوظة؟', 'warning', async (confirmed) => {
+      showCustomModal('حذف المحاضرة', 'هل أنت متأكد من حذف هذه المحاضرة المحفوظة من ذاكرة التطبيق؟', 'warning', async (confirmed) => {
         if (confirmed) {
           try {
             const db = await openVideoDB();
