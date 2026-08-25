@@ -71,54 +71,56 @@
     </div>
   </div>
 
-  <!-- نافذة طرق الدفع والتحويل -->
+  <!-- نافذة طرق الدفع وتأكيد التحويل مباشرة داخل المنصة -->
   <div id="paymentModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-    <div class="modal-box bg-[#111a2e] border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+    <div class="modal-box bg-[#111a2e] border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div>
           <h3 class="font-black text-base text-white flex items-center gap-2">
-            <i class="fa-solid fa-wallet text-emerald-400"></i> بيانات الدفع والاشتراك
+            <i class="fa-solid fa-wallet text-emerald-400"></i> تفاصيل الدفع وتأكيد الاشتراك
           </h3>
           <p class="text-xs text-slate-400 mt-0.5" id="paymentModalSubTitle">تفاصيل التحويل للاشتراك في المواد</p>
         </div>
         <button onclick="closePaymentModal()" class="p-2 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <div class="space-y-3 text-xs">
-        <div class="bg-[#090e1a] p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
-          <div class="space-y-1">
-            <span class="text-rose-400 font-black flex items-center gap-1.5">
-              <i class="fa-solid fa-mobile-screen-button"></i> محفظة كاش (فودافون / أورنج / اتصالات):
+      <div class="space-y-2.5 text-xs">
+        <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 flex items-center justify-between">
+          <div class="space-y-0.5">
+            <span class="text-rose-400 font-black flex items-center gap-1.5 text-[11px]">
+              <i class="fa-solid fa-mobile-screen-button"></i> كاش (فودافون / أورنج / اتصالات):
             </span>
             <span class="font-mono text-sm font-bold text-white block">01556922710</span>
           </div>
           <button onclick="copyToClipboard('01556922710')" class="bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold transition">
-            نسخ الرقم 📋
+            نسخ 📋
           </button>
         </div>
 
-        <div class="bg-[#090e1a] p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
-          <div class="space-y-1">
-            <span class="text-purple-400 font-black flex items-center gap-1.5">
+        <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 flex items-center justify-between">
+          <div class="space-y-0.5">
+            <span class="text-purple-400 font-black flex items-center gap-1.5 text-[11px]">
               <i class="fa-solid fa-building-columns"></i> تطبيق إنستاباي (InstaPay):
             </span>
             <span class="font-mono text-sm font-bold text-white block">01003946065</span>
           </div>
           <button onclick="copyToClipboard('01003946065')" class="bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white border border-purple-500/30 px-3 py-1.5 rounded-xl font-bold transition">
-            نسخ الرقم 📋
+            نسخ 📋
           </button>
         </div>
       </div>
 
-      <div class="bg-cyan-950/40 border border-cyan-800/40 p-3.5 rounded-2xl text-[11px] text-cyan-200 leading-relaxed space-y-1.5">
-        <p class="font-bold">⚠️ خطوات تأكيد الاشتراك بعد التحويل:</p>
-        <p>1. قم بالتحويل من محفظتك أو حسابك البنكي.</p>
-        <p>2. خذ لقطة شاشة (سكرين شوت) للتحويل وأرسلها عبر الواتساب لتفعيل حسابك فوراً.</p>
-      </div>
-
-      <a href="https://wa.me/201556922710?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%AD%D9%88%D9%84%D8%AA%20%D8%B1%D8%B3%D9%88%D9%85%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%88%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D9%81%D8%B9%D9%8A%D9%84%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%AF" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition">
-        <i class="fa-brands fa-whatsapp text-sm"></i> إرسال إيصال التحويل على واتساب
-      </a>
+      <!-- نموذج إرسال طلب التفعيل المباشر -->
+      <form onsubmit="handleSendPaymentVerification(event)" class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800 space-y-3">
+        <span class="text-xs font-black text-cyan-400 block"><i class="fa-solid fa-file-invoice-dollar ml-1"></i> تأكيد التحويل وتفعيل الحساب:</span>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-300 mb-1">الرقم أو الحساب الذي قمت بالتحويل منه:</label>
+          <input type="text" id="senderNumberInput" required placeholder="مثال: 01012345678 أو اسم المحفظة" class="w-full bg-[#111a2e] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono">
+        </div>
+        <button type="submit" id="btnSendVerifyPayment" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-600/30 transition">
+          <i class="fa-solid fa-paper-plane"></i> إرسال طلب التفعيل للإدارة فوراً ⚡
+        </button>
+      </form>
     </div>
   </div>
 
@@ -237,7 +239,6 @@
     <section id="viewLanding" class="w-full flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 space-y-12">
       <div class="max-w-7xl mx-auto space-y-12">
         
-        <!-- Hero Section -->
         <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="space-y-4 text-center md:text-right max-w-3xl">
             <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
@@ -579,6 +580,7 @@
       <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-2 sm:p-4 custom-scrollbar relative">
         <div id="videoContainerWrapper" class="w-full flex flex-col items-center">
           
+          <!-- حاوية المشغل مع دعم كامل لملء الشاشة على الهاتف والتابلت -->
           <div id="playerContainer" class="w-full max-w-4xl aspect-video bg-black rounded-3xl border border-slate-800 relative overflow-hidden shadow-2xl flex items-center justify-center min-h-[240px] sm:min-h-[380px]">
             <div class="watermark-text" id="playerWatermark">Dr Success • Student</div>
             <div id="screenPlayer" class="w-full h-full flex items-center justify-center">
@@ -690,7 +692,10 @@
             إدارة وحذف المحتوى المرفوع 🗂️
           </button>
           <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
-            سجل الطلاب وتفعيل الاشتراكات 📊
+            سجل الطلاب والاشتراكات 📊
+          </button>
+          <button onclick="switchDashTab('tab-payment-reqs', this)" id="btnTabPaymentReqs" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            طلبات التحويل والتفعيل 💳
           </button>
           <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="hidden flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
             اعتماد المحاضرين والمواد 👨‍🏫
@@ -851,7 +856,35 @@
           </div>
         </div>
 
-        <!-- تبويب 4: طلبات اعتماد المحاضرين -->
+        <!-- تبويب 4: طلبات التحويل والتفعيل المباشر -->
+        <div id="dashSectionPaymentReqs" class="hidden space-y-4">
+          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl p-4">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+              <h3 class="text-sm font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> طلبات تأكيد التحويلات المعلقة
+              </h3>
+              <button onclick="loadPaymentRequestsForManagement()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl font-bold text-slate-300">
+                <i class="fa-solid fa-arrows-rotate ml-1"></i> تحديث الطلبات
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-right text-xs">
+                <thead class="bg-[#090e1a] text-slate-400 font-black border-b border-slate-800 text-[11px]">
+                  <tr>
+                    <th class="p-3.5">اسم الطالب</th>
+                    <th class="p-3.5">هاتف الطالب</th>
+                    <th class="p-3.5">رقم المحول منه</th>
+                    <th class="p-3.5">الباقة المطلوبة</th>
+                    <th class="p-3.5 text-center">الإجراء والتفعيل</th>
+                  </tr>
+                </thead>
+                <tbody id="paymentRequestsTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- تبويب 5: طلبات اعتماد المحاضرين -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين وتعديل المواد المخصصة
@@ -900,6 +933,7 @@
     let allPlatformLectures = [];
     let currentManagingStudent = null;
     let modalCallback = null;
+    let selectedPackageForPayment = 'باقة الـ 5 مواد كاملة (1625 ج.م)';
 
     let pdfDoc = null;
     let pdfPageNum = 1;
@@ -1017,7 +1051,8 @@
     }
 
     function openPaymentModal(itemTitle) {
-      document.getElementById('paymentModalSubTitle').innerText = itemTitle ? `تفاصيل التحويل لـ (${itemTitle})` : 'تفاصيل التحويل للاشتراك';
+      selectedPackageForPayment = itemTitle || 'باقة الـ 5 مواد كاملة (1625 ج.م)';
+      document.getElementById('paymentModalSubTitle').innerText = `تفاصيل التحويل لـ (${selectedPackageForPayment})`;
       document.getElementById('paymentModal').classList.remove('hidden');
     }
 
@@ -1028,6 +1063,42 @@
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text);
       showCustomModal('تم النسخ', `تم نسخ الرقم (${text}) بنجاح!`, 'success');
+    }
+
+    async function handleSendPaymentVerification(e) {
+      if (e) e.preventDefault();
+      if (!currentUser) {
+        return showCustomModal('تنبيه', 'يرجى تسجيل الدخول بحسابك أولاً لإرسال طلب التفعيل.', 'info', () => {
+          closePaymentModal();
+          openStudentTab('login');
+        });
+      }
+
+      const senderNum = document.getElementById('senderNumberInput').value.trim();
+      const btn = document.getElementById('btnSendVerifyPayment');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري إرسال الطلب...';
+
+      try {
+        await sendToSheet({
+          action: "createPaymentRequest",
+          userId: currentUser.id,
+          studentName: currentUser.full_name,
+          studentPhone: currentUser.phone,
+          senderNumber: senderNum,
+          packageTitle: selectedPackageForPayment
+        });
+
+        closePaymentModal();
+        document.getElementById('senderNumberInput').value = '';
+        showCustomModal('تم إرسال الطلب بنجاح ⚡', 'تم تسجيل طلب التفعيل الخاص بك وسيتم مراجعته وتفعيل المواد لحسابك فوراً.', 'success');
+      } catch (err) {
+        showCustomModal('خطأ', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> إرسال طلب التفعيل للإدارة فوراً ⚡';
+      }
     }
 
     function promptAddReview() {
@@ -1459,7 +1530,7 @@
 
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         let vId = url.includes('v=') ? url.split('v=')[1]?.split('&')[0] : url.split('youtu.be/')[1];
-        screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&enablejsapi=1" class="w-full h-full border-0 rounded-3xl" allowfullscreen></iframe>`;
+        screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&enablejsapi=1" class="w-full h-full border-0 rounded-3xl" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>`;
         currentVideoElement = null;
       } else if (url.includes('mediadelivery.net') || url.includes('iframe') || url.includes('bunny')) {
         let embedUrl = url;
@@ -1467,20 +1538,37 @@
         if (!embedUrl.includes('?')) {
           embedUrl += '?autoplay=true';
         }
-        screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="${embedUrl}" loading="lazy" class="w-full h-full border-0 rounded-3xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
+        screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="${embedUrl}" loading="lazy" class="w-full h-full border-0 rounded-3xl" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>`;
         currentVideoElement = null;
       } else {
-        screen.innerHTML = `<video id="nativeVideo" src="${url}" controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-3xl" autoplay playsinline></video>`;
+        screen.innerHTML = `<video id="nativeVideo" src="${url}" controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-3xl" autoplay playsinline webkit-playsinline></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
       }
     }
 
+    // دعم ملء الشاشة الكامل لجميع أجهزة الأندرويد والتابلت
     function togglePlayerFullscreen() {
-      const vid = document.getElementById('nativeVideo');
       const container = document.getElementById('playerContainer');
-      if (vid && vid.requestFullscreen) vid.requestFullscreen();
-      else if (vid && vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
-      else if (container.requestFullscreen) container.requestFullscreen();
+      const vid = document.getElementById('nativeVideo');
+
+      if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+      } else {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else if (container.mozRequestFullScreen) {
+          container.mozRequestFullScreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
+        } else if (vid && vid.webkitEnterFullscreen) {
+          vid.webkitEnterFullscreen(); // لهواتف iOS القديمة
+        }
+      }
     }
 
     function setPlayerSpeed(speed, btn) {
@@ -1513,7 +1601,6 @@
       try {
         let downloadUrl = url;
 
-        // استخراج Video ID والتحقق عبر الـ API
         let vidId = '';
         if (url.includes('mediadelivery.net') || url.includes('bunnycdn.com') || url.includes('b-cdn.net')) {
           if (url.includes('/embed/')) vidId = url.split('/embed/')[1].split('?')[0].split('/')[1] || url.split('/embed/')[1].split('?')[0];
@@ -1566,6 +1653,11 @@
           }
         }
 
+        // التحقق من أن حجم الملف أكبر من 500 كيلوبايت لضمان عدم حفظ ملف وهمي أو تالف
+        if (loaded < 500 * 1024) {
+          throw new Error('لم تكتمل معالجة الفيديو في سيرفر Bunny بعد. يرجى الانتظار دقيقة والمحاولة مجدداً.');
+        }
+
         const videoBlob = new Blob(chunks, { type: 'video/mp4' });
         const recordId = 'vid_' + (currentActiveLecture.id || Date.now());
 
@@ -1590,7 +1682,7 @@
 
         progressBar.style.width = '100%';
         percentText.innerText = '100%';
-        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة وتخزينها في ذاكرة التطبيق، يمكنك تشغيلها بدون إنترنت دائماً.', 'success');
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل وتخزينها في ذاكرة التطبيق، يمكنك تشغيلها بدون إنترنت دائماً.', 'success');
       } catch (e) {
         showCustomModal('خطأ في التحميل', e.message, 'error');
       } finally {
@@ -1863,11 +1955,11 @@
         return;
       }
 
-      ['dashSectionUpload', 'dashSectionContentManage', 'dashSectionUsers', 'dashSectionDoctors'].forEach(id => {
+      ['dashSectionUpload', 'dashSectionContentManage', 'dashSectionUsers', 'dashSectionPaymentReqs', 'dashSectionDoctors'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
 
-      ['btnTabUpload', 'btnTabContentManage', 'btnTabUsers', 'btnTabDoctors'].forEach(id => {
+      ['btnTabUpload', 'btnTabContentManage', 'btnTabUsers', 'btnTabPaymentReqs', 'btnTabDoctors'].forEach(id => {
         document.getElementById(id).className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap';
       });
 
@@ -1876,6 +1968,7 @@
       if (tab === 'tab-upload') document.getElementById('dashSectionUpload').classList.remove('hidden');
       if (tab === 'tab-content-manage') { document.getElementById('dashSectionContentManage').classList.remove('hidden'); loadUploadedContentForManagement(); }
       if (tab === 'tab-users') { document.getElementById('dashSectionUsers').classList.remove('hidden'); loadAllServerUsers(); }
+      if (tab === 'tab-payment-reqs') { document.getElementById('dashSectionPaymentReqs').classList.remove('hidden'); loadPaymentRequestsForManagement(); }
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
@@ -1981,6 +2074,60 @@
         `;
         tbody.appendChild(tr);
       });
+    }
+
+    // إدارة طلبات الدفع والتفعيل المباشر
+    async function loadPaymentRequestsForManagement() {
+      const tbody = document.getElementById('paymentRequestsTableBody');
+      tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات التحويل...</td></tr>';
+
+      try {
+        const reqs = await getFromSheet('getPaymentRequests');
+        const list = Array.isArray(reqs) ? reqs : [];
+        const pendingList = list.filter(r => r.status === 'pending');
+
+        if (pendingList.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">لا توجد طلبات تحويل معلقة حالياً.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        pendingList.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-3.5 font-bold text-white">${r.studentName || '--'}</td>
+            <td class="p-3.5 font-mono text-slate-300">${r.studentPhone || '--'}</td>
+            <td class="p-3.5 font-mono text-amber-400 font-bold">${r.senderNumber || '--'}</td>
+            <td class="p-3.5 text-cyan-300">${r.packageTitle || '--'}</td>
+            <td class="p-3.5 text-center">
+              <button onclick="approveStudentPaymentRequest('${r.id}', '${r.userId}', '${r.studentName}')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black px-3.5 py-1.5 rounded-xl text-xs shadow-md transition">
+                تفعيل الحساب فوراً ✅
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-400 font-bold">تعذر جلب الطلبات: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function approveStudentPaymentRequest(reqId, userId, studentName) {
+      showCustomModal('تأكيد التفعيل', `هل تريد تأكيد استلام المبلغ وتفعيل جميع المواد للطالب (${studentName})؟`, 'warning', async (confirmed) => {
+        if (confirmed) {
+          try {
+            await sendToSheet({
+              action: "approvePaymentRequest",
+              requestId: reqId,
+              userId: userId
+            });
+            showCustomModal('تم التفعيل بنجاح', `تم تفعيل المواد للطالب (${studentName}) بنجاح!`, 'success');
+            loadPaymentRequestsForManagement();
+          } catch (err) {
+            showCustomModal('خطأ في التفعيل', err.message, 'error');
+          }
+        }
+      }, true);
     }
 
     function openManageSubsModal(userId) {
