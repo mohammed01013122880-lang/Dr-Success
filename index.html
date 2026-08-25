@@ -42,7 +42,7 @@
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none" oncontextmenu="return false;">
 
-  <!-- النافذة المنبثقة الاحترافية (Custom Modal) -->
+  <!-- النافذة المنبثقة العامة -->
   <div id="customModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 transition-all duration-200">
     <div class="modal-box bg-[#111a2e] border border-slate-700/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl shadow-cyan-950/60 relative">
       <div id="modalIconBox" class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
@@ -59,6 +59,32 @@
           إلغاء
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- نافذة إدارة الاشتراكات -->
+  <div id="manageSubsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="modal-box bg-[#111a2e] border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-black text-sm sm:text-base text-white">إدارة اشتراكات الطالب</h3>
+          <p id="subStudentNameHeader" class="text-xs text-cyan-400 font-bold mt-0.5">--</p>
+        </div>
+        <button onclick="closeSubsModal()" class="p-2 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="flex justify-between items-center bg-[#090e1a] p-3 rounded-2xl border border-slate-800">
+        <span class="text-xs font-bold text-slate-300">تفعيل الباقة الكاملة (كل المواد)</span>
+        <button onclick="toggleAllCoursesForCurrentStudent()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md">
+          تفعيل الكل ⚡
+        </button>
+      </div>
+
+      <div id="subsCoursesListContainer" class="space-y-2.5 max-h-64 overflow-y-auto custom-scrollbar p-1"></div>
+
+      <button onclick="closeSubsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-2xl text-xs border border-slate-700">
+        إغلاق النافذة
+      </button>
     </div>
   </div>
 
@@ -444,8 +470,8 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-xl font-bold text-xs transition">
-                <i class="fa-solid fa-cloud-arrow-down ml-1"></i> حفظ بدون نت
+              <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-md">
+                <i class="fa-solid fa-cloud-arrow-down"></i> <span id="btnDownloadText">حفظ بدون نت</span>
               </button>
               <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold text-xs transition">
                 <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
@@ -502,7 +528,7 @@
       </section>
     </section>
 
-    <!-- 8. لوحة تحكم المالك المركزية (محمية 100%) -->
+    <!-- 8. لوحة تحكم المالك المركزية -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -530,10 +556,14 @@
           </button>
         </div>
 
-        <!-- تبويب 1: رفع محتوى -->
+        <!-- تبويب 1: رفع محتوى مباشر إلى Bunny.net -->
         <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
-            <h3 class="text-cyan-400 font-bold text-sm border-b border-slate-800 pb-2">نشر محاضرة فيديو جديدة</h3>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-cyan-400 font-bold text-sm">نشر محاضرة فيديو (رفع مباشر لـ Bunny)</h3>
+              <span class="text-[10px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-full font-mono">Bunny Stream API</span>
+            </div>
+            
             <form onsubmit="handleUploadLecture(event)" class="space-y-3">
               <select id="uploadSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
@@ -542,7 +572,9 @@
                 <option value="biochemistry">Biochemistry</option>
                 <option value="microbiology">Microbiology</option>
               </select>
+              
               <input type="text" id="lectureTitle" placeholder="عنوان المحاضرة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              
               <div class="grid grid-cols-2 gap-3">
                 <input type="text" id="lectureDuration" placeholder="المدة (مثال: 50 دقيقة)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
                 <select id="lectureType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
@@ -550,8 +582,31 @@
                   <option value="true">👁️ مجانية للجميع</option>
                 </select>
               </div>
-              <input type="url" id="lectureVideoUrl" placeholder="رابط الفيديو (Direct MP4 / YouTube)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <button type="submit" id="btnUploadLectureSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20">نشر المحاضرة الآن 🚀</button>
+
+              <!-- خيار رفع ملف الفيديو مباشرة من الجهاز -->
+              <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                <label class="block text-[11px] font-bold text-slate-300">اختر ملف الفيديو من جهازك (MP4 / MKV):</label>
+                <input type="file" id="lectureVideoFileInput" accept="video/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 cursor-pointer">
+              </div>
+
+              <!-- خيار بديل: وضع رابط خارجي إن وجد -->
+              <div class="text-center text-[10px] text-slate-500 font-bold">-- أو ضع رابط فيديو جاهز إن وجد --</div>
+              <input type="url" id="lectureVideoUrl" placeholder="رابط خارجي (اختياري إذا لم تختر ملف)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+
+              <!-- شريط التقدم للرفع -->
+              <div id="uploadProgressBarContainer" class="hidden bg-[#090e1a] p-2.5 rounded-xl border border-slate-800 space-y-1">
+                <div class="flex justify-between text-[10px] font-bold text-cyan-300">
+                  <span id="uploadProgressStatusText">جاري تهيئة الرفع...</span>
+                  <span id="uploadProgressPercentText">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div id="uploadProgressBarFill" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 transition-all duration-150"></div>
+                </div>
+              </div>
+
+              <button type="submit" id="btnUploadLectureSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20 transition">
+                نشر المحاضرة الآن 🚀
+              </button>
             </form>
           </div>
 
@@ -576,7 +631,7 @@
           </div>
         </div>
 
-        <!-- تبويب 2: سجل الطلاب (للمالك فقط) -->
+        <!-- تبويب 2: سجل الطلاب -->
         <div id="dashSectionUsers" class="hidden space-y-4">
           <div class="flex flex-wrap justify-between items-center bg-[#111a2e] p-4 rounded-2xl border border-slate-800 gap-3">
             <input type="text" id="searchUserInput" oninput="filterUsersTable()" placeholder="ابحث باسم الطالب أو الهاتف..." class="bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white w-64">
@@ -589,11 +644,11 @@
             <table class="w-full text-right text-xs">
               <thead class="bg-[#090e1a] text-slate-400 font-black border-b border-slate-800 text-[11px]">
                 <tr>
-                  <th class="p-4">الاسم</th>
+                  <th class="p-4">اسم الطالب</th>
                   <th class="p-4">الهاتف والبريد</th>
                   <th class="p-4">الجامعة والفرقة</th>
-                  <th class="p-4">المواد المفعلة للطالب</th>
-                  <th class="p-4 text-center">التحكم في الاشتراك</th>
+                  <th class="p-4">المواد المشترك بها</th>
+                  <th class="p-4 text-center">الاشتراكات والمواد</th>
                   <th class="p-4 text-center">إدارة الجهاز</th>
                 </tr>
               </thead>
@@ -602,7 +657,7 @@
           </div>
         </div>
 
-        <!-- تبويب 3: طلبات اعتماد المحاضرين (للمالك فقط) -->
+        <!-- تبويب 3: طلبات اعتماد المحاضرين -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين الجدد المعلقة للاعتماد
@@ -631,6 +686,10 @@
     const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwZHl9dgIcvmpKklA6a65wRLNQvjWCmXaZ4N97nUihwwHU4W0mgs4NNodhXx80vPiieow/exec";
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
+    // إعدادات مكتبة Bunny.net المباشرة
+    const BUNNY_LIBRARY_ID = "736281";
+    const BUNNY_API_KEY = "191b587a-c366-4447-998cdc8f53cd-78e9-449f";
+
     const ACADEMY_DATA = {
       dental_anatomy: { id: 'dental_anatomy', title: 'Dental Anatomy', doctor: 'Dr. Ahmed El-Taher', price: 400, image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80', desc: 'تضاريس وتشريح الأسنان وفيديوهات الكارفينج.' },
       anatomy: { id: 'anatomy', title: 'General Anatomy', doctor: 'Dr. Mohamed Fawzy', price: 400, image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=800&q=80', desc: 'تشريح منطقة الرأس والعنق.' },
@@ -645,6 +704,7 @@
     let currentActiveLecture = null;
     let currentVideoElement = null;
     let allPlatformUsers = [];
+    let currentManagingStudent = null;
     let modalCallback = null;
 
     let pdfDoc = null;
@@ -655,6 +715,15 @@
     let isDrawing = false;
     let drawCtx = null;
     let pageDrawingsCache = {};
+
+    function openVideoDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('DrSuccessOfflineDB', 1);
+        req.onupgradeneeded = () => req.result.createObjectStore('videos', { keyPath: 'url' });
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
 
     try {
       const cached = localStorage.getItem('dr_success_cached_user');
@@ -742,7 +811,6 @@
     function navigate(view) {
       const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
 
-      // حماية لوحة التحكم: تمنع أي شخص غير المالك أو المحاضر المعتمد
       if (view === 'instructor-dash') {
         if (!currentUser || (!isOwner && (currentUser.role !== 'doctor' || !currentUser.is_approved))) {
           showCustomModal('غير مصرح', 'ليس لديك صلاحية الدخول للوحة التحكم.', 'error');
@@ -837,7 +905,6 @@
       }
     }
 
-    // تسجيل الطالب
     async function handleStudentRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentRegisterSubmit');
@@ -891,7 +958,6 @@
       }
     }
 
-    // دخول الطالب
     async function handleStudentLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentLoginSubmit');
@@ -905,7 +971,7 @@
 
       try {
         const users = await getFromSheet('getUsers');
-        const user = users.find(u => u.email && u.email.toLowerCase() === email && String(u.password) === String(password));
+        const user = users.find(u => (u.email || '').toLowerCase() === email && String(u.password) === String(password));
 
         if (!user) {
           showCustomModal('بيانات غير صحيحة', 'تأكد من كتابة البريد الإلكتروني وكلمة المرور بشكل سليم.', 'error');
@@ -928,7 +994,6 @@
       }
     }
 
-    // طلب انضمام دكتور جديد
     async function handleDoctorRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorRegisterSubmit');
@@ -952,7 +1017,7 @@
           phone: phone,
           assigned_subject: subject,
           role: 'doctor',
-          is_approved: false, // لا يدخل أبداً إلا بموافقة المالك
+          is_approved: false,
           unlocked_courses: [subject]
         };
 
@@ -968,7 +1033,6 @@
       }
     }
 
-    // دخول المحاضر أو المالك
     async function handleDoctorLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorLoginSubmit');
@@ -982,7 +1046,6 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
 
       try {
-        // 1. إذا كان المالك الحصري
         if (isOwner) {
           currentUser = { email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
           userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
@@ -992,16 +1055,14 @@
           return;
         }
 
-        // 2. إذا كان دكتور آخر
         const users = await getFromSheet('getUsers');
-        const doc = users.find(u => u.email && u.email.toLowerCase() === email && String(u.password) === String(pass) && u.role === 'doctor');
+        const doc = users.find(u => (u.email || '').toLowerCase() === email && String(u.password) === String(pass) && u.role === 'doctor');
 
         if (!doc) {
           showCustomModal('خطأ في البيانات', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'error');
           return;
         }
 
-        // التحقق الصارم من حالة الاعتماد
         const isApproved = doc.is_approved === true || String(doc.is_approved).toLowerCase() === 'true';
         if (!isApproved) {
           showCustomModal('الحساب قيد المراجعة ⏳', 'طلب انضمامك مسجل ولكنه بانتظار موافقة واعتماد المالك أولاً.', 'warning');
@@ -1124,8 +1185,11 @@
         let vId = url.includes('v=') ? url.split('v=')[1]?.split('&')[0] : url.split('youtu.be/')[1];
         screen.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vId}?autoplay=1" class="w-full h-full border-0 rounded-2xl" allowfullscreen></iframe>`;
         currentVideoElement = null;
+      } else if (url.includes('iframe.mediadelivery.net') || url.includes('bunny.net')) {
+        screen.innerHTML = `<iframe src="${url}" loading="lazy" class="w-full h-full border-0 rounded-2xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
+        currentVideoElement = null;
       } else {
-        screen.innerHTML = `<video id="nativeVideo" src="${url}" controls class="w-full h-full object-contain bg-black rounded-2xl" autoplay playsinline></video>`;
+        screen.innerHTML = `<video id="nativeVideo" src="${url}" controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-2xl" autoplay playsinline></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
       }
     }
@@ -1146,29 +1210,62 @@
 
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
+      const url = currentActiveLecture.video_url;
+
+      if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('iframe.mediadelivery.net')) {
+        return showCustomModal('تنبيه', 'المحاضرات المضمنة من مشغل Bunny أو YouTube يمكن مشاهدتها أونلاين فقط، التحميل الأوفلاين متاح للفيديوهات المباشرة.', 'info');
+      }
+
       const btn = document.getElementById('btnDownloadOffline');
-      const oldText = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الحفظ...';
+      const textSpan = document.getElementById('btnDownloadText');
       btn.disabled = true;
+      textSpan.innerText = 'جاري التحميل 0%';
 
       try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('فشل جلب ملف الفيديو');
+
+        const contentLength = response.headers.get('content-length');
+        const total = parseInt(contentLength, 10);
+        let loaded = 0;
+
+        const reader = response.body.getReader();
+        const chunks = [];
+
+        while(true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          loaded += value.length;
+          if (total) {
+            const percent = Math.round((loaded / total) * 100);
+            textSpan.innerText = `جاري التحميل ${percent}%`;
+          }
+        }
+
+        const blob = new Blob(chunks, { type: 'video/mp4' });
+        const db = await openVideoDB();
+        const tx = db.transaction('videos', 'readwrite');
+        tx.objectStore('videos').put({ url: url, blob: blob });
+
         let downloads = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
-        if (!downloads.find(d => d.title === currentActiveLecture.title)) {
+        if (!downloads.find(d => d.video_url === url)) {
           downloads.push({
             id: currentActiveLecture.id || Date.now(),
             title: currentActiveLecture.title,
             duration: currentActiveLecture.duration || '',
-            video_url: currentActiveLecture.video_url,
+            video_url: url,
             saved_at: new Date().toLocaleDateString('ar-EG')
           });
           localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
         }
-        showCustomModal('تم الحفظ بنجاح 💾', 'تم حفظ المحاضرة داخل التطبيق، يمكنك مشاهدتها دائماً من قسم التنزيلات بدون إنترنت.', 'success');
+
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل على جهازك! يمكنك مشاهدتها دائماً من قسم التنزيلات حتى في حال انقطاع الإنترنت.', 'success');
       } catch(e) {
-        showCustomModal('تعذر الحفظ', e.message, 'error');
+        showCustomModal('تعذر الحفظ', 'حدث خطأ أثناء تنزيل المحاضرة: ' + e.message, 'error');
       } finally {
-        btn.innerHTML = oldText;
         btn.disabled = false;
+        textSpan.innerText = 'حفظ بدون نت';
       }
     }
 
@@ -1193,23 +1290,50 @@
             <p class="text-[10px] text-slate-500 mt-1">تاريخ الحفظ: ${item.saved_at} ${item.duration ? '• المدة: ' + item.duration : ''}</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="playOfflineLecture('${item.video_url}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition">تشغيل 👁️</button>
-            <button onclick="deleteOfflineItem(${idx})" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="playOfflineSavedVideo('${item.video_url}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1">
+              <i class="fa-solid fa-play"></i> تشغيل أوفلاين
+            </button>
+            <button onclick="deleteOfflineItem(${idx}, '${item.video_url}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    function playOfflineLecture(url, title) {
-      currentActiveLecture = { video_url: url, title: title };
-      navigate('course-view');
-      playLecture(currentActiveLecture);
+    async function playOfflineSavedVideo(url, title) {
+      try {
+        const db = await openVideoDB();
+        const tx = db.transaction('videos', 'readonly');
+        const req = tx.objectStore('videos').get(url);
+
+        req.onsuccess = () => {
+          if (req.result && req.result.blob) {
+            const blobUrl = URL.createObjectURL(req.result.blob);
+            currentActiveLecture = { video_url: blobUrl, title: `${title} (أوفلاين)` };
+            navigate('course-view');
+            playLecture(currentActiveLecture);
+          } else {
+            currentActiveLecture = { video_url: url, title: title };
+            navigate('course-view');
+            playLecture(currentActiveLecture);
+          }
+        };
+      } catch(e) {
+        currentActiveLecture = { video_url: url, title: title };
+        navigate('course-view');
+        playLecture(currentActiveLecture);
+      }
     }
 
-    function deleteOfflineItem(idx) {
-      showCustomModal('حذف المحاضرة المحفوظة', 'هل أنت متأكد من حذف هذه المحاضرة من جهازك؟', 'warning', (confirmed) => {
+    async function deleteOfflineItem(idx, url) {
+      showCustomModal('حذف المحاضرة', 'هل أنت متأكد من حذف هذه المحاضرة المحفوظة؟', 'warning', async (confirmed) => {
         if (confirmed) {
+          try {
+            const db = await openVideoDB();
+            const tx = db.transaction('videos', 'readwrite');
+            tx.objectStore('videos').delete(url);
+          } catch(e) {}
+
           let list = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
           list.splice(idx, 1);
           localStorage.setItem('dr_success_offline_list', JSON.stringify(list));
@@ -1218,9 +1342,15 @@
       }, true);
     }
 
-    function clearAllOfflineDownloads() {
-      showCustomModal('مسح الكل', 'هل تريد مسح جميع المحاضرات المحفوظة أوفلاين؟', 'warning', (confirmed) => {
+    async function clearAllOfflineDownloads() {
+      showCustomModal('مسح الكل', 'هل تريد مسح جميع المحاضرات المحفوظة أوفلاين؟', 'warning', async (confirmed) => {
         if (confirmed) {
+          try {
+            const db = await openVideoDB();
+            const tx = db.transaction('videos', 'readwrite');
+            tx.objectStore('videos').clear();
+          } catch(e) {}
+
           localStorage.removeItem('dr_success_offline_list');
           renderDownloadsView();
           showCustomModal('تم المسح', 'تم تفريغ قائمة التنزيلات المحفوظة بنجاح.', 'success');
@@ -1228,7 +1358,7 @@
       }, true);
     }
 
-    // استوديو PDF التفاعلي
+    // استوديو PDF
     async function openPdfStudio(doc) {
       document.getElementById('videoContainerWrapper').classList.add('hidden');
       document.getElementById('pdfStudioContainer').classList.remove('hidden');
@@ -1384,13 +1514,11 @@
     function prevPdfPage() { if (pdfPageNum > 1) { pdfPageNum--; renderPdfPage(pdfPageNum); } }
     function nextPdfPage() { if (pdfPageNum < pdfDoc.numPages) { pdfPageNum++; renderPdfPage(pdfPageNum); } }
 
-    // لوحة التحكم - الصلاحيات المحصنة
     function loadInstructorDashboard() {
       const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
       
       document.getElementById('docTag').innerText = isOwner ? 'المالك (Super Admin)' : `محاضر: ${currentUser?.assigned_subject || ''}`;
       
-      // إظهار تبويبات الإدارة الحساسة للمالك فقط
       const btnUsers = document.getElementById('btnTabUsers');
       const btnDoctors = document.getElementById('btnTabDoctors');
 
@@ -1408,7 +1536,6 @@
     function switchDashTab(tab, btn) {
       const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
 
-      // منع أي محاولة لفتح التبويبات الإدارية لغير المالك
       if ((tab === 'tab-users' || tab === 'tab-doctors') && !isOwner) {
         showCustomModal('غير مصرح', 'هذا القسم متاح لمالك المنصة فقط.', 'error');
         return;
@@ -1434,9 +1561,20 @@
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Google Sheets...</td></tr>';
 
       try {
-        allPlatformUsers = await getFromSheet('getUsers');
+        const rawUsers = await getFromSheet('getUsers');
+        
+        allPlatformUsers = Array.isArray(rawUsers) ? rawUsers.map(u => ({
+          id: u.id || u[0] || '',
+          full_name: u.full_name || u[1] || 'طالب',
+          email: u.email || u[2] || '',
+          phone: u.phone || u[4] || '',
+          university: u.university || u[5] || 'جامعة كفر الشيخ',
+          faculty: u.faculty || u[6] || 'طب أسنان',
+          role: u.role || u[7] || 'student',
+          unlocked_courses: Array.isArray(u.unlocked_courses) ? u.unlocked_courses : (typeof u.unlocked_courses === 'string' ? JSON.parse(u.unlocked_courses || '[]') : [])
+        })) : [];
 
-        if (!Array.isArray(allPlatformUsers) || allPlatformUsers.length === 0) {
+        if (allPlatformUsers.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">لا يوجد أي حسابات مسجلة حتى الآن.</td></tr>';
           return;
         }
@@ -1453,72 +1591,121 @@
       list.forEach(u => {
         const isDoc = u.role === 'doctor';
         const unlocked = u.unlocked_courses || [];
+        const unlockedText = unlocked.map(id => ACADEMY_DATA[id]?.title || id).join(', ');
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-4 font-bold text-white">${u.full_name || '--'} ${isDoc ? '<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded mr-1">محاضر</span>' : ''}</td>
-          <td class="p-4 text-slate-300 font-mono">${u.phone || '--'}<br><span class="text-[10px] text-slate-500">${u.email || ''}</span></td>
-          <td class="p-4 text-slate-300">${u.university ? `${u.university} (${u.faculty || ''})` : '--'}</td>
+          <td class="p-4 font-bold text-white">${u.full_name} ${isDoc ? '<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded mr-1">محاضر</span>' : ''}</td>
+          <td class="p-4 text-slate-300 font-mono">${u.phone}<br><span class="text-[10px] text-slate-500">${u.email}</span></td>
+          <td class="p-4 text-slate-300">${u.university} (${u.faculty})</td>
           <td class="p-4">
-            <span class="text-cyan-400 font-bold">${unlocked.length > 0 ? unlocked.join(', ') : 'لا يوجد مواد مفعلة'}</span>
+            <span class="text-cyan-400 font-bold">${unlocked.length > 0 ? unlockedText : '<span class="text-slate-500 text-[11px]">لا يوجد مواد</span>'}</span>
           </td>
           <td class="p-4 text-center">
             ${!isDoc ? `
-              <select onchange="toggleCourseForStudent('${u.id}', this.value, this)" class="bg-[#090e1a] border border-slate-700 rounded-lg text-xs text-cyan-300 px-2 py-1">
-                <option value="">+ تفعيل / إغلاق مادة</option>
-                <option value="dental_anatomy">Dental Anatomy</option>
-                <option value="anatomy">General Anatomy</option>
-                <option value="histology">Histology</option>
-                <option value="biochemistry">Biochemistry</option>
-                <option value="microbiology">Microbiology</option>
-                <option value="all">⭐ تفعيل كل المواد</option>
-              </select>
+              <button onclick="openManageSubsModal('${u.id}')" class="bg-cyan-600/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-600 hover:text-white px-3 py-1.5 rounded-xl font-bold text-xs transition">
+                إدارة المواد والاشتراك 📚
+              </button>
             ` : '--'}
           </td>
           <td class="p-4 text-center">
-            ${!isDoc ? `<button onclick="resetStudentDevice('${u.id}', '${u.full_name}')" class="bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition"><i class="fa-solid fa-arrows-rotate ml-1"></i> فك قفل الجهاز</button>` : '--'}
+            ${!isDoc ? `<button onclick="resetStudentDevice('${u.id}', '${u.full_name}')" class="bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600 hover:text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-arrows-rotate ml-1"></i> فك قفل الجهاز</button>` : '--'}
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    async function toggleCourseForStudent(userId, subjectKey, selectEl) {
-      if (!subjectKey) return;
-      const user = allPlatformUsers.find(u => u.id === userId);
-      if (!user) return;
+    function openManageSubsModal(userId) {
+      const student = allPlatformUsers.find(u => u.id === userId);
+      if (!student) return;
 
-      let courses = user.unlocked_courses || [];
-      if (subjectKey === 'all') {
-        courses = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology'];
-        applyCourseUpdate(userId, courses, selectEl);
-      } else {
-        if (courses.includes(subjectKey)) {
-          showCustomModal('إلغاء تفعيل مادة', `المادة (${subjectKey}) مفعلة للطالب بالفعل، هل تريد إلغاء تفعيلها؟`, 'warning', async (confirmed) => {
-            if (confirmed) {
-              courses = courses.filter(c => c !== subjectKey);
-              await applyCourseUpdate(userId, courses, selectEl);
-            }
-          }, true);
-        } else {
-          courses.push(subjectKey);
-          applyCourseUpdate(userId, courses, selectEl);
-        }
-      }
+      currentManagingStudent = student;
+      document.getElementById('subStudentNameHeader').innerText = `${student.full_name} (${student.phone})`;
+
+      renderSubsModalCourses();
+      document.getElementById('manageSubsModal').classList.remove('hidden');
     }
 
-    async function applyCourseUpdate(userId, courses, selectEl) {
+    function closeSubsModal() {
+      document.getElementById('manageSubsModal').classList.add('hidden');
+      currentManagingStudent = null;
+    }
+
+    function renderSubsModalCourses() {
+      const container = document.getElementById('subsCoursesListContainer');
+      container.innerHTML = '';
+      if (!currentManagingStudent) return;
+
+      const userCourses = currentManagingStudent.unlocked_courses || [];
+
+      Object.values(ACADEMY_DATA).forEach(course => {
+        const isEnrolled = userCourses.includes(course.id);
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-3 rounded-2xl bg-[#090e1a] border border-slate-800";
+        item.innerHTML = `
+          <div>
+            <h4 class="text-xs font-bold text-white">${course.title}</h4>
+            <span class="text-[10px] ${isEnrolled ? 'text-emerald-400 font-bold' : 'text-slate-500'}">${isEnrolled ? 'المادة مفعلة للطالب ✅' : 'المادة مقفولة 🔒'}</span>
+          </div>
+          <div>
+            ${isEnrolled ? `
+              <button onclick="toggleSingleCourse('${course.id}', false)" class="bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500 hover:text-white px-3 py-1 rounded-xl text-xs font-bold transition">
+                إلغاء المادة ❌
+              </button>
+            ` : `
+              <button onclick="toggleSingleCourse('${course.id}', true)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-xl text-xs font-bold shadow-md shadow-cyan-600/30 transition">
+                تفعيل المادة ✅
+              </button>
+            `}
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    async function toggleSingleCourse(courseId, enable) {
+      if (!currentManagingStudent) return;
+      let courses = currentManagingStudent.unlocked_courses || [];
+
+      if (enable) {
+        if (!courses.includes(courseId)) courses.push(courseId);
+      } else {
+        courses = courses.filter(c => c !== courseId);
+      }
+
+      currentManagingStudent.unlocked_courses = courses;
+      renderSubsModalCourses();
+
       try {
         await sendToSheet({
           action: "updateUserCourses",
-          userId: userId,
+          userId: currentManagingStudent.id,
           unlocked_courses: courses
         });
-        showCustomModal('تم التحديث بنجاح', 'تم تحديث اشتراك الطالب وحفظ التغيير في Google Sheets!', 'success');
         loadAllServerUsers();
-      } catch(e) {
-        showCustomModal('فشل التحديث', e.message, 'error');
+      } catch (err) {
+        showCustomModal('خطأ', err.message, 'error');
       }
-      if (selectEl) selectEl.value = '';
+    }
+
+    async function toggleAllCoursesForCurrentStudent() {
+      if (!currentManagingStudent) return;
+      const allKeys = Object.keys(ACADEMY_DATA);
+      currentManagingStudent.unlocked_courses = allKeys;
+      renderSubsModalCourses();
+
+      try {
+        await sendToSheet({
+          action: "updateUserCourses",
+          userId: currentManagingStudent.id,
+          unlocked_courses: allKeys
+        });
+        showCustomModal('تم التفعيل', 'تم تفعيل جميع المواد للطالب بنجاح!', 'success');
+        loadAllServerUsers();
+      } catch (err) {
+        showCustomModal('خطأ', err.message, 'error');
+      }
     }
 
     async function resetStudentDevice(userId, studentName) {
@@ -1603,6 +1790,53 @@
       } catch (err) { showCustomModal('خطأ في الاعتماد', err.message, 'error'); }
     }
 
+    // الرفع المباشر التلقائي لسيرفرات Bunny.net عبر الـ API
+    async function uploadVideoToBunny(file, title, onProgress) {
+      // 1. إنشاء سجل الفيديو في مكتبة Bunny
+      const createRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`, {
+        method: 'POST',
+        headers: {
+          'AccessKey': BUNNY_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ title: title })
+      });
+
+      if (!createRes.ok) throw new Error('فشل إنشاء جلسة رفع الفيديو في سيرفر Bunny');
+      const videoObj = await createRes.json();
+      const videoId = videoObj.guid;
+
+      // 2. رفع ملف الفيديو الفعلي
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`);
+        xhr.setRequestHeader('AccessKey', BUNNY_API_KEY);
+        xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && onProgress) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            onProgress(percent);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            // رابط المشغل المباشر
+            const playUrl = `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}`;
+            resolve(playUrl);
+          } else {
+            reject(new Error('تعذر رفع ملف الفيديو إلى سيرفرات البث'));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('انقطع الاتصال أثناء الرفع'));
+        xhr.send(file);
+      });
+    }
+
+    // نشر محاضرة فيديو (رفع مباشر أو رابط)
     async function handleUploadLecture(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadLectureSubmit');
@@ -1611,31 +1845,59 @@
       const sub = document.getElementById('uploadSubjectSelect').value;
       const title = document.getElementById('lectureTitle').value.trim();
       const duration = document.getElementById('lectureDuration').value.trim();
-      const url = document.getElementById('lectureVideoUrl').value.trim();
+      const manualUrl = document.getElementById('lectureVideoUrl').value.trim();
+      const fileInput = document.getElementById('lectureVideoFileInput');
       const isFree = document.getElementById('lectureType').value === 'true';
 
-      if (!title || !url) return showCustomModal('بيانات ناقصة', 'يرجى إدخال عنوان ورابط المحاضرة.', 'warning');
+      const file = fileInput.files && fileInput.files[0];
+
+      if (!title) return showCustomModal('بيانات ناقصة', 'يرجى كتابة عنوان المحاضرة.', 'warning');
+      if (!file && !manualUrl) return showCustomModal('تنبيه', 'يرجى اختيار ملف فيديو للرفع أو إدخال رابط مباشر.', 'warning');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
 
+      let finalVideoUrl = manualUrl;
+
+      const progressBox = document.getElementById('uploadProgressBarContainer');
+      const progressFill = document.getElementById('uploadProgressBarFill');
+      const progressPercent = document.getElementById('uploadProgressPercentText');
+      const progressStatus = document.getElementById('uploadProgressStatusText');
+
       try {
+        if (file) {
+          progressBox.classList.remove('hidden');
+          progressStatus.innerText = 'جاري رفع الفيديو لسيرفرات Bunny...';
+
+          finalVideoUrl = await uploadVideoToBunny(file, title, (percent) => {
+            progressFill.style.width = `${percent}%`;
+            progressPercent.innerText = `${percent}%`;
+          });
+
+          progressStatus.innerText = 'تم الرفع! جاري الحفظ في المنصة...';
+        }
+
         await sendToSheet({
           action: "addLecture",
           subject_id: sub,
           title: title,
           duration: duration || 'غير محدد',
-          video_url: url,
+          video_url: finalVideoUrl,
           is_free: isFree
         });
 
-        showCustomModal('تم النشر بنجاح 🎉', 'تم نشر المحاضرة وأصبحت متاحة للطلاب على المنصة وفي الشيت.', 'success');
+        showCustomModal('تم نشر المحاضرة بنجاح 🎉', 'تم رفع الفيديو ونشره للطلاب على المنصة وفي السجل.', 'success');
+        
         document.getElementById('lectureTitle').value = '';
         document.getElementById('lectureDuration').value = '';
         document.getElementById('lectureVideoUrl').value = '';
+        fileInput.value = '';
+        progressBox.classList.add('hidden');
+        progressFill.style.width = '0%';
         loadGlobalStats();
       } catch (err) {
-        showCustomModal('خطأ في النشر', err.message, 'error');
+        showCustomModal('خطأ في الرفع', err.message, 'error');
+        progressBox.classList.add('hidden');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
