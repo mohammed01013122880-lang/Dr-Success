@@ -32,9 +32,35 @@
       user-select: none; z-index: 30; animation: floatMark 16s infinite alternate ease-in-out;
     }
     canvas { touch-action: none; }
+
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-box { animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
   </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none" oncontextmenu="return false;">
+
+  <!-- النافذة المنبثقة الاحترافية (Custom Modal) -->
+  <div id="customModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 transition-all duration-200">
+    <div class="modal-box bg-[#111a2e] border border-slate-700/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl shadow-cyan-950/60 relative">
+      <div id="modalIconBox" class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+        <i id="modalIcon" class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 id="modalTitle" class="text-base sm:text-lg font-black text-white mb-2 leading-snug">تمت العملية بنجاح</h3>
+      <p id="modalMsg" class="text-xs text-slate-300 mb-6 leading-relaxed">تفاصيل التنبيه هنا</p>
+      
+      <div id="modalActionContainer" class="flex gap-2">
+        <button onclick="closeCustomModal(true)" id="modalBtnOk" class="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 rounded-2xl text-xs shadow-lg shadow-cyan-600/30 transition">
+          موافق 🚀
+        </button>
+        <button onclick="closeCustomModal(false)" id="modalBtnCancel" class="hidden flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-2xl text-xs transition border border-slate-700">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- الهيدر -->
   <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-4 sm:px-6 py-3 backdrop-blur-md">
@@ -318,7 +344,7 @@
             </h2>
             <p class="text-xs text-slate-400 mt-1">المحاضرات المحفوظة على جهازك للمشاهدة بدون إنترنت</p>
           </div>
-          <button onclick="clearAllOfflineDownloads()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold">
+          <button onclick="clearAllOfflineDownloads()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-500/20 transition">
             مسح الكل
           </button>
         </div>
@@ -365,7 +391,7 @@
           <button onclick="navigate('courses-grid')" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl text-xs">
             الذهاب للمواد الدراسية 🚀
           </button>
-          <button onclick="handleLogout()" class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-5 py-2.5 rounded-xl text-xs font-bold">
+          <button onclick="handleLogout()" class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-rose-500/20 transition">
             تسجيل الخروج
           </button>
         </div>
@@ -373,7 +399,7 @@
     </section>
 
     <!-- 7. مشغل المادة واستوديو PDF -->
-    <section id="viewStudentPlatform" class="hidden w-full flex flex-col md:flex-row flex-1 overflow-hidden">
+    <section id="viewStudentPlatform" class="hidden w-full flex-col md:flex-row flex-1 overflow-hidden">
       <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
         <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
           <div class="flex items-center justify-between">
@@ -418,10 +444,10 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-xl font-bold text-xs">
+              <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-xl font-bold text-xs transition">
                 <i class="fa-solid fa-cloud-arrow-down ml-1"></i> حفظ بدون نت
               </button>
-              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold text-xs">
+              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold text-xs transition">
                 <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
               </button>
             </div>
@@ -476,7 +502,7 @@
       </section>
     </section>
 
-    <!-- 8. لوحة تحكم المالك المركزية -->
+    <!-- 8. لوحة تحكم المالك المركزية (محمية 100%) -->
     <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-6">
         
@@ -496,10 +522,10 @@
           <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap">
             رفع المحتوى والمذكرات 🚀
           </button>
-          <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+          <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="hidden flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
             سجل الطلاب وتفعيل الاشتراكات (Excel) 📊
           </button>
-          <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+          <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="hidden flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
             اعتماد المحاضرين الجدد 👨‍🏫
           </button>
         </div>
@@ -550,7 +576,7 @@
           </div>
         </div>
 
-        <!-- تبويب 2: سجل الطلاب -->
+        <!-- تبويب 2: سجل الطلاب (للمالك فقط) -->
         <div id="dashSectionUsers" class="hidden space-y-4">
           <div class="flex flex-wrap justify-between items-center bg-[#111a2e] p-4 rounded-2xl border border-slate-800 gap-3">
             <input type="text" id="searchUserInput" oninput="filterUsersTable()" placeholder="ابحث باسم الطالب أو الهاتف..." class="bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white w-64">
@@ -576,7 +602,7 @@
           </div>
         </div>
 
-        <!-- تبويب 3: طلبات اعتماد المحاضرين -->
+        <!-- تبويب 3: طلبات اعتماد المحاضرين (للمالك فقط) -->
         <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
             طلبات المحاضرين الجدد المعلقة للاعتماد
@@ -619,6 +645,7 @@
     let currentActiveLecture = null;
     let currentVideoElement = null;
     let allPlatformUsers = [];
+    let modalCallback = null;
 
     let pdfDoc = null;
     let pdfPageNum = 1;
@@ -633,7 +660,8 @@
       const cached = localStorage.getItem('dr_success_cached_user');
       if (cached) {
         currentUser = JSON.parse(cached);
-        userUnlockedSubjects = currentUser.unlocked_courses || (currentUser.role === 'super_admin' ? ['all'] : []);
+        const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        userUnlockedSubjects = currentUser.unlocked_courses || (isOwner ? ['all'] : []);
         updateUserUI();
       }
     } catch(e) {}
@@ -641,6 +669,47 @@
     function toggleMobileNav() {
       const m = document.getElementById('mobileNavMenu');
       m.classList.toggle('hidden');
+    }
+
+    function showCustomModal(title, msg, type = 'success', callback = null, showCancel = false) {
+      const modal = document.getElementById('customModal');
+      const iconBox = document.getElementById('modalIconBox');
+      const icon = document.getElementById('modalIcon');
+      const titleEl = document.getElementById('modalTitle');
+      const msgEl = document.getElementById('modalMsg');
+      const cancelBtn = document.getElementById('modalBtnCancel');
+      const okBtn = document.getElementById('modalBtnOk');
+
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+      modalCallback = callback;
+
+      cancelBtn.classList.toggle('hidden', !showCancel);
+      okBtn.innerText = showCancel ? 'نعم، متأكد' : 'موافق 🚀';
+
+      if (type === 'success') {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+        icon.className = 'fa-solid fa-circle-check';
+      } else if (type === 'error') {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-rose-500/10 text-rose-400 border border-rose-500/30';
+        icon.className = 'fa-solid fa-circle-xmark';
+      } else if (type === 'warning') {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-amber-500/10 text-amber-400 border border-amber-500/30';
+        icon.className = 'fa-solid fa-triangle-exclamation';
+      } else {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30';
+        icon.className = 'fa-solid fa-circle-info';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeCustomModal(confirmed = true) {
+      document.getElementById('customModal').classList.add('hidden');
+      if (modalCallback) {
+        modalCallback(confirmed);
+        modalCallback = null;
+      }
     }
 
     async function sendToSheet(payload) {
@@ -671,6 +740,16 @@
     }
 
     function navigate(view) {
+      const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
+      // حماية لوحة التحكم: تمنع أي شخص غير المالك أو المحاضر المعتمد
+      if (view === 'instructor-dash') {
+        if (!currentUser || (!isOwner && (currentUser.role !== 'doctor' || !currentUser.is_approved))) {
+          showCustomModal('غير مصرح', 'ليس لديك صلاحية الدخول للوحة التحكم.', 'error');
+          return navigate('landing');
+        }
+      }
+
       ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewDownloads', 'viewUserProfile', 'viewStudentPlatform', 'viewInstructorDash'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
@@ -725,7 +804,8 @@
 
     function openProfileOrDashboard() {
       if (currentUser) {
-        if (currentUser.role === 'super_admin' || currentUser.role === 'doctor') {
+        const isOwner = currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        if (isOwner || (currentUser.role === 'doctor' && currentUser.is_approved)) {
           navigate('instructor-dash');
         } else {
           navigate('user-profile');
@@ -746,7 +826,7 @@
       box.innerHTML = '';
       const list = currentUser.unlocked_courses || [];
       if (list.length === 0) {
-        box.innerHTML = '<span class="text-slate-500 text-xs">لا يوجد مواد مفعلة حالياً. تواصل مع الإدارة لتفعيل اشتراكك.</span>';
+        box.innerHTML = '<span class="text-slate-500 text-xs">لا توجد مواد مفعلة حالياً. تواصل مع الإدارة لتفعيل اشتراكك.</span>';
       } else {
         list.forEach(c => {
           const badge = document.createElement('span');
@@ -757,6 +837,7 @@
       }
     }
 
+    // تسجيل الطالب
     async function handleStudentRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentRegisterSubmit');
@@ -769,10 +850,12 @@
       const university = document.getElementById('regUniversity').value;
       const faculty = document.getElementById('regFaculty').value;
 
-      if (!email || !password || !fullName || !phone) return alert('يرجى ملء جميع الحقول المطلوبة.');
+      if (!email || !password || !fullName || !phone) {
+        return showCustomModal('بيانات غير مكتملة', 'يرجى ملء جميع الحقول المطلوبة للتسجيل.', 'warning');
+      }
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري حفظ البيانات في Google Sheets...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري حفظ البيانات...';
 
       try {
         const deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
@@ -785,6 +868,7 @@
           university: university,
           faculty: faculty,
           role: 'student',
+          is_approved: true,
           unlocked_courses: [],
           device_session: deviceId
         };
@@ -796,16 +880,18 @@
         localStorage.setItem('dr_success_device_id', deviceId);
 
         updateUserUI();
-        navigate('courses-grid');
-        alert('🎉 تم إنشاء حسابك بنجاح وحفظه في Google Sheets! مرحباً بك يا دكتور.');
+        showCustomModal('تم إنشاء حسابك بنجاح يا دكتور 🎉', 'مرحباً بك في Dr Success Academy! يمكنك الآن تصفح المواد والمحاضرات.', 'success', () => {
+          navigate('courses-grid');
+        });
       } catch (err) {
-        alert('❌ حدث خطأ أثناء الاتصال: ' + err.message);
+        showCustomModal('خطأ في التسجيل', err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     }
 
+    // دخول الطالب
     async function handleStudentLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentLoginSubmit');
@@ -815,14 +901,14 @@
       const password = document.getElementById('loginStudentPass').value;
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق من الشيت...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
 
       try {
         const users = await getFromSheet('getUsers');
         const user = users.find(u => u.email && u.email.toLowerCase() === email && String(u.password) === String(password));
 
         if (!user) {
-          alert('بيانات الدخول غير صحيحة. يرجى التأكد من البريد وكلمة المرور.');
+          showCustomModal('بيانات غير صحيحة', 'تأكد من كتابة البريد الإلكتروني وكلمة المرور بشكل سليم.', 'error');
           return;
         }
 
@@ -835,13 +921,14 @@
         updateUserUI();
         navigate('courses-grid');
       } catch (err) {
-        alert('خطأ أثناء الدخول: ' + err.message);
+        showCustomModal('خطأ في الاتصال', err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     }
 
+    // طلب انضمام دكتور جديد
     async function handleDoctorRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorRegisterSubmit');
@@ -865,21 +952,23 @@
           phone: phone,
           assigned_subject: subject,
           role: 'doctor',
-          is_approved: false,
+          is_approved: false, // لا يدخل أبداً إلا بموافقة المالك
           unlocked_courses: [subject]
         };
 
         await sendToSheet(payload);
-        alert('✅ تم إرسال طلب الانضمام وسيتم اعتماده من المالك في Google Sheets!');
-        openDoctorTab('login');
+        showCustomModal('تم إرسال الطلب بنجاح 📋', 'تم تسجيل طلبك بنجاح. حسابك بانتظار مراجعة واعتماد المالك قبل تفعيل الدخول.', 'info', () => {
+          openDoctorTab('login');
+        });
       } catch (err) {
-        alert('خطأ: ' + err.message);
+        showCustomModal('خطأ', err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
       }
     }
 
+    // دخول المحاضر أو المالك
     async function handleDoctorLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorLoginSubmit');
@@ -893,6 +982,7 @@
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
 
       try {
+        // 1. إذا كان المالك الحصري
         if (isOwner) {
           currentUser = { email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
           userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
@@ -902,15 +992,19 @@
           return;
         }
 
+        // 2. إذا كان دكتور آخر
         const users = await getFromSheet('getUsers');
         const doc = users.find(u => u.email && u.email.toLowerCase() === email && String(u.password) === String(pass) && u.role === 'doctor');
 
         if (!doc) {
-          alert('بيانات الدخول غير صحيحة.');
+          showCustomModal('خطأ في البيانات', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'error');
           return;
         }
-        if (!doc.is_approved) {
-          alert('حسابك بانتظار موافقة واعتماد المالك.');
+
+        // التحقق الصارم من حالة الاعتماد
+        const isApproved = doc.is_approved === true || String(doc.is_approved).toLowerCase() === 'true';
+        if (!isApproved) {
+          showCustomModal('الحساب قيد المراجعة ⏳', 'طلب انضمامك مسجل ولكنه بانتظار موافقة واعتماد المالك أولاً.', 'warning');
           return;
         }
 
@@ -920,7 +1014,7 @@
         updateUserUI();
         navigate('instructor-dash');
       } catch (err) {
-        alert('خطأ: ' + err.message);
+        showCustomModal('خطأ في الاتصال', err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -947,7 +1041,7 @@
           </div>
           <div class="flex items-center justify-between border-t border-slate-800 pt-3 mt-4">
             <span class="text-sm font-black text-cyan-400">${isUnlocked ? 'مفعل لك ✅' : '400 ج.م'}</span>
-            <button onclick="openCourseView('${course.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold">دخول 👁️</button>
+            <button onclick="openCourseView('${course.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold transition">دخول 👁️</button>
           </div>
         `;
         container.appendChild(card);
@@ -992,7 +1086,7 @@
             hasLec = true;
             const d = document.createElement('div');
             d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
-            d.onclick = () => { if (can) playLecture(l); else alert('هذه المحاضرة مقفولة للمشتركين'); };
+            d.onclick = () => { if (can) playLecture(l); else showCustomModal('محتوى مخصص للمشتركين', 'هذه المحاضرة متاحة للطلاب المشتركين في المادة فقط.', 'info'); };
             d.innerHTML = `<span><i class="fa-solid ${can ? 'fa-play text-cyan-400' : 'fa-lock text-amber-400'} ml-1"></i> ${l.title}</span><span class="text-[10px] text-slate-500">${l.duration || ''}</span>`;
             lecBox.appendChild(d);
           }
@@ -1000,7 +1094,7 @@
             hasNote = true;
             const d = document.createElement('div');
             d.className = `p-2.5 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-rose-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
-            d.onclick = () => { if (can) openPdfStudio(l); else alert('هذه المذكرة مقفولة للمشتركين'); };
+            d.onclick = () => { if (can) openPdfStudio(l); else showCustomModal('محتوى مخصص للمشتركين', 'هذه المذكرة متاحة للطلاب المشتركين في المادة فقط.', 'info'); };
             d.innerHTML = `<span><i class="fa-solid ${can ? 'fa-file-pdf text-rose-400' : 'fa-lock text-amber-400'} ml-1"></i> ${l.title}</span>`;
             noteBox.appendChild(d);
           }
@@ -1051,10 +1145,10 @@
     }
 
     async function downloadCurrentLectureOffline() {
-      if (!currentActiveLecture) return alert('اختر محاضرة أولاً');
+      if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       const btn = document.getElementById('btnDownloadOffline');
       const oldText = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التنزيل...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الحفظ...';
       btn.disabled = true;
 
       try {
@@ -1069,9 +1163,9 @@
           });
           localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
         }
-        alert('✅ تم حفظ المحاضرة بنجاح! يمكنك مشاهدتها دائماً من قسم "التنزيلات".');
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم حفظ المحاضرة داخل التطبيق، يمكنك مشاهدتها دائماً من قسم التنزيلات بدون إنترنت.', 'success');
       } catch(e) {
-        alert('تعذر الحفظ: ' + e.message);
+        showCustomModal('تعذر الحفظ', e.message, 'error');
       } finally {
         btn.innerHTML = oldText;
         btn.disabled = false;
@@ -1099,8 +1193,8 @@
             <p class="text-[10px] text-slate-500 mt-1">تاريخ الحفظ: ${item.saved_at} ${item.duration ? '• المدة: ' + item.duration : ''}</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="playOfflineLecture('${item.video_url}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold">تشغيل 👁️</button>
-            <button onclick="deleteOfflineItem(${idx})" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="playOfflineLecture('${item.video_url}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition">تشغيل 👁️</button>
+            <button onclick="deleteOfflineItem(${idx})" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
           </div>
         `;
         container.appendChild(card);
@@ -1114,16 +1208,24 @@
     }
 
     function deleteOfflineItem(idx) {
-      let list = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
-      list.splice(idx, 1);
-      localStorage.setItem('dr_success_offline_list', JSON.stringify(list));
-      renderDownloadsView();
+      showCustomModal('حذف المحاضرة المحفوظة', 'هل أنت متأكد من حذف هذه المحاضرة من جهازك؟', 'warning', (confirmed) => {
+        if (confirmed) {
+          let list = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
+          list.splice(idx, 1);
+          localStorage.setItem('dr_success_offline_list', JSON.stringify(list));
+          renderDownloadsView();
+        }
+      }, true);
     }
 
     function clearAllOfflineDownloads() {
-      if (!confirm('هل تريد مسح جميع المحاضرات المحفوظة؟')) return;
-      localStorage.removeItem('dr_success_offline_list');
-      renderDownloadsView();
+      showCustomModal('مسح الكل', 'هل تريد مسح جميع المحاضرات المحفوظة أوفلاين؟', 'warning', (confirmed) => {
+        if (confirmed) {
+          localStorage.removeItem('dr_success_offline_list');
+          renderDownloadsView();
+          showCustomModal('تم المسح', 'تم تفريغ قائمة التنزيلات المحفوظة بنجاح.', 'success');
+        }
+      }, true);
     }
 
     // استوديو PDF التفاعلي
@@ -1157,7 +1259,7 @@
           pdfPageNum = 1;
           renderPdfPage(pdfPageNum);
         } catch(err2) {
-          alert('تعذر فتح ملف الـ PDF. تأكد من أن الرابط مباشر وينتهي بـ .pdf.');
+          showCustomModal('خطأ في فتح الملف', 'تعذر فتح ملف الـ PDF. تأكد من صحة الرابط المباشر للملف.', 'error');
         }
       }
     }
@@ -1282,13 +1384,36 @@
     function prevPdfPage() { if (pdfPageNum > 1) { pdfPageNum--; renderPdfPage(pdfPageNum); } }
     function nextPdfPage() { if (pdfPageNum < pdfDoc.numPages) { pdfPageNum++; renderPdfPage(pdfPageNum); } }
 
+    // لوحة التحكم - الصلاحيات المحصنة
     function loadInstructorDashboard() {
       const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+      
       document.getElementById('docTag').innerText = isOwner ? 'المالك (Super Admin)' : `محاضر: ${currentUser?.assigned_subject || ''}`;
+      
+      // إظهار تبويبات الإدارة الحساسة للمالك فقط
+      const btnUsers = document.getElementById('btnTabUsers');
+      const btnDoctors = document.getElementById('btnTabDoctors');
+
+      if (isOwner) {
+        btnUsers.classList.remove('hidden');
+        btnDoctors.classList.remove('hidden');
+      } else {
+        btnUsers.classList.add('hidden');
+        btnDoctors.classList.add('hidden');
+      }
+
       switchDashTab('tab-upload', document.getElementById('btnTabUpload'));
     }
 
     function switchDashTab(tab, btn) {
+      const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
+      // منع أي محاولة لفتح التبويبات الإدارية لغير المالك
+      if ((tab === 'tab-users' || tab === 'tab-doctors') && !isOwner) {
+        showCustomModal('غير مصرح', 'هذا القسم متاح لمالك المنصة فقط.', 'error');
+        return;
+      }
+
       ['dashSectionUpload', 'dashSectionUsers', 'dashSectionDoctors'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
@@ -1365,39 +1490,51 @@
       let courses = user.unlocked_courses || [];
       if (subjectKey === 'all') {
         courses = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology'];
+        applyCourseUpdate(userId, courses, selectEl);
       } else {
         if (courses.includes(subjectKey)) {
-          if (confirm(`المادة (${subjectKey}) مفعلة للطالب بالفعل، هل تريد إلغاء تفعيلها؟`)) {
-            courses = courses.filter(c => c !== subjectKey);
-          }
+          showCustomModal('إلغاء تفعيل مادة', `المادة (${subjectKey}) مفعلة للطالب بالفعل، هل تريد إلغاء تفعيلها؟`, 'warning', async (confirmed) => {
+            if (confirmed) {
+              courses = courses.filter(c => c !== subjectKey);
+              await applyCourseUpdate(userId, courses, selectEl);
+            }
+          }, true);
         } else {
           courses.push(subjectKey);
+          applyCourseUpdate(userId, courses, selectEl);
         }
       }
+    }
 
+    async function applyCourseUpdate(userId, courses, selectEl) {
       try {
         await sendToSheet({
           action: "updateUserCourses",
           userId: userId,
           unlocked_courses: courses
         });
-        alert('تم تحديث اشتراك الطالب بنجاح في Google Sheets!');
+        showCustomModal('تم التحديث بنجاح', 'تم تحديث اشتراك الطالب وحفظ التغيير في Google Sheets!', 'success');
         loadAllServerUsers();
       } catch(e) {
-        alert('فشل التحديث: ' + e.message);
+        showCustomModal('فشل التحديث', e.message, 'error');
       }
-      selectEl.value = '';
+      if (selectEl) selectEl.value = '';
     }
 
     async function resetStudentDevice(userId, studentName) {
-      if (!confirm(`هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`)) return;
-      try {
-        await sendToSheet({
-          action: "resetDevice",
-          userId: userId
-        });
-        alert('تمت إعادة تعيين الجهاز بنجاح!');
-      } catch (err) { alert('فشل إعادة التعيين: ' + err.message); }
+      showCustomModal('فك قفل الجهاز', `هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`, 'warning', async (confirmed) => {
+        if (confirmed) {
+          try {
+            await sendToSheet({
+              action: "resetDevice",
+              userId: userId
+            });
+            showCustomModal('تمت الإعادة بنجاح', 'تمت إعادة تعيين الجهاز بنجاح ويمكن للطالب الدخول من أي جهاز الآن.', 'success');
+          } catch (err) { 
+            showCustomModal('خطأ', err.message, 'error'); 
+          }
+        }
+      }, true);
     }
 
     function filterUsersTable() {
@@ -1411,7 +1548,7 @@
     }
 
     function exportUsersToCSV() {
-      if (allPlatformUsers.length === 0) return alert('لا توجد بيانات مسجلة للتصدير');
+      if (allPlatformUsers.length === 0) return showCustomModal('تنبيه', 'لا توجد بيانات مسجلة للتصدير.', 'info');
       let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة,المواد المفعلة\n";
       allPlatformUsers.forEach(u => {
         const courses = (u.unlocked_courses || []).join(' - ');
@@ -1430,7 +1567,7 @@
 
       try {
         const all = await getFromSheet('getUsers');
-        const pending = Array.isArray(all) ? all.filter(u => u.role === 'doctor' && !u.is_approved) : [];
+        const pending = Array.isArray(all) ? all.filter(u => u.role === 'doctor' && (u.is_approved === false || String(u.is_approved).toLowerCase() === 'false')) : [];
 
         if (pending.length === 0) {
           tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
@@ -1445,7 +1582,7 @@
             <td class="p-4">${d.phone || '--'} <span class="block text-slate-500 text-[10px]">${d.email || ''}</span></td>
             <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
             <td class="p-4 text-center">
-              <button onclick="approveDoctor('${d.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs">اعتماد المحاضر ✅</button>
+              <button onclick="approveDoctor('${d.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">اعتماد المحاضر ✅</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -1461,9 +1598,9 @@
           action: "approveDoctor",
           userId: docId
         });
-        alert('تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!');
+        showCustomModal('تم الاعتماد', 'تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!', 'success');
         loadPendingDoctors();
-      } catch (err) { alert('خطأ في الاعتماد: ' + err.message); }
+      } catch (err) { showCustomModal('خطأ في الاعتماد', err.message, 'error'); }
     }
 
     async function handleUploadLecture(e) {
@@ -1477,7 +1614,7 @@
       const url = document.getElementById('lectureVideoUrl').value.trim();
       const isFree = document.getElementById('lectureType').value === 'true';
 
-      if (!title || !url) return alert('يرجى ملء جميع الحقول المطلوبة');
+      if (!title || !url) return showCustomModal('بيانات ناقصة', 'يرجى إدخال عنوان ورابط المحاضرة.', 'warning');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
@@ -1492,13 +1629,13 @@
           is_free: isFree
         });
 
-        alert('✅ تم نشر المحاضرة بنجاح وحفظها في Google Sheets!');
+        showCustomModal('تم النشر بنجاح 🎉', 'تم نشر المحاضرة وأصبحت متاحة للطلاب على المنصة وفي الشيت.', 'success');
         document.getElementById('lectureTitle').value = '';
         document.getElementById('lectureDuration').value = '';
         document.getElementById('lectureVideoUrl').value = '';
         loadGlobalStats();
       } catch (err) {
-        alert('❌ حدث خطأ: ' + err.message);
+        showCustomModal('خطأ في النشر', err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -1515,7 +1652,7 @@
       const url = document.getElementById('pdfDocUrl').value.trim();
       const isFree = document.getElementById('pdfDocType').value === 'true';
 
-      if (!title || !url) return alert('يرجى ملء جميع الحقول المطلوبة');
+      if (!title || !url) return showCustomModal('بيانات ناقصة', 'يرجى إدخال عنوان ورابط المذكرة.', 'warning');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإضافة...';
@@ -1529,12 +1666,12 @@
           is_free: isFree
         });
 
-        alert('✅ تم إضافة مذكرة الـ PDF بنجاح وأصبحت متاحة للطلاب!');
+        showCustomModal('تمت الإضافة بنجاح 📑', 'تمت إضافة مذكرة الـ PDF وأصبحت جاهزة للتدوين والشخبطة.', 'success');
         document.getElementById('pdfDocTitle').value = '';
         document.getElementById('pdfDocUrl').value = '';
         loadGlobalStats();
       } catch (err) {
-        alert('❌ حدث خطأ: ' + err.message);
+        showCustomModal('خطأ في الرفع', err.message, 'error');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -1558,7 +1695,8 @@
         if (userTagDesktop) userTagDesktop.classList.remove('hidden');
         if (userTagMobile) userTagMobile.classList.remove('hidden');
         
-        const label = currentUser.role === 'super_admin' ? `${currentUser.full_name} ⚙️` : `👤 ${currentUser.full_name}`;
+        const isOwner = currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        const label = isOwner ? `${currentUser.full_name} ⚙️` : `👤 ${currentUser.full_name}`;
         if (badgeDesktop) badgeDesktop.innerText = label;
         if (badgeMobile) badgeMobile.innerText = label;
       } else {
@@ -1572,12 +1710,16 @@
     }
 
     function handleLogout() {
-      localStorage.removeItem('dr_success_device_id');
-      localStorage.removeItem('dr_success_cached_user');
-      currentUser = null;
-      userUnlockedSubjects = [];
-      updateUserUI();
-      navigate('landing');
+      showCustomModal('تسجيل الخروج', 'هل ترغب بالتأكيد في تسجيل الخروج من حسابك؟', 'warning', (confirmed) => {
+        if (confirmed) {
+          localStorage.removeItem('dr_success_device_id');
+          localStorage.removeItem('dr_success_cached_user');
+          currentUser = null;
+          userUnlockedSubjects = [];
+          updateUserUI();
+          navigate('landing');
+        }
+      }, true);
     }
 
     navigate('landing');
