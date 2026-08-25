@@ -48,7 +48,7 @@
     <span>أنت تعمل الآن في وضع الأوفلاين (بدون إنترنت) — المحاضرات المحفوظة متاحة للتشغيل.</span>
   </div>
 
-  <!-- النافذة المنبثقة العامة (Modal) -->
+  <!-- النافذة المنبثقة العامة -->
   <div id="customModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 transition-all duration-200">
     <div class="modal-box bg-[#111a2e] border border-slate-700/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl shadow-cyan-950/60 relative">
       <div id="modalIconBox" class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
@@ -82,7 +82,6 @@
       </div>
 
       <div class="space-y-3 text-xs">
-        <!-- فودافون كاش -->
         <div class="bg-[#090e1a] p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
           <div class="space-y-1">
             <span class="text-rose-400 font-black flex items-center gap-1.5">
@@ -95,7 +94,6 @@
           </button>
         </div>
 
-        <!-- إنستاباي -->
         <div class="bg-[#090e1a] p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
           <div class="space-y-1">
             <span class="text-purple-400 font-black flex items-center gap-1.5">
@@ -121,7 +119,7 @@
     </div>
   </div>
 
-  <!-- نافذة إدارة الاشتراكات (Admin Subs Modal) -->
+  <!-- نافذة إدارة الاشتراكات -->
   <div id="manageSubsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
     <div class="modal-box bg-[#111a2e] border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -236,7 +234,6 @@
     <section id="viewLanding" class="w-full flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 space-y-12">
       <div class="max-w-7xl mx-auto space-y-12">
         
-        <!-- Hero Section -->
         <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div class="space-y-4 text-center md:text-right max-w-2xl">
             <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
@@ -278,7 +275,7 @@
           </div>
         </div>
 
-        <!-- قسم آراء وتقييمات الطلاب -->
+        <!-- قسم آراء الطلاب -->
         <div class="space-y-6">
           <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
             <div>
@@ -293,7 +290,6 @@
           </div>
 
           <div id="reviewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <!-- آراء نموذجية -->
             <div class="bg-[#111a2e] border border-slate-800 p-5 rounded-3xl space-y-3 shadow-xl">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
@@ -478,7 +474,7 @@
       </div>
     </section>
 
-    <!-- 4. شبكة المواد (مع عرض الباقة الكاملة المحدث) -->
+    <!-- 4. شبكة المواد -->
     <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
       <div class="max-w-7xl mx-auto space-y-8">
         
@@ -566,7 +562,7 @@
       </div>
     </section>
 
-    <!-- 7. مشغل المادة واستوديو PDF المدمج -->
+    <!-- 7. مشغل المادة واستوديو PDF -->
     <section id="viewStudentPlatform" class="hidden w-full flex-col md:flex-row flex-1 overflow-hidden">
       <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
         <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
@@ -597,7 +593,6 @@
       <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-2 sm:p-4 custom-scrollbar relative">
         <div id="videoContainerWrapper" class="w-full flex flex-col items-center">
           
-          <!-- المشغل الموحد والمدمج -->
           <div id="playerContainer" class="w-full max-w-4xl aspect-video bg-black rounded-3xl border border-slate-800 relative overflow-hidden shadow-2xl flex items-center justify-center min-h-[240px] sm:min-h-[380px]">
             <div class="watermark-text" id="playerWatermark">Dr Success • Student</div>
             <div id="screenPlayer" class="w-full h-full flex items-center justify-center">
@@ -605,7 +600,6 @@
             </div>
           </div>
 
-          <!-- لوحة التحكم بالسرعة والتحميل المدمجة -->
           <div class="w-full max-w-4xl bg-[#111a2e] border border-slate-800 rounded-2xl p-3 mt-3 flex flex-wrap items-center justify-between gap-3 text-xs shadow-lg">
             <div class="flex items-center gap-1 bg-[#090e1a] p-1 rounded-xl border border-slate-800">
               <span class="text-slate-400 text-[11px] font-bold px-1.5"><i class="fa-solid fa-gauge-high ml-1"></i> السرعة:</span>
@@ -626,7 +620,6 @@
             </div>
           </div>
 
-          <!-- شريط تقدم التنزيل الفعلي -->
           <div id="lectureDownloadProgressWrapper" class="hidden w-full max-w-4xl mt-3 bg-[#111a2e] border border-cyan-500/30 p-3 rounded-2xl space-y-1.5 shadow-xl">
             <div class="flex justify-between text-xs font-bold text-cyan-300">
               <span id="lecDownloadStatusText"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري تنزيل المحاضرة وتخزينها في ذاكرة التطبيق...</span>
@@ -870,6 +863,7 @@
     const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwZHl9dgIcvmpKklA6a65wRLNQvjWCmXaZ4N97nUihwwHU4W0mgs4NNodhXx80vPiieow/exec";
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
+    // إعدادات مكتبة Bunny.net
     const BUNNY_LIBRARY_ID = "736281";
     const BUNNY_API_KEY = "191b587a-c366-4447-998cdc8f53cd-78e9-449f";
 
@@ -1413,7 +1407,6 @@
       }
     }
 
-    // تشغيل المحاضرة المدمج
     function playLecture(lec) {
       currentActiveLecture = lec;
       document.getElementById('videoContainerWrapper').classList.remove('hidden');
@@ -1457,22 +1450,13 @@
       if (btn) btn.className = 'speed-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white font-black text-xs';
     }
 
-    // تنزيل وحفظ الفيديو الفعلي مع إظهار شريط النسبة المئوية
+    // تنزيل وحفظ الفيديو الفعلي الدقيق عبر Bunny API
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       let url = (currentActiveLecture.video_url || '').trim();
 
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         return showCustomModal('تنبيه', 'محاضرات YouTube متاحة للمشاهدة أونلاين فقط.', 'info');
-      }
-
-      let downloadUrl = url;
-      if (url.includes('iframe.mediadelivery.net/embed/')) {
-        const parts = url.split('/embed/')[1].split('?')[0].split('/');
-        downloadUrl = `https://vz-${parts[0]}.b-cdn.net/${parts[1]}/play_720p.mp4`;
-      } else if (url.includes('mediadelivery.net/play/')) {
-        const parts = url.split('/play/')[1].split('?')[0].split('/');
-        downloadUrl = `https://vz-${parts[0]}.b-cdn.net/${parts[1]}/play_720p.mp4`;
       }
 
       const btn = document.getElementById('btnDownloadOffline');
@@ -1486,8 +1470,31 @@
       percentText.innerText = '0%';
 
       try {
+        let downloadUrl = url;
+
+        if (url.includes('mediadelivery.net')) {
+          let vidId = '';
+          if (url.includes('/embed/')) vidId = url.split('/embed/')[1].split('?')[0].split('/')[1];
+          else if (url.includes('/play/')) vidId = url.split('/play/')[1].split('?')[0].split('/')[1];
+
+          if (vidId) {
+            const videoDataRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${vidId}`, {
+              headers: { 'AccessKey': BUNNY_API_KEY, 'Accept': 'application/json' }
+            });
+            
+            if (videoDataRes.ok) {
+              const videoData = await videoDataRes.json();
+              if (videoData.directPlayUrl) {
+                downloadUrl = videoData.directPlayUrl;
+              } else {
+                downloadUrl = `https://video.bunnycdn.com/play/${BUNNY_LIBRARY_ID}/${vidId}`;
+              }
+            }
+          }
+        }
+
         const response = await fetch(downloadUrl);
-        if (!response.ok) throw new Error('فشل جلب ملف الفيديو');
+        if (!response.ok) throw new Error('فشل جلب ملف الفيديو من السيرفر');
 
         const contentLength = response.headers.get('content-length');
         const total = parseInt(contentLength, 10);
@@ -1496,7 +1503,7 @@
         const reader = response.body.getReader();
         const chunks = [];
 
-        while(true) {
+        while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           chunks.push(value);
@@ -1526,17 +1533,9 @@
           localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
         }
 
-        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل وتخزينها في ذاكرة التطبيق! يمكنك تشغيلها بدون إنترنت دائماً.', 'success');
-      } catch(e) {
-        // في حال اعتراض CORS، يتم فتح التنزيل المباشر
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = `${currentActiveLecture.title}.mp4`;
-        a.target = '_blank';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showCustomModal('بدء التنزيل', 'تم توجيه رابط تحميل الفيديو إلى جهازك بنجاح.', 'info');
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل وتخزينها في ذاكرة التطبيق للتشغيل بدون إنترنت.', 'success');
+      } catch (e) {
+        showCustomModal('خطأ في التحميل', 'تأكد من اكتمال معالجة الفيديو في سيرفر Bunny: ' + e.message, 'error');
       } finally {
         btn.disabled = false;
         setTimeout(() => { progressWrapper.classList.add('hidden'); }, 2000);
@@ -1999,7 +1998,7 @@
       let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة,المواد المفعلة\n";
       allPlatformUsers.forEach(u => {
         const courses = (u.unlocked_courses || []).join(' - ');
-        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}","${courses}"\n`;
+        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
