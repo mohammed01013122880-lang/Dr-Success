@@ -104,7 +104,6 @@
         </div>
       </div>
 
-      <!-- أزرار الديسكتاوب -->
       <div class="hidden md:flex items-center gap-2.5">
         <button onclick="navigate('landing')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
           <i class="fa-solid fa-house ml-1"></i> الرئيسية
@@ -131,7 +130,6 @@
         </div>
       </div>
 
-      <!-- أزرار الموبايل -->
       <div class="flex md:hidden items-center gap-2">
         <button onclick="navigate('downloads-view')" class="p-2 rounded-xl bg-slate-800 text-cyan-400 border border-slate-700">
           <i class="fa-solid fa-circle-down text-sm"></i>
@@ -143,7 +141,6 @@
 
     </div>
 
-    <!-- قائمة الموبايل -->
     <div id="mobileNavMenu" class="hidden md:hidden pt-3 pb-2 border-t border-slate-800/80 mt-2 space-y-2">
       <div class="grid grid-cols-3 gap-2">
         <button onclick="navigate('landing'); toggleMobileNav();" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700">
@@ -425,7 +422,7 @@
     </section>
 
     <!-- 7. مشغل المادة واستوديو PDF -->
-    <section id="viewStudentPlatform" class="hidden w-full flex-col md:flex-row flex-1 overflow-hidden">
+    <section id="viewStudentPlatform" class="hidden w-full flex flex-col md:flex-row flex-1 overflow-hidden">
       <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
         <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
           <div class="flex items-center justify-between">
@@ -717,7 +714,7 @@
     const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwZHl9dgIcvmpKklA6a65wRLNQvjWCmXaZ4N97nUihwwHU4W0mgs4NNodhXx80vPiieow/exec";
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
-    // بيانات مكتبة Bunny.net
+    // إعدادات مكتبة Bunny.net
     const BUNNY_LIBRARY_ID = "736281";
     const BUNNY_API_KEY = "191b587a-c366-4447-998cdc8f53cd-78e9-449f";
 
@@ -936,7 +933,6 @@
       }
     }
 
-    // تسجيل الطالب
     async function handleStudentRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentRegisterSubmit');
@@ -990,7 +986,6 @@
       }
     }
 
-    // دخول الطالب
     async function handleStudentLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentLoginSubmit');
@@ -1027,7 +1022,6 @@
       }
     }
 
-    // طلب انضمام دكتور جديد
     async function handleDoctorRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorRegisterSubmit');
@@ -1067,7 +1061,6 @@
       }
     }
 
-    // دخول المحاضر أو المالك
     async function handleDoctorLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorLoginSubmit');
@@ -1220,10 +1213,8 @@
         let vId = url.includes('v=') ? url.split('v=')[1]?.split('&')[0] : url.split('youtu.be/')[1];
         screen.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vId}?autoplay=1" class="w-full h-full border-0 rounded-2xl" allowfullscreen></iframe>`;
         currentVideoElement = null;
-      } else if (url.includes('iframe.mediadelivery.net') || url.includes('bunny.net')) {
-        screen.innerHTML = `<iframe src="${url}" loading="lazy" class="w-full h-full border-0 rounded-2xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
-        currentVideoElement = null;
       } else {
+        // تشغيل مباشر لمقاطع MP4 من Bunny أو أي سيرفر مع حظر القوائم العشوائية
         screen.innerHTML = `<video id="nativeVideo" src="${url}" controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-2xl" autoplay playsinline></video>`;
         currentVideoElement = document.getElementById('nativeVideo');
       }
@@ -1243,13 +1234,13 @@
       if (btn) btn.className = 'speed-btn px-2 py-1 rounded-lg bg-cyan-600 text-white font-black text-[11px]';
     }
 
-    // تنزيل وحفظ الفيديو الفعلي
+    // تنزيل الفيديو الفعلي من Bunny وتخزينه أوفلاين
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       const url = currentActiveLecture.video_url;
 
-      if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('iframe.mediadelivery.net')) {
-        return showCustomModal('تنبيه', 'المحاضرات المضمنة من مشغل Bunny أو YouTube يمكن مشاهدتها أونلاين فقط، التحميل الأوفلاين متاح للفيديوهات المباشرة.', 'info');
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        return showCustomModal('تنبيه', 'محاضرات YouTube يمكن مشاهدتها أونلاين فقط، التحميل الأوفلاين متاح للفيديوهات المرفوعة مباشرة على المنصة.', 'info');
       }
 
       const btn = document.getElementById('btnDownloadOffline');
@@ -1259,7 +1250,7 @@
 
       try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error('فشل جلب ملف الفيديو');
+        if (!response.ok) throw new Error('فشل الاتصال بسيرفر الفيديو');
 
         const contentLength = response.headers.get('content-length');
         const total = parseInt(contentLength, 10);
@@ -1296,7 +1287,7 @@
           localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
         }
 
-        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالكامل على جهازك! يمكنك مشاهدتها دائماً من قسم التنزيلات حتى في حال انقطاع الإنترنت.', 'success');
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة وتخزينها بنجاح داخل التطبيق! يمكنك مشاهدتها دائماً من قسم التنزيلات حتى في حال انقطاع الإنترنت.', 'success');
       } catch(e) {
         showCustomModal('تعذر الحفظ', 'حدث خطأ أثناء تنزيل المحاضرة: ' + e.message, 'error');
       } finally {
@@ -1425,7 +1416,7 @@
           pdfPageNum = 1;
           renderPdfPage(pdfPageNum);
         } catch(err2) {
-          showCustomModal('خطأ في فتح الملف', 'تعذر فتح ملف الـ PDF. تأكد من صحة الرابط المباشر للملف.', 'error');
+          showCustomModal('خطأ في فتح الملف', 'تعذر فتح ملف الـ PDF. تأكد من صحة الملف المرفوع.', 'error');
         }
       }
     }
@@ -1550,7 +1541,6 @@
     function prevPdfPage() { if (pdfPageNum > 1) { pdfPageNum--; renderPdfPage(pdfPageNum); } }
     function nextPdfPage() { if (pdfPageNum < pdfDoc.numPages) { pdfPageNum++; renderPdfPage(pdfPageNum); } }
 
-    // لوحة التحكم - الصلاحيات
     function loadInstructorDashboard() {
       const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
       
@@ -1593,24 +1583,13 @@
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
-    // جلب الطلاب وعرض بياناتهم الصحيحة الصريحة
     async function loadAllServerUsers() {
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Google Sheets...</td></tr>';
 
       try {
         const rawUsers = await getFromSheet('getUsers');
-        
-        allPlatformUsers = Array.isArray(rawUsers) ? rawUsers.map(u => ({
-          id: u.id || '',
-          full_name: u.full_name || 'طالب مسجل',
-          email: u.email || '--',
-          phone: u.phone || '--',
-          university: u.university || 'جامعة كفر الشيخ',
-          faculty: u.faculty || 'طب أسنان',
-          role: u.role || 'student',
-          unlocked_courses: Array.isArray(u.unlocked_courses) ? u.unlocked_courses : (typeof u.unlocked_courses === 'string' ? JSON.parse(u.unlocked_courses || '[]') : [])
-        })) : [];
+        allPlatformUsers = Array.isArray(rawUsers) ? rawUsers : [];
 
         if (allPlatformUsers.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">لا يوجد أي حسابات مسجلة حتى الآن.</td></tr>';
@@ -1633,9 +1612,9 @@
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-4 font-bold text-white">${u.full_name} ${isDoc ? '<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded mr-1">محاضر</span>' : ''}</td>
-          <td class="p-4 text-slate-300 font-mono">${u.phone}<br><span class="text-[10px] text-slate-500">${u.email}</span></td>
-          <td class="p-4 text-slate-300">${u.university} (${u.faculty})</td>
+          <td class="p-4 font-bold text-white">${u.full_name || 'طالب مسجل'} ${isDoc ? '<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded mr-1">محاضر</span>' : ''}</td>
+          <td class="p-4 text-slate-300 font-mono">${u.phone || '--'}<br><span class="text-[10px] text-slate-500">${u.email || ''}</span></td>
+          <td class="p-4 text-slate-300">${u.university || 'جامعة كفر الشيخ'} (${u.faculty || 'طب أسنان'})</td>
           <td class="p-4">
             <span class="text-cyan-400 font-bold">${unlocked.length > 0 ? unlockedText : '<span class="text-slate-500 text-[11px]">لا يوجد مواد</span>'}</span>
           </td>
@@ -1777,7 +1756,7 @@
       let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة,المواد المفعلة\n";
       allPlatformUsers.forEach(u => {
         const courses = (u.unlocked_courses || []).join(' - ');
-        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}","${courses}"\n`;
+        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
@@ -1828,7 +1807,7 @@
       } catch (err) { showCustomModal('خطأ في الاعتماد', err.message, 'error'); }
     }
 
-    // الرفع المباشر لسيرفرات Bunny.net
+    // الرفع المباشر إلى سيرفرات Bunny.net واستخراج رابط MP4 المباشر للتشغيل والتنزيل
     async function uploadVideoToBunny(file, title, onProgress) {
       const createRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`, {
         method: 'POST',
@@ -1859,8 +1838,9 @@
 
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            const playUrl = `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}`;
-            resolve(playUrl);
+            // استخدام رابط MP4 المباشر حتى يعمل مشغل الفيديو الأصلي وزرار الحفظ أوفلاين
+            const directPlayUrl = `https://vz-736281.b-cdn.net/${videoId}/play_720p.mp4`;
+            resolve(directPlayUrl);
           } else {
             reject(new Error('تعذر رفع ملف الفيديو إلى سيرفرات البث'));
           }
@@ -1871,7 +1851,6 @@
       });
     }
 
-    // تحويل ملف PDF إلى DataURL لسهولة فتحه وعرضه محلياً وسحابياً
     function readFileAsDataURL(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
