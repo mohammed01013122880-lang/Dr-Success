@@ -116,7 +116,7 @@
         <p>2. خذ لقطة شاشة (سكرين شوت) للتحويل وأرسلها عبر الواتساب لتفعيل حسابك فوراً.</p>
       </div>
 
-      <a href="https://wa.me/201556922710?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%AD%D9%88%D9%84%D8%AA%20%D8%B1%D8%B3%D9%88%D9%85%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%88%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D9%81%D8%B9%D9%8A%D9%84%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%AF" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition">
+      <a href="https://wa.me/201556922710?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8b%D8%8C%20%D8%AD%D9%88%D9%84%D8%AA%20%D8%B1%D8%B3%D9%88%D9%85%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%88%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D9%81%D8%B9%D9%8A%D9%84%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%AF" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition">
         <i class="fa-brands fa-whatsapp text-sm"></i> إرسال إيصال التحويل على واتساب
       </a>
     </div>
@@ -1464,6 +1464,9 @@
       } else if (url.includes('mediadelivery.net') || url.includes('iframe') || url.includes('bunny')) {
         let embedUrl = url;
         if (!url.startsWith('http')) embedUrl = `https://${url}`;
+        if (!embedUrl.includes('?')) {
+          embedUrl += '?autoplay=true';
+        }
         screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="${embedUrl}" loading="lazy" class="w-full h-full border-0 rounded-3xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
         currentVideoElement = null;
       } else {
@@ -1524,17 +1527,19 @@
               if (videoData.directPlayUrl) {
                 downloadUrl = videoData.directPlayUrl;
               } else {
-                downloadUrl = `https://video.bunnycdn.com/play/${BUNNY_LIBRARY_ID}/${vidId}?quality=1080p`;
+                downloadUrl = `https://video.bunnycdn.com/play/${BUNNY_LIBRARY_ID}/${vidId}/playlist.m3u8`;
               }
             }
           }
         }
 
-        const response = await fetch(downloadUrl);
-        if (!response.ok) {
-          const fallbackRes = await fetch(downloadUrl.replace('play_720p.mp4', 'play_1080p.mp4'));
-          if (!fallbackRes.ok) throw new Error('فشل جلب ملف الـ 1080p من السيرفر');
+        if (downloadUrl.includes('iframe.mediadelivery.net/embed/')) {
+          const parts = downloadUrl.split('/embed/')[1].split('?')[0].split('/');
+          downloadUrl = `https://vz-${parts[0]}.b-cdn.net/${parts[1]}/play_480p.mp4`;
         }
+
+        const response = await fetch(downloadUrl);
+        if (!response.ok) throw new Error('تعذر جلب ملف الفيديو المباشر.');
 
         const contentLength = response.headers.get('content-length');
         const total = parseInt(contentLength, 10) || 0;
@@ -1583,9 +1588,9 @@
 
         progressBar.style.width = '100%';
         percentText.innerText = '100%';
-        showCustomModal('تم الحفظ بجودة 1080p 💾', 'تم تنزيل المحاضرة كاملة وتخزينها على جهازك لتشغيلها بدون إنترنت.', 'success');
+        showCustomModal('تم الحفظ بنجاح 💾', 'تم تنزيل المحاضرة بالجودة المرفوعة وتخزينها على جهازك لتشغيلها بدون إنترنت.', 'success');
       } catch (e) {
-        showCustomModal('خطأ في التحميل', 'تعذر تنزيل ملف الـ 1080p: ' + e.message, 'error');
+        showCustomModal('خطأ في التحميل', 'تأكد من توافر رابط الفيديو المباشر: ' + e.message, 'error');
       } finally {
         btn.disabled = false;
         setTimeout(() => { progressWrapper.classList.add('hidden'); }, 2000);
@@ -1872,7 +1877,6 @@
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
-    // إدارة وحذف المحتوى المرفوع
     async function loadUploadedContentForManagement() {
       const tbody = document.getElementById('contentManageTableBody');
       tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب المحاضرات والمذكرات...</td></tr>';
