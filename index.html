@@ -42,6 +42,12 @@
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col antialiased select-none" oncontextmenu="return false;">
 
+  <!-- شريط تنبيه العمل بدون إنترنت -->
+  <div id="offlineBanner" class="hidden bg-amber-600/90 text-white text-xs font-bold py-1.5 px-4 text-center sticky top-0 z-[60] backdrop-blur-md flex items-center justify-center gap-2">
+    <i class="fa-solid fa-wifi-slash"></i>
+    <span>أنت تعمل الآن في وضع الأوفلاين (بدون إنترنت) — يمكنك الوصول للمحاضرات المحفوظة فقط.</span>
+  </div>
+
   <!-- النافذة المنبثقة العامة -->
   <div id="customModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 transition-all duration-200">
     <div class="modal-box bg-[#111a2e] border border-slate-700/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl shadow-cyan-950/60 relative">
@@ -422,7 +428,7 @@
     </section>
 
     <!-- 7. مشغل المادة واستوديو PDF -->
-    <section id="viewStudentPlatform" class="hidden w-full flex flex-col md:flex-row flex-1 overflow-hidden">
+    <section id="viewStudentPlatform" class="hidden w-full flex-col md:flex-row flex-1 overflow-hidden">
       <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
         <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
           <div class="flex items-center justify-between">
@@ -741,7 +747,7 @@
     function openVideoDB() {
       return new Promise((resolve, reject) => {
         const req = indexedDB.open('DrSuccessOfflineDB', 1);
-        req.onupgradeneeded = () => req.result.createObjectStore('videos', { keyPath: 'url' });
+        req.onupgradeneeded = () => req.result.createObjectStore('videos', { keyPath: 'id' });
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
       });
@@ -756,6 +762,19 @@
         updateUserUI();
       }
     } catch(e) {}
+
+    // كشف حالة الاتصال بالإنترنت والتبديل للأوفلاين
+    function checkNetworkStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (!navigator.onLine) {
+        banner.classList.remove('hidden');
+        navigate('downloads-view');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+    window.addEventListener('online', checkNetworkStatus);
+    window.addEventListener('offline', checkNetworkStatus);
 
     function toggleMobileNav() {
       const m = document.getElementById('mobileNavMenu');
@@ -822,6 +841,7 @@
     }
 
     async function loadGlobalStats() {
+      if (!navigator.onLine) return;
       try {
         const users = await getFromSheet('getUsers');
         const lecs = await getFromSheet('getLectures');
@@ -927,7 +947,6 @@
       }
     }
 
-    // تسجيل الطالب
     async function handleStudentRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentRegisterSubmit');
@@ -981,7 +1000,6 @@
       }
     }
 
-    // دخول الطالب
     async function handleStudentLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentLoginSubmit');
@@ -1018,7 +1036,6 @@
       }
     }
 
-    // طلب انضمام دكتور جديد
     async function handleDoctorRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorRegisterSubmit');
@@ -1058,7 +1075,6 @@
       }
     }
 
-    // دخول المحاضر أو المالك
     async function handleDoctorLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorLoginSubmit');
@@ -1190,8 +1206,8 @@
         if (!hasLec) lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
         if (!hasNote) noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد مذكرات مرفوعة حالياً.</p>';
       } catch (err) {
-        lecBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المحتوى.</p>';
-        noteBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المذكرات.</p>';
+        lecBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المحتوى أونلاين.</p>';
+        noteBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المذكرات أونلاين.</p>';
       }
     }
 
@@ -1213,7 +1229,6 @@
         screen.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${vId}?autoplay=1" class="w-full h-full border-0 rounded-2xl" allowfullscreen></iframe>`;
         currentVideoElement = null;
       } else if (url.includes('mediadelivery.net') || url.includes('iframe') || url.includes('bunny')) {
-        // تشغيل مباشر لمشغل Bunny السحابي
         let embedUrl = url;
         if (!url.startsWith('http')) embedUrl = `https://${url}`;
         screen.innerHTML = `<iframe src="${embedUrl}" loading="lazy" class="w-full h-full border-0 rounded-2xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
@@ -1238,7 +1253,7 @@
       if (btn) btn.className = 'speed-btn px-2 py-1 rounded-lg bg-cyan-600 text-white font-black text-[11px]';
     }
 
-    // تنزيل وحفظ الفيديو الفعلي
+    // تنزيل الفيديو الفعلي وتخزينه أوفلاين
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       let url = currentActiveLecture.video_url;
@@ -1247,14 +1262,23 @@
         return showCustomModal('تنبيه', 'محاضرات YouTube يمكن مشاهدتها أونلاين فقط، التحميل الأوفلاين متاح للفيديوهات المرفوعة مباشرة على المنصة.', 'info');
       }
 
+      // تحويل رابط التضمين إلى رابط ملف MP4 مباشر إذا كان من Bunny
+      let downloadUrl = url;
+      if (url.includes('iframe.mediadelivery.net/embed/')) {
+        const parts = url.split('/embed/')[1].split('/');
+        const libId = parts[0];
+        const vidId = parts[1];
+        downloadUrl = `https://vz-${libId}.b-cdn.net/${vidId}/play_720p.mp4`;
+      }
+
       const btn = document.getElementById('btnDownloadOffline');
       const textSpan = document.getElementById('btnDownloadText');
       btn.disabled = true;
       textSpan.innerText = 'جاري التحميل 0%';
 
       try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('فشل الاتصال بسيرفر الفيديو');
+        const response = await fetch(downloadUrl);
+        if (!response.ok) throw new Error('فشل جلب ملف الفيديو من السيرفر');
 
         const contentLength = response.headers.get('content-length');
         const total = parseInt(contentLength, 10);
@@ -1275,17 +1299,18 @@
         }
 
         const blob = new Blob(chunks, { type: 'video/mp4' });
+        const recordId = 'vid_' + (currentActiveLecture.id || Date.now());
+
         const db = await openVideoDB();
         const tx = db.transaction('videos', 'readwrite');
-        tx.objectStore('videos').put({ url: url, blob: blob });
+        tx.objectStore('videos').put({ id: recordId, title: currentActiveLecture.title, blob: blob });
 
         let downloads = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
-        if (!downloads.find(d => d.video_url === url)) {
+        if (!downloads.find(d => d.id === recordId)) {
           downloads.push({
-            id: currentActiveLecture.id || Date.now(),
+            id: recordId,
             title: currentActiveLecture.title,
             duration: currentActiveLecture.duration || '',
-            video_url: url,
             saved_at: new Date().toLocaleDateString('ar-EG')
           });
           localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
@@ -1321,21 +1346,21 @@
             <p class="text-[10px] text-slate-500 mt-1">تاريخ الحفظ: ${item.saved_at} ${item.duration ? '• المدة: ' + item.duration : ''}</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="playOfflineSavedVideo('${item.video_url}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1">
+            <button onclick="playOfflineSavedVideo('${item.id}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold transition flex items-center gap-1">
               <i class="fa-solid fa-play"></i> تشغيل أوفلاين
             </button>
-            <button onclick="deleteOfflineItem(${idx}, '${item.video_url}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="deleteOfflineItem(${idx}, '${item.id}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    async function playOfflineSavedVideo(url, title) {
+    async function playOfflineSavedVideo(recordId, title) {
       try {
         const db = await openVideoDB();
         const tx = db.transaction('videos', 'readonly');
-        const req = tx.objectStore('videos').get(url);
+        const req = tx.objectStore('videos').get(recordId);
 
         req.onsuccess = () => {
           if (req.result && req.result.blob) {
@@ -1344,25 +1369,21 @@
             navigate('course-view');
             playLecture(currentActiveLecture);
           } else {
-            currentActiveLecture = { video_url: url, title: title };
-            navigate('course-view');
-            playLecture(currentActiveLecture);
+            showCustomModal('خطأ', 'ملف الفيديو غير موجود في الذاكرة.', 'error');
           }
         };
       } catch(e) {
-        currentActiveLecture = { video_url: url, title: title };
-        navigate('course-view');
-        playLecture(currentActiveLecture);
+        showCustomModal('خطأ', 'تعذر تشغيل الفيديو المحفوظ: ' + e.message, 'error');
       }
     }
 
-    async function deleteOfflineItem(idx, url) {
-      showCustomModal('حذف المحاضرة', 'هل أنت متأكد من حذف هذه المحاضرة المحفوظة؟', 'warning', async (confirmed) => {
+    async function deleteOfflineItem(idx, recordId) {
+      showCustomModal('حذف المحاضرة', 'هل أنت متأكد من حذف هذه المحاضرة المحفوظة من ذاكرة التطبيق؟', 'warning', async (confirmed) => {
         if (confirmed) {
           try {
             const db = await openVideoDB();
             const tx = db.transaction('videos', 'readwrite');
-            tx.objectStore('videos').delete(url);
+            tx.objectStore('videos').delete(recordId);
           } catch(e) {}
 
           let list = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
@@ -1811,7 +1832,6 @@
       } catch (err) { showCustomModal('خطأ في الاعتماد', err.message, 'error'); }
     }
 
-    // رفع الفيديو إلى Bunny.net واستخراج معرف التشغيل
     async function uploadVideoToBunny(file, title, onProgress) {
       const createRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`, {
         method: 'POST',
@@ -1931,7 +1951,7 @@
       }
     }
 
-    // رفع مذكرة PDF مباشرة
+    // رفع مذكرة PDF
     async function handleUploadPdf(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadPdfSubmit');
@@ -2036,6 +2056,7 @@
       }, true);
     }
 
+    checkNetworkStatus();
     navigate('landing');
     loadGlobalStats();
   </script>
