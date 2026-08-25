@@ -558,10 +558,12 @@
 
         <!-- تبويب 1: رفع محتوى مباشر إلى Bunny.net -->
         <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <!-- رفع المحاضرات -->
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
             <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-              <h3 class="text-cyan-400 font-bold text-sm">نشر محاضرة فيديو (رفع مباشر لـ Bunny)</h3>
-              <span class="text-[10px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-full font-mono">Bunny Stream API</span>
+              <h3 class="text-cyan-400 font-bold text-sm">نشر محاضرة فيديو (رفع مباشر من الجهاز)</h3>
+              <span class="text-[10px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-full font-mono">Bunny Stream</span>
             </div>
             
             <form onsubmit="handleUploadLecture(event)" class="space-y-3">
@@ -583,20 +585,19 @@
                 </select>
               </div>
 
-              <!-- خيار رفع ملف الفيديو مباشرة من الجهاز -->
+              <!-- اختيار ملف الفيديو من الجهاز -->
               <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 space-y-1.5">
-                <label class="block text-[11px] font-bold text-slate-300">اختر ملف الفيديو من جهازك (MP4 / MKV):</label>
+                <label class="block text-[11px] font-bold text-slate-300">اختر ملف الفيديو من جهازك:</label>
                 <input type="file" id="lectureVideoFileInput" accept="video/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 cursor-pointer">
               </div>
 
-              <!-- خيار بديل: وضع رابط خارجي إن وجد -->
-              <div class="text-center text-[10px] text-slate-500 font-bold">-- أو ضع رابط فيديو جاهز إن وجد --</div>
-              <input type="url" id="lectureVideoUrl" placeholder="رابط خارجي (اختياري إذا لم تختر ملف)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <div class="text-center text-[10px] text-slate-500 font-bold">-- أو ضع رابط فيديو خارجي --</div>
+              <input type="url" id="lectureVideoUrl" placeholder="رابط مباشر أو YouTube (اختياري)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
 
               <!-- شريط التقدم للرفع -->
               <div id="uploadProgressBarContainer" class="hidden bg-[#090e1a] p-2.5 rounded-xl border border-slate-800 space-y-1">
                 <div class="flex justify-between text-[10px] font-bold text-cyan-300">
-                  <span id="uploadProgressStatusText">جاري تهيئة الرفع...</span>
+                  <span id="uploadProgressStatusText">جاري الرفع...</span>
                   <span id="uploadProgressPercentText">0%</span>
                 </div>
                 <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -610,8 +611,13 @@
             </form>
           </div>
 
+          <!-- رفع مذكرات PDF (مباشر من الجهاز) -->
           <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
-            <h3 class="text-rose-400 font-bold text-sm border-b border-slate-800 pb-2">رفع مذكرة شرح PDF للتدوين</h3>
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-rose-400 font-bold text-sm">رفع مذكرة PDF (مباشر من جهازك)</h3>
+              <span class="text-[10px] bg-rose-500/10 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-mono">PDF Studio</span>
+            </div>
+
             <form onsubmit="handleUploadPdf(event)" class="space-y-3">
               <select id="pdfSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="dental_anatomy">Dental Anatomy</option>
@@ -620,15 +626,40 @@
                 <option value="biochemistry">Biochemistry</option>
                 <option value="microbiology">Microbiology</option>
               </select>
+              
               <input type="text" id="pdfDocTitle" placeholder="عنوان المذكرة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              
               <select id="pdfDocType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
                 <option value="false">🔒 مقفولة للمشتركين</option>
                 <option value="true">👁️ مجانية للجميع</option>
               </select>
-              <input type="url" id="pdfDocUrl" placeholder="رابط الـ PDF المباشر" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-              <button type="submit" id="btnUploadPdfSubmit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/20">إضافة المذكرة للمادة ⚡</button>
+
+              <!-- اختيار ملف PDF من الجهاز -->
+              <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                <label class="block text-[11px] font-bold text-slate-300">اختر ملف الـ PDF من جهازك:</label>
+                <input type="file" id="pdfFileInput" accept="application/pdf" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-rose-600 file:text-white hover:file:bg-rose-500 cursor-pointer">
+              </div>
+
+              <div class="text-center text-[10px] text-slate-500 font-bold">-- أو ضع رابط PDF مباشر --</div>
+              <input type="url" id="pdfDocUrl" placeholder="رابط PDF سحابي (اختياري)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+
+              <!-- شريط تقدم رفع الـ PDF -->
+              <div id="uploadPdfProgressContainer" class="hidden bg-[#090e1a] p-2.5 rounded-xl border border-slate-800 space-y-1">
+                <div class="flex justify-between text-[10px] font-bold text-rose-300">
+                  <span id="uploadPdfStatusText">جاري حفظ الـ PDF...</span>
+                  <span id="uploadPdfPercentText">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div id="uploadPdfBarFill" class="bg-gradient-to-r from-rose-500 to-amber-500 h-full w-0 transition-all duration-150"></div>
+                </div>
+              </div>
+
+              <button type="submit" id="btnUploadPdfSubmit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/20 transition">
+                إضافة المذكرة للمادة ⚡
+              </button>
             </form>
           </div>
+
         </div>
 
         <!-- تبويب 2: سجل الطلاب -->
@@ -686,7 +717,7 @@
     const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwZHl9dgIcvmpKklA6a65wRLNQvjWCmXaZ4N97nUihwwHU4W0mgs4NNodhXx80vPiieow/exec";
     const OWNER_EMAIL = "mohammed01013122880@gmail.com";
 
-    // إعدادات مكتبة Bunny.net المباشرة
+    // بيانات مكتبة Bunny.net
     const BUNNY_LIBRARY_ID = "736281";
     const BUNNY_API_KEY = "191b587a-c366-4447-998cdc8f53cd-78e9-449f";
 
@@ -905,6 +936,7 @@
       }
     }
 
+    // تسجيل الطالب
     async function handleStudentRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentRegisterSubmit');
@@ -958,6 +990,7 @@
       }
     }
 
+    // دخول الطالب
     async function handleStudentLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnStudentLoginSubmit');
@@ -994,6 +1027,7 @@
       }
     }
 
+    // طلب انضمام دكتور جديد
     async function handleDoctorRegister(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorRegisterSubmit');
@@ -1033,6 +1067,7 @@
       }
     }
 
+    // دخول المحاضر أو المالك
     async function handleDoctorLogin(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnDoctorLoginSubmit');
@@ -1208,6 +1243,7 @@
       if (btn) btn.className = 'speed-btn px-2 py-1 rounded-lg bg-cyan-600 text-white font-black text-[11px]';
     }
 
+    // تنزيل وحفظ الفيديو الفعلي
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       const url = currentActiveLecture.video_url;
@@ -1514,6 +1550,7 @@
     function prevPdfPage() { if (pdfPageNum > 1) { pdfPageNum--; renderPdfPage(pdfPageNum); } }
     function nextPdfPage() { if (pdfPageNum < pdfDoc.numPages) { pdfPageNum++; renderPdfPage(pdfPageNum); } }
 
+    // لوحة التحكم - الصلاحيات
     function loadInstructorDashboard() {
       const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
       
@@ -1556,6 +1593,7 @@
       if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
     }
 
+    // جلب الطلاب وعرض بياناتهم الصحيحة الصريحة
     async function loadAllServerUsers() {
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Google Sheets...</td></tr>';
@@ -1564,13 +1602,13 @@
         const rawUsers = await getFromSheet('getUsers');
         
         allPlatformUsers = Array.isArray(rawUsers) ? rawUsers.map(u => ({
-          id: u.id || u[0] || '',
-          full_name: u.full_name || u[1] || 'طالب',
-          email: u.email || u[2] || '',
-          phone: u.phone || u[4] || '',
-          university: u.university || u[5] || 'جامعة كفر الشيخ',
-          faculty: u.faculty || u[6] || 'طب أسنان',
-          role: u.role || u[7] || 'student',
+          id: u.id || '',
+          full_name: u.full_name || 'طالب مسجل',
+          email: u.email || '--',
+          phone: u.phone || '--',
+          university: u.university || 'جامعة كفر الشيخ',
+          faculty: u.faculty || 'طب أسنان',
+          role: u.role || 'student',
           unlocked_courses: Array.isArray(u.unlocked_courses) ? u.unlocked_courses : (typeof u.unlocked_courses === 'string' ? JSON.parse(u.unlocked_courses || '[]') : [])
         })) : [];
 
@@ -1739,7 +1777,7 @@
       let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة,المواد المفعلة\n";
       allPlatformUsers.forEach(u => {
         const courses = (u.unlocked_courses || []).join(' - ');
-        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}"\n`;
+        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}","${courses}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
@@ -1790,9 +1828,8 @@
       } catch (err) { showCustomModal('خطأ في الاعتماد', err.message, 'error'); }
     }
 
-    // الرفع المباشر التلقائي لسيرفرات Bunny.net عبر الـ API
+    // الرفع المباشر لسيرفرات Bunny.net
     async function uploadVideoToBunny(file, title, onProgress) {
-      // 1. إنشاء سجل الفيديو في مكتبة Bunny
       const createRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`, {
         method: 'POST',
         headers: {
@@ -1807,7 +1844,6 @@
       const videoObj = await createRes.json();
       const videoId = videoObj.guid;
 
-      // 2. رفع ملف الفيديو الفعلي
       return new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`);
@@ -1823,7 +1859,6 @@
 
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
-            // رابط المشغل المباشر
             const playUrl = `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}`;
             resolve(playUrl);
           } else {
@@ -1836,7 +1871,17 @@
       });
     }
 
-    // نشر محاضرة فيديو (رفع مباشر أو رابط)
+    // تحويل ملف PDF إلى DataURL لسهولة فتحه وعرضه محلياً وسحابياً
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // نشر محاضرة فيديو
     async function handleUploadLecture(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadLectureSubmit');
@@ -1874,7 +1919,7 @@
             progressPercent.innerText = `${percent}%`;
           });
 
-          progressStatus.innerText = 'تم الرفع! جاري الحفظ في المنصة...';
+          progressStatus.innerText = 'تم الرفع! جاري الحفظ في الشيت...';
         }
 
         await sendToSheet({
@@ -1904,6 +1949,7 @@
       }
     }
 
+    // رفع مذكرة PDF مباشرة
     async function handleUploadPdf(e) {
       if (e) e.preventDefault();
       const btn = document.getElementById('btnUploadPdfSubmit');
@@ -1911,29 +1957,53 @@
 
       const sub = document.getElementById('pdfSubjectSelect').value;
       const title = document.getElementById('pdfDocTitle').value.trim();
-      const url = document.getElementById('pdfDocUrl').value.trim();
+      const manualUrl = document.getElementById('pdfDocUrl').value.trim();
+      const fileInput = document.getElementById('pdfFileInput');
       const isFree = document.getElementById('pdfDocType').value === 'true';
 
-      if (!title || !url) return showCustomModal('بيانات ناقصة', 'يرجى إدخال عنوان ورابط المذكرة.', 'warning');
+      const file = fileInput.files && fileInput.files[0];
+
+      if (!title) return showCustomModal('بيانات ناقصة', 'يرجى إدخال عنوان المذكرة.', 'warning');
+      if (!file && !manualUrl) return showCustomModal('تنبيه', 'يرجى اختيار ملف PDF أو وضع رابط مباشر.', 'warning');
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإضافة...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري حفظ المذكرة...';
+
+      let finalPdfUrl = manualUrl;
+
+      const progressBox = document.getElementById('uploadPdfProgressContainer');
+      const progressFill = document.getElementById('uploadPdfBarFill');
+      const progressPercent = document.getElementById('uploadPdfPercentText');
 
       try {
+        if (file) {
+          progressBox.classList.remove('hidden');
+          progressFill.style.width = '50%';
+          progressPercent.innerText = '50%';
+
+          finalPdfUrl = await readFileAsDataURL(file);
+          progressFill.style.width = '100%';
+          progressPercent.innerText = '100%';
+        }
+
         await sendToSheet({
           action: "addLecture",
           subject_id: sub,
           title: title,
-          pdf_url: url,
+          pdf_url: finalPdfUrl,
           is_free: isFree
         });
 
         showCustomModal('تمت الإضافة بنجاح 📑', 'تمت إضافة مذكرة الـ PDF وأصبحت جاهزة للتدوين والشخبطة.', 'success');
         document.getElementById('pdfDocTitle').value = '';
         document.getElementById('pdfDocUrl').value = '';
+        fileInput.value = '';
+        progressBox.classList.add('hidden');
+        progressFill.style.width = '0%';
         loadGlobalStats();
       } catch (err) {
         showCustomModal('خطأ في الرفع', err.message, 'error');
+        progressBox.classList.add('hidden');
       } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
