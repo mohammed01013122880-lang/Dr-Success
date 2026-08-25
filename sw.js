@@ -1,80 +1,2307 @@
-const CACHE_NAME = 'dr-success-v2-offline-first';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dr Success Academy | منصة كورسات طب الأسنان</title>
+  
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0e1626">
 
-// الروابط والملفات الأساسية لتشغيل التطبيق بالكامل بدون نت
-const CORE_ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './logo.png',
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-];
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- PDF.js Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
 
-// التثبيت وحفظ جميع الملفات في كاش المتصفح فوراً
-self.addEventListener('install', (event) => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(CORE_ASSETS);
-    })
-  );
-});
+  <style>
+    body { font-family: 'Tajawal', sans-serif; background-color: #080c14; touch-action: manipulation; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    .course-card:hover { transform: translateY(-4px); }
+    
+    @keyframes floatMark {
+      0% { top: 12%; left: 10%; }
+      50% { top: 70%; left: 65%; }
+      100% { top: 35%; left: 35%; }
+    }
+    .watermark-text {
+      position: absolute; color: rgba(255, 255, 255, 0.25);
+      font-size: 0.8rem; font-weight: 800; pointer-events: none;
+      user-select: none; z-index: 30; animation: floatMark 16s infinite alternate ease-in-out;
+    }
+    canvas { touch-action: none; }
 
-// تفعيل النسخة الجديدة وحذف القديم
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
-  );
-});
+    @keyframes popIn {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .modal-box { animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col antialiased select-none" oncontextmenu="return false;">
 
-// الاستراتيجية الصارمة: فتح التطبيق من الذاكرة المحلية أولاً دون انتظار الإنترنت
-self.addEventListener('fetch', (event) => {
-  const requestUrl = new URL(event.request.url);
+  <!-- شريط تنبيه الأوفلاين -->
+  <div id="offlineBanner" class="hidden bg-amber-600/90 text-white text-xs font-bold py-1.5 px-4 text-center sticky top-0 z-[60] backdrop-blur-md flex items-center justify-center gap-2">
+    <i class="fa-solid fa-wifi-slash"></i>
+    <span>أنت تعمل الآن في وضع الأوفلاين (بدون إنترنت) — المحاضرات المحفوظة متاحة للتشغيل.</span>
+  </div>
 
-  // تجاهل طلبات الـ Google Apps Script أثناء الأوفلاين حتى لا تعطل التطبيق
-  if (requestUrl.href.includes('script.google.com')) {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return new Response(JSON.stringify({ status: 'offline', data: [] }), {
-          headers: { 'Content-Type': 'application/json' }
-        });
-      })
-    );
-    return;
-  }
+  <!-- النافذة المنبثقة العامة -->
+  <div id="customModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 transition-all duration-200">
+    <div class="modal-box bg-[#111a2e] border border-slate-700/80 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center shadow-2xl shadow-cyan-950/60 relative">
+      <div id="modalIconBox" class="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+        <i id="modalIcon" class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 id="modalTitle" class="text-base sm:text-lg font-black text-white mb-2 leading-snug">تمت العملية بنجاح</h3>
+      <p id="modalMsg" class="text-xs text-slate-300 mb-6 leading-relaxed">تفاصيل التنبيه هنا</p>
+      
+      <div id="modalActionContainer" class="flex gap-2">
+        <button onclick="closeCustomModal(true)" id="modalBtnOk" class="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black py-3 rounded-2xl text-xs shadow-lg shadow-cyan-600/30 transition">
+          موافق 🚀
+        </button>
+        <button onclick="closeCustomModal(false)" id="modalBtnCancel" class="hidden flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-2xl text-xs transition border border-slate-700">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
 
-  // لكل الملفات الأخرى: اقرأ من الذاكرة أولاً
-  event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
-      if (cachedResponse) {
-        // تحديث الكاش في الخلفية لو فيه نت متاح
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+  <!-- نافذة طرق الدفع والتحويل -->
+  <div id="paymentModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="modal-box bg-[#111a2e] border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-black text-base text-white flex items-center gap-2">
+            <i class="fa-solid fa-wallet text-emerald-400"></i> بيانات الدفع والاشتراك
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5" id="paymentModalSubTitle">تفاصيل التحويل للاشتراك في المواد</p>
+        </div>
+        <button onclick="closePaymentModal()" class="p-2 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="bg-[#090e1a] p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
+          <div class="space-y-1">
+            <span class="text-rose-400 font-black flex items-center gap-1.5">
+              <i class="fa-solid fa-mobile-screen-button"></i> محفظة كاش (فودافون / أورنج / اتصالات):
+            </span>
+            <span class="font-mono text-sm font-bold text-white block">01556922710</span>
+          </div>
+          <button onclick="copyToClipboard('01556922710')" class="bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold transition">
+            نسخ الرقم 📋
+          </button>
+        </div>
+
+        <div class="bg-[#090e1a] p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between">
+          <div class="space-y-1">
+            <span class="text-purple-400 font-black flex items-center gap-1.5">
+              <i class="fa-solid fa-building-columns"></i> تطبيق إنستاباي (InstaPay):
+            </span>
+            <span class="font-mono text-sm font-bold text-white block">01003946065</span>
+          </div>
+          <button onclick="copyToClipboard('01003946065')" class="bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white border border-purple-500/30 px-3 py-1.5 rounded-xl font-bold transition">
+            نسخ الرقم 📋
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-cyan-950/40 border border-cyan-800/40 p-3.5 rounded-2xl text-[11px] text-cyan-200 leading-relaxed space-y-1.5">
+        <p class="font-bold">⚠️ خطوات تأكيد الاشتراك بعد التحويل:</p>
+        <p>1. قم بالتحويل من محفظتك أو حسابك البنكي.</p>
+        <p>2. خذ لقطة شاشة (سكرين شوت) للتحويل وأرسلها عبر الواتساب لتفعيل حسابك فوراً.</p>
+      </div>
+
+      <a href="https://wa.me/201556922710?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%AD%D9%88%D9%84%D8%AA%20%D8%B1%D8%B3%D9%88%D9%85%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%88%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%AA%D9%81%D8%B9%D9%8A%D9%84%20%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%AF" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition">
+        <i class="fa-brands fa-whatsapp text-sm"></i> إرسال إيصال التحويل على واتساب
+      </a>
+    </div>
+  </div>
+
+  <!-- نافذة إدارة الاشتراكات -->
+  <div id="manageSubsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="modal-box bg-[#111a2e] border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-black text-sm sm:text-base text-white">إدارة اشتراكات الطالب</h3>
+          <p id="subStudentNameHeader" class="text-xs text-cyan-400 font-bold mt-0.5">--</p>
+        </div>
+        <button onclick="closeSubsModal()" class="p-2 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="flex justify-between items-center bg-[#090e1a] p-3 rounded-2xl border border-slate-800">
+        <span class="text-xs font-bold text-slate-300">تفعيل الباقة الكاملة (كل المواد)</span>
+        <button onclick="toggleAllCoursesForCurrentStudent()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md">
+          تفعيل الكل ⚡
+        </button>
+      </div>
+
+      <div id="subsCoursesListContainer" class="space-y-2.5 max-h-64 overflow-y-auto custom-scrollbar p-1"></div>
+
+      <button onclick="closeSubsModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-2xl text-xs border border-slate-700">
+        إغلاق النافذة
+      </button>
+    </div>
+  </div>
+
+  <!-- الهيدر -->
+  <header class="bg-[#0e1626]/95 border-b border-slate-800 sticky top-0 z-50 px-4 sm:px-6 py-3 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      
+      <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigate('landing')">
+        <img src="./logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3413/3413535.png'" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover border border-cyan-500/30 shadow-lg shadow-cyan-500/20" alt="Logo">
+        <div>
+          <h1 class="font-black text-sm sm:text-base md:text-lg tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 leading-tight">
+            DR SUCCESS ACADEMY
+          </h1>
+          <p class="text-[9px] sm:text-[11px] text-slate-300 font-bold hidden xs:block">
+            كلية طب الأسنان — جامعة كفر الشيخ (الحكومية والأهلية)
+          </p>
+        </div>
+      </div>
+
+      <div class="hidden md:flex items-center gap-2.5">
+        <button onclick="navigate('landing')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
+          <i class="fa-solid fa-house ml-1"></i> الرئيسية
+        </button>
+        <button onclick="navigate('courses-grid')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700">
+          <i class="fa-solid fa-layer-group ml-1"></i> المواد الدراسية
+        </button>
+        <button onclick="navigate('downloads-view')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-cyan-400 border border-slate-700 hover:bg-slate-700">
+          <i class="fa-solid fa-circle-down ml-1"></i> التنزيلات
+        </button>
+
+        <div id="authButtonsDesktop" class="flex items-center gap-2">
+          <button onclick="openStudentTab('login')" class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-cyan-600 text-white hover:bg-cyan-500 shadow-lg shadow-cyan-600/30">
+            <i class="fa-solid fa-graduation-cap ml-1"></i> بوابة الطلاب
+          </button>
+          <button onclick="openDoctorTab('login')" class="px-3.5 py-1.5 rounded-xl text-xs font-black bg-purple-600 text-white hover:bg-purple-500 shadow-lg shadow-purple-600/30">
+            <i class="fa-solid fa-chalkboard-user ml-1"></i> بوابة المحاضرين
+          </button>
+        </div>
+
+        <div id="userProfileTagDesktop" class="hidden flex items-center gap-2">
+          <button onclick="openProfileOrDashboard()" id="userNameBadgeDesktop" class="text-xs bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-cyan-300 font-bold hover:border-cyan-500 transition"></button>
+          <button onclick="handleLogout()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl hover:bg-rose-500/20 font-bold">خروج</button>
+        </div>
+      </div>
+
+      <div class="flex md:hidden items-center gap-2">
+        <button onclick="navigate('downloads-view')" class="p-2 rounded-xl bg-slate-800 text-cyan-400 border border-slate-700">
+          <i class="fa-solid fa-circle-down text-sm"></i>
+        </button>
+        <button id="mobileMenuToggleBtn" onclick="toggleMobileNav()" class="p-2 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:text-white">
+          <i id="mobileMenuIcon" class="fa-solid fa-bars text-sm"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div id="mobileNavMenu" class="hidden md:hidden pt-3 pb-2 border-t border-slate-800/80 mt-2 space-y-2">
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="navigate('landing'); toggleMobileNav();" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700">
+          <i class="fa-solid fa-house ml-1"></i> الرئيسية
+        </button>
+        <button onclick="navigate('courses-grid'); toggleMobileNav();" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-200 border border-slate-700">
+          <i class="fa-solid fa-layer-group ml-1"></i> المواد
+        </button>
+        <button onclick="navigate('downloads-view'); toggleMobileNav();" class="w-full py-2 rounded-xl text-xs font-bold bg-slate-800 text-cyan-400 border border-slate-700">
+          <i class="fa-solid fa-circle-down ml-1"></i> المحفوظات
+        </button>
+      </div>
+
+      <div id="authButtonsMobile" class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="openStudentTab('login'); toggleMobileNav();" class="w-full py-2.5 rounded-xl text-xs font-black bg-cyan-600 text-white shadow-md shadow-cyan-600/30">
+          <i class="fa-solid fa-graduation-cap ml-1"></i> بوابة الطلاب
+        </button>
+        <button onclick="openDoctorTab('login'); toggleMobileNav();" class="w-full py-2.5 rounded-xl text-xs font-black bg-purple-600 text-white shadow-md shadow-purple-600/30">
+          <i class="fa-solid fa-chalkboard-user ml-1"></i> بوابة المحاضر
+        </button>
+      </div>
+
+      <div id="userProfileTagMobile" class="hidden flex items-center justify-between gap-2 pt-1 border-t border-slate-800">
+        <button onclick="openProfileOrDashboard(); toggleMobileNav();" id="userNameBadgeMobile" class="text-xs flex-1 bg-slate-800 border border-slate-700 py-2 rounded-xl text-cyan-300 font-bold text-center"></button>
+        <button onclick="handleLogout(); toggleMobileNav();" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl font-bold">خروج</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- جسم الصفحة الرئيسي -->
+  <main class="flex-1 flex overflow-hidden">
+
+    <!-- 1. الواجهة الرئيسية -->
+    <section id="viewLanding" class="w-full flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-10 space-y-12">
+      <div class="max-w-7xl mx-auto space-y-12">
+        
+        <div class="relative bg-gradient-to-r from-blue-950/80 via-slate-900 to-cyan-950/80 border border-cyan-500/30 rounded-3xl p-8 lg:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+          <div class="space-y-4 text-center md:text-right max-w-2xl">
+            <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3.5 py-1 rounded-full text-xs font-black">
+              <i class="fa-solid fa-crown text-amber-400"></i> المنصة الطبية التخصصية لطب الأسنان
+            </div>
+            <h2 class="text-3xl lg:text-5xl font-black text-white leading-tight">
+              طريقك نحو الامتياز مع <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Dr Success</span>
+            </h2>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              شروحات منهجية متكاملة لطلاب <strong>كلية طب الأسنان — جامعة كفر الشيخ (الحكومية والأهلية)</strong>، أطالس تشريح وكارفينج عملية، ومذكرات ذكية للتدوين والشخبطة.
+            </p>
+            <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+              <button onclick="navigate('courses-grid')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black px-6 py-3 rounded-2xl text-xs shadow-xl shadow-cyan-600/30 transition">
+                <i class="fa-solid fa-layer-group ml-1"></i> استعراض المواد
+              </button>
+              <button id="landingRegisterBtn" onclick="openStudentTab('register')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-6 py-3 rounded-2xl text-xs transition">
+                طالب جديد (إنشاء حساب)
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 w-full md:w-auto min-w-[280px]">
+            <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
+              <div class="text-2xl font-black text-cyan-400" id="statStudents">0</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">طالب مسجل</div>
+            </div>
+            <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
+              <div class="text-2xl font-black text-blue-400">5</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">المواد المتاحة</div>
+            </div>
+            <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
+              <div class="text-2xl font-black text-purple-400" id="statLectures">0</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">محاضرة منشورة</div>
+            </div>
+            <div class="bg-[#0e1626]/90 border border-slate-700/80 p-5 rounded-2xl text-center shadow-lg">
+              <div class="text-2xl font-black text-emerald-400">A+</div>
+              <div class="text-xs text-slate-400 mt-1 font-bold">هدفنا الأكاديمي</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- قسم آراء الطلاب -->
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div>
+              <h3 class="text-xl font-black text-white flex items-center gap-2">
+                <i class="fa-solid fa-comments text-cyan-400"></i> آراء وتقييمات زملائكم الدكاترة
+              </h3>
+              <p class="text-xs text-slate-400 mt-1">تجارب حقيقية لطلاب كلية طب الأسنان مع شروحات المنصة</p>
+            </div>
+            <button onclick="promptAddReview()" class="bg-cyan-600/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-600 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition">
+              <i class="fa-solid fa-pen-nib ml-1"></i> أضف رأيك في الكورسات
+            </button>
+          </div>
+
+          <div id="reviewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="bg-[#111a2e] border border-slate-800 p-5 rounded-3xl space-y-3 shadow-xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">م</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">محمد عبد الرحمن</h4>
+                    <span class="text-[10px] text-slate-400">طب أسنان كفر الشيخ (حكومي)</span>
+                  </div>
+                </div>
+                <div class="text-amber-400 text-xs">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">"كورس الـ Dental Anatomy والشرح العملي للكارفينج فرق معايا جداً، المذكرات سهلت حفظ التفاصيل والتضاريس."</p>
+            </div>
+
+            <div class="bg-[#111a2e] border border-slate-800 p-5 rounded-3xl space-y-3 shadow-xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">ن</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">نورهان علي</h4>
+                    <span class="text-[10px] text-slate-400">طب أسنان كفر الشيخ (أهلية)</span>
+                  </div>
+                </div>
+                <div class="text-amber-400 text-xs">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">"ميزة التدوين والشخبطة على الـ PDF أثناء متابعة شرح البايو والميكرو وفرت عليا وقت كبير في تلخيص المحاضرات."</p>
+            </div>
+
+            <div class="bg-[#111a2e] border border-slate-800 p-5 rounded-3xl space-y-3 shadow-xl">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">أ</div>
+                  <div>
+                    <h4 class="text-xs font-bold text-white">أحمد حسام</h4>
+                    <span class="text-[10px] text-slate-400">طب أسنان كفر الشيخ (حكومي)</span>
+                  </div>
+                </div>
+                <div class="text-amber-400 text-xs">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed">"سلاسة تشغيل الفيديوهات وسرعة المنصة ممتازة، وتجميعة الخمس مواد باقة متكاملة وموفرة جداً."</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 2. بوابة الطلاب -->
+    <section id="viewStudentAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
+      <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+        <div class="flex bg-[#090e1a] p-1.5 rounded-2xl mb-6 border border-slate-800 text-xs font-bold gap-1">
+          <button id="tabStudentLogin" onclick="openStudentTab('login')" class="flex-1 py-2.5 rounded-xl transition font-black bg-cyan-600 text-white shadow">الدخول كطالب</button>
+          <button id="tabStudentRegister" onclick="openStudentTab('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold">طالب جديد (تسجيل)</button>
+        </div>
+
+        <form id="formStudentLogin" onsubmit="handleStudentLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+            <input type="email" id="loginStudentEmail" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+            <input type="password" id="loginStudentPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-cyan-500">
+          </div>
+          <button type="submit" id="btnStudentLoginSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
+            الدخول للمنصة 🚀
+          </button>
+        </form>
+
+        <form id="formStudentRegister" onsubmit="handleStudentRegister(event)" class="space-y-3 hidden">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">الاسم ثلاثي</label>
+            <input type="text" id="regName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-cyan-500" placeholder="مثال: أحمد محمد علي">
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">الجامعة</label>
+              <select id="regUniversity" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-cyan-500">
+                <option value="جامعة كفر الشيخ (حكومي)">كفر الشيخ (حكومي)</option>
+                <option value="جامعة كفر الشيخ (أهلية)">كفر الشيخ (أهلية)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">الفرقة الدراسية</label>
+              <select id="regFaculty" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold focus:outline-none focus:border-cyan-500">
+                <option value="طب أسنان - الفرقة الأولى">طب أسنان - الفرقة الأولى</option>
+                <option value="طب أسنان - الفرقة الثانية">طب أسنان - الفرقة الثانية</option>
+                <option value="طب أسنان - الفرقة الثالثة">طب أسنان - الفرقة الثالثة</option>
+                <option value="طب أسنان - الفرقة الرابعة">طب أسنان - الفرقة الرابعة</option>
+                <option value="طب أسنان - الفرقة الخامسة">طب أسنان - الفرقة الخامسة</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+              <input type="email" id="regEmail" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+              <input type="password" id="regPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">رقم الواتساب</label>
+            <input type="tel" id="regPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white" placeholder="010XXXXXXXX">
+          </div>
+
+          <button type="submit" id="btnStudentRegisterSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3 rounded-xl transition text-xs shadow-lg shadow-cyan-600/30">
+            إنشاء الحساب وبدء المذاكرة 🚀
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 3. بوابة المحاضرين -->
+    <section id="viewInstructorAuth" class="hidden w-full flex items-center justify-center p-6 overflow-y-auto">
+      <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+        <div class="flex bg-[#090e1a] p-1.5 rounded-2xl mb-6 border border-slate-800 text-xs font-bold gap-1">
+          <button id="tabDocLogin" onclick="openDoctorTab('login')" class="flex-1 py-2.5 rounded-xl transition font-black bg-purple-600 text-white shadow">دخول المحاضر / المالك</button>
+          <button id="tabDocRegister" onclick="openDoctorTab('register')" class="flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold">طلب انضمام محاضر</button>
+        </div>
+
+        <form id="formDoctorLogin" onsubmit="handleDoctorLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+            <input type="email" id="docLoginEmail" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+            <input type="password" id="docLoginPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white">
+          </div>
+          <button type="submit" id="btnDoctorLoginSubmit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition shadow-lg text-xs">
+            دخول لوحة التحكم والاعتمادات
+          </button>
+        </form>
+
+        <form id="formDoctorRegister" onsubmit="handleDoctorRegister(event)" class="space-y-3 hidden">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 mb-1">الاسم واللقب</label>
+            <input type="text" id="newDocName" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">المادة المخصصة</label>
+              <select id="newDocSubject" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                <option value="dental_anatomy">Dental Anatomy</option>
+                <option value="anatomy">General Anatomy</option>
+                <option value="histology">Histology</option>
+                <option value="biochemistry">Biochemistry</option>
+                <option value="microbiology">Microbiology</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">الهاتف</label>
+              <input type="tel" id="newDocPhone" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">البريد الإلكتروني</label>
+              <input type="email" id="newDocEmail" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 mb-1">كلمة المرور</label>
+              <input type="password" id="newDocPass" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+          </div>
+          <button type="submit" id="btnDoctorRegisterSubmit" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl transition text-xs mt-2">
+            إرسال طلب الانضمام للمالك ⚡
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 4. شبكة المواد -->
+    <section id="viewCoursesGrid" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+      <div class="max-w-7xl mx-auto space-y-8">
+        
+        <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/70 border-2 border-amber-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="space-y-2 text-center md:text-right">
+            <span class="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-black inline-block">
+              🔥 عرض الباقة الكاملة الشامل
+            </span>
+            <h3 class="text-xl sm:text-2xl font-black text-white">
+              اشترك في الـ 5 مواد كاملة بـ <span class="text-amber-400">1625 ج.م</span> <span class="text-xs line-through text-slate-400 mr-2">بدلاً من 2000 ج.م</span>
+            </h3>
+            <p class="text-xs text-slate-300">وفر 375 ج.م وافتح جميع المحاضرات، الفيديوهات، ومذكرات التدوين التفاعلية لكل مواد الفصل الدراسي.</p>
+          </div>
+          <button onclick="openPaymentModal('باقة الـ 5 مواد كاملة (1625 ج.م)')" class="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs shadow-xl shadow-amber-500/20 whitespace-nowrap transition transform hover:scale-105">
+            الاشتراك في الباقة الكاملة ⚡
+          </button>
+        </div>
+
+        <div id="cardsGridContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- 5. التنزيلات (أوفلاين) -->
+    <section id="viewDownloads" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+      <div class="max-w-4xl mx-auto space-y-6">
+        <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 shadow-2xl flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-black text-white flex items-center gap-2">
+              <i class="fa-solid fa-circle-down text-cyan-400"></i> المحاضرات المحفوظة (أوفلاين)
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">المحاضرات المحفوظة على جهازك للمشاهدة بدون إنترنت</p>
+          </div>
+          <button onclick="clearAllOfflineDownloads()" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold hover:bg-rose-500/20 transition">
+            مسح الكل
+          </button>
+        </div>
+        <div id="downloadsListContainer" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- 6. الملف الشخصي للطالب -->
+    <section id="viewUserProfile" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+      <div class="max-w-2xl mx-auto bg-[#111a2e] border border-slate-800 rounded-3xl p-6 lg:p-8 space-y-6 shadow-2xl">
+        <div class="flex items-center gap-4 border-b border-slate-800 pb-5">
+          <div class="w-16 h-16 rounded-2xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-2xl text-cyan-400 font-black" id="profileAvatar">د</div>
+          <div>
+            <h2 class="text-lg font-black text-white" id="profileFullName">--</h2>
+            <span class="text-xs text-cyan-400 font-bold" id="profileRoleTag">طالب</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800">
+            <span class="text-slate-400 block mb-1">البريد الإلكتروني</span>
+            <span class="font-bold text-white font-mono" id="profileEmail">--</span>
+          </div>
+          <div class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800">
+            <span class="text-slate-400 block mb-1">رقم الواتساب</span>
+            <span class="font-bold text-white font-mono" id="profilePhone">--</span>
+          </div>
+          <div class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800">
+            <span class="text-slate-400 block mb-1">الجامعة</span>
+            <span class="font-bold text-white" id="profileUniversity">--</span>
+          </div>
+          <div class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800">
+            <span class="text-slate-400 block mb-1">الفرقة الدراسية</span>
+            <span class="font-bold text-white" id="profileFaculty">--</span>
+          </div>
+        </div>
+
+        <div class="bg-[#090e1a] p-4 rounded-2xl border border-slate-800 space-y-2">
+          <span class="text-slate-400 block text-xs">المواد المفعلة لحسابك</span>
+          <div id="profileCoursesList" class="flex flex-wrap gap-2 pt-1"></div>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="navigate('courses-grid')" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2.5 rounded-xl text-xs">
+            الذهاب للمواد الدراسية 🚀
+          </button>
+          <button onclick="handleLogout()" class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-rose-500/20 transition">
+            تسجيل الخروج
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. مشغل المادة واستوديو PDF -->
+    <section id="viewStudentPlatform" class="hidden w-full flex-col md:flex-row flex-1 overflow-hidden">
+      <aside class="w-full md:w-80 bg-[#0f172a] border-b md:border-b-0 md:border-l border-slate-800 flex flex-col flex-shrink-0 z-10 max-h-64 md:max-h-full">
+        <div class="p-3 border-b border-slate-800 bg-[#111a2e] space-y-2">
+          <div class="flex items-center justify-between">
+            <button onclick="navigate('courses-grid')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-bold">
+              <i class="fa-solid fa-arrow-right"></i> كل المواد
+            </button>
+            <span id="platformSubjectTitle" class="text-xs font-black text-cyan-400"></span>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
+          <div>
+            <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
+              <i class="fa-solid fa-play-circle text-cyan-400"></i> المحاضرات
+            </span>
+            <div id="lectureList" class="space-y-2"></div>
+          </div>
+          <div>
+            <span class="text-xs font-black text-slate-300 flex items-center gap-1.5 mb-2">
+              <i class="fa-solid fa-file-pdf text-rose-400"></i> المذكرات (التدوين والشخبطة)
+            </span>
+            <div id="notesList" class="space-y-2"></div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="flex-1 flex flex-col bg-[#090e1a] overflow-y-auto p-2 sm:p-4 custom-scrollbar relative">
+        <div id="videoContainerWrapper" class="w-full flex flex-col items-center">
+          
+          <div id="playerContainer" class="w-full max-w-4xl aspect-video bg-black rounded-3xl border border-slate-800 relative overflow-hidden shadow-2xl flex items-center justify-center min-h-[240px] sm:min-h-[380px]">
+            <div class="watermark-text" id="playerWatermark">Dr Success • Student</div>
+            <div id="screenPlayer" class="w-full h-full flex items-center justify-center">
+              <p class="text-slate-400 text-xs sm:text-sm font-bold">اختر محاضرة للتشغيل</p>
+            </div>
+          </div>
+
+          <div class="w-full max-w-4xl bg-[#111a2e] border border-slate-800 rounded-2xl p-3 mt-3 flex flex-wrap items-center justify-between gap-3 text-xs shadow-lg">
+            <div class="flex items-center gap-1 bg-[#090e1a] p-1 rounded-xl border border-slate-800">
+              <span class="text-slate-400 text-[11px] font-bold px-1.5"><i class="fa-solid fa-gauge-high ml-1"></i> السرعة:</span>
+              <button onclick="setPlayerSpeed(1.0, this)" class="speed-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white font-black text-xs">1x</button>
+              <button onclick="setPlayerSpeed(1.25, this)" class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white font-bold text-xs">1.25x</button>
+              <button onclick="setPlayerSpeed(1.5, this)" class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white font-bold text-xs">1.5x</button>
+              <button onclick="setPlayerSpeed(1.75, this)" class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white font-bold text-xs">1.75x</button>
+              <button onclick="setPlayerSpeed(2.0, this)" class="speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white font-bold text-xs">2x</button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="btnDownloadOffline" onclick="downloadCurrentLectureOffline()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 shadow-md shadow-cyan-600/30">
+                <i class="fa-solid fa-cloud-arrow-down"></i> <span id="btnDownloadText">حفظ بدون نت</span>
+              </button>
+              <button onclick="togglePlayerFullscreen()" class="bg-[#090e1a] hover:bg-slate-800 text-cyan-400 border border-slate-800 px-3.5 py-1.5 rounded-xl font-bold text-xs transition">
+                <i class="fa-solid fa-expand ml-1"></i> ملء الشاشة
+              </button>
+            </div>
+          </div>
+
+          <div id="lectureDownloadProgressWrapper" class="hidden w-full max-w-4xl mt-3 bg-[#111a2e] border border-cyan-500/30 p-3 rounded-2xl space-y-1.5 shadow-xl">
+            <div class="flex justify-between text-xs font-bold text-cyan-300">
+              <span id="lecDownloadStatusText"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري تنزيل المحاضرة وتخزينها في ذاكرة التطبيق...</span>
+              <span id="lecDownloadPercentText" class="font-mono">0%</span>
+            </div>
+            <div class="w-full bg-[#090e1a] h-2.5 rounded-full overflow-hidden border border-slate-800">
+              <div id="lecDownloadBarFill" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 transition-all duration-150"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- استوديو PDF -->
+        <div id="pdfStudioContainer" class="hidden w-full max-w-5xl mx-auto flex flex-col gap-3">
+          <div class="bg-[#111a2e] border border-slate-800 p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-xl">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-cyan-400 max-w-[150px] truncate" id="pdfFileName">المذكرة</span>
+              <span class="text-slate-500">|</span>
+              <span>صفحة: <span id="pageNum" class="font-bold text-white">1</span> / <span id="pageCount" class="font-bold text-slate-400">--</span></span>
+              <div class="flex items-center gap-1">
+                <button onclick="prevPdfPage()" class="bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg"><i class="fa-solid fa-chevron-right"></i></button>
+                <button onclick="nextPdfPage()" class="bg-slate-800 hover:bg-slate-700 px-2.5 py-1 rounded-lg"><i class="fa-solid fa-chevron-left"></i></button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="setToolMode('pen')" id="toolPenBtn" class="bg-cyan-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
+                <i class="fa-solid fa-pen"></i> قلم
+              </button>
+              <button onclick="setToolMode('highlighter')" id="toolHighBtn" class="bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
+                <i class="fa-solid fa-highlighter text-amber-400"></i> تظليل
+              </button>
+              <button onclick="setToolMode('eraser')" id="toolEraserBtn" class="bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1">
+                <i class="fa-solid fa-eraser text-rose-400"></i> ممحاة
+              </button>
+
+              <div class="flex items-center gap-1 border-r border-slate-700 pr-2">
+                <button onclick="setPenColor('#ef4444')" class="w-5 h-5 rounded-full bg-red-500 border border-white/40"></button>
+                <button onclick="setPenColor('#06b6d4')" class="w-5 h-5 rounded-full bg-cyan-400 border border-white/40"></button>
+                <button onclick="setPenColor('#eab308')" class="w-5 h-5 rounded-full bg-yellow-400 border border-white/40"></button>
+                <button onclick="setPenColor('#10b981')" class="w-5 h-5 rounded-full bg-emerald-500 border border-white/40"></button>
+              </div>
+
+              <button onclick="clearCurrentPageDrawings()" class="bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 px-2.5 py-1 rounded-lg font-bold text-[11px]">
+                مسح الشخبطة
+              </button>
+            </div>
+          </div>
+
+          <div id="pdfCanvasContainer" class="relative w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-auto flex justify-center p-2 min-h-[550px] shadow-2xl">
+            <div id="canvasWrapper" class="relative inline-block">
+              <canvas id="pdfCanvas" class="rounded-lg shadow-xl block"></canvas>
+              <canvas id="drawCanvas" class="absolute top-0 left-0 rounded-lg cursor-crosshair"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </section>
+
+    <!-- 8. لوحة تحكم المالك المركزية -->
+    <section id="viewInstructorDash" class="hidden w-full flex-1 p-6 lg:p-8 overflow-y-auto custom-scrollbar">
+      <div class="max-w-7xl mx-auto space-y-6">
+        
+        <div class="bg-[#111a2e] p-6 rounded-3xl border border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
+          <div>
+            <h2 class="text-xl font-black text-white flex items-center gap-2" id="dashTitle">
+              لوحة التحكم المركزية
+            </h2>
+            <span id="docTag" class="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30 px-3 py-0.5 rounded-full font-bold mt-1 inline-block">المالك (Super Admin)</span>
+          </div>
+          <button onclick="navigate('courses-grid')" class="text-xs bg-cyan-600/10 text-cyan-400 border border-cyan-500/30 px-4 py-2 rounded-xl font-bold">
+            معاينة كطالب 👁️
+          </button>
+        </div>
+
+        <div class="flex flex-wrap bg-[#090e1a] p-1.5 rounded-2xl border border-slate-800 text-xs font-bold gap-1">
+          <button onclick="switchDashTab('tab-upload', this)" id="btnTabUpload" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap">
+            رفع المحتوى والمذكرات 🚀
+          </button>
+          <button onclick="switchDashTab('tab-users', this)" id="btnTabUsers" class="hidden flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            سجل الطلاب وتفعيل الاشتراكات (Excel) 📊
+          </button>
+          <button onclick="switchDashTab('tab-doctors', this)" id="btnTabDoctors" class="hidden flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap">
+            اعتماد المحاضرين الجدد 👨‍🏫
+          </button>
+        </div>
+
+        <!-- تبويب 1: رفع محتوى -->
+        <div id="dashSectionUpload" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-cyan-400 font-bold text-sm">نشر محاضرة فيديو (رفع مباشر من الجهاز)</h3>
+              <span class="text-[10px] bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 px-2 py-0.5 rounded-full font-mono">Bunny Stream</span>
+            </div>
+            
+            <form onsubmit="handleUploadLecture(event)" class="space-y-3">
+              <select id="uploadSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                <option value="dental_anatomy">Dental Anatomy</option>
+                <option value="anatomy">General Anatomy</option>
+                <option value="histology">Histology</option>
+                <option value="biochemistry">Biochemistry</option>
+                <option value="microbiology">Microbiology</option>
+              </select>
+              
+              <input type="text" id="lectureTitle" placeholder="عنوان المحاضرة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="lectureDuration" placeholder="المدة (مثال: 50 دقيقة)" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                <select id="lectureType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                  <option value="false">🔒 مقفولة للمشتركين</option>
+                  <option value="true">👁️ مجانية للجميع</option>
+                </select>
+              </div>
+
+              <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                <label class="block text-[11px] font-bold text-slate-300">اختر ملف الفيديو من جهازك:</label>
+                <input type="file" id="lectureVideoFileInput" accept="video/*" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-600 file:text-white hover:file:bg-cyan-500 cursor-pointer">
+              </div>
+
+              <div class="text-center text-[10px] text-slate-500 font-bold">-- أو ضع رابط فيديو خارجي --</div>
+              <input type="url" id="lectureVideoUrl" placeholder="رابط مباشر أو YouTube (اختياري)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+
+              <div id="uploadProgressBarContainer" class="hidden bg-[#090e1a] p-2.5 rounded-xl border border-slate-800 space-y-1">
+                <div class="flex justify-between text-[10px] font-bold text-cyan-300">
+                  <span id="uploadProgressStatusText">جاري الرفع...</span>
+                  <span id="uploadProgressPercentText">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div id="uploadProgressBarFill" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full w-0 transition-all duration-150"></div>
+                </div>
+              </div>
+
+              <button type="submit" id="btnUploadLectureSubmit" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-cyan-600/20 transition">
+                نشر المحاضرة الآن 🚀
+              </button>
+            </form>
+          </div>
+
+          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="text-rose-400 font-bold text-sm">رفع مذكرة PDF (مباشر من جهازك)</h3>
+              <span class="text-[10px] bg-rose-500/10 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-mono">PDF Studio</span>
+            </div>
+
+            <form onsubmit="handleUploadPdf(event)" class="space-y-3">
+              <select id="pdfSubjectSelect" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                <option value="dental_anatomy">Dental Anatomy</option>
+                <option value="anatomy">General Anatomy</option>
+                <option value="histology">Histology</option>
+                <option value="biochemistry">Biochemistry</option>
+                <option value="microbiology">Microbiology</option>
+              </select>
+              
+              <input type="text" id="pdfDocTitle" placeholder="عنوان المذكرة" required class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              
+              <select id="pdfDocType" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-bold">
+                <option value="false">🔒 مقفولة للمشتركين</option>
+                <option value="true">👁️ مجانية للجميع</option>
+              </select>
+
+              <div class="bg-[#090e1a] p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                <label class="block text-[11px] font-bold text-slate-300">اختر ملف الـ PDF من جهازك:</label>
+                <input type="file" id="pdfFileInput" accept="application/pdf" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-rose-600 file:text-white hover:file:bg-rose-500 cursor-pointer">
+              </div>
+
+              <div class="text-center text-[10px] text-slate-500 font-bold">-- أو ضع رابط PDF مباشر --</div>
+              <input type="url" id="pdfDocUrl" placeholder="رابط PDF سحابي (اختياري)" class="w-full bg-[#090e1a] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+
+              <div id="uploadPdfProgressContainer" class="hidden bg-[#090e1a] p-2.5 rounded-xl border border-slate-800 space-y-1">
+                <div class="flex justify-between text-[10px] font-bold text-rose-300">
+                  <span id="uploadPdfStatusText">جاري حفظ الـ PDF...</span>
+                  <span id="uploadPdfPercentText">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div id="uploadPdfBarFill" class="bg-gradient-to-r from-rose-500 to-amber-500 h-full w-0 transition-all duration-150"></div>
+                </div>
+              </div>
+
+              <button type="submit" id="btnUploadPdfSubmit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg shadow-rose-600/20 transition">
+                إضافة المذكرة للمادة ⚡
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- تبويب 2: سجل الطلاب -->
+        <div id="dashSectionUsers" class="hidden space-y-4">
+          <div class="flex flex-wrap justify-between items-center bg-[#111a2e] p-4 rounded-2xl border border-slate-800 gap-3">
+            <input type="text" id="searchUserInput" oninput="filterUsersTable()" placeholder="ابحث باسم الطالب أو الهاتف..." class="bg-[#090e1a] border border-slate-700 rounded-xl px-4 py-2 text-xs text-white w-64">
+            <button onclick="exportUsersToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/20">
+              <i class="fa-solid fa-file-excel"></i> تنزيل شيت Excel (CSV)
+            </button>
+          </div>
+
+          <div class="bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-[#090e1a] text-slate-400 font-black border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-4">اسم الطالب</th>
+                  <th class="p-4">الهاتف والبريد</th>
+                  <th class="p-4">الجامعة والفرقة</th>
+                  <th class="p-4">المواد المشترك بها</th>
+                  <th class="p-4 text-center">الاشتراكات والمواد</th>
+                  <th class="p-4 text-center">إدارة الجهاز</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- تبويب 3: طلبات اعتماد المحاضرين -->
+        <div id="dashSectionDoctors" class="hidden bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+          <div class="p-4 bg-purple-950/40 border-b border-purple-800/40 font-bold text-xs text-purple-300">
+            طلبات المحاضرين الجدد المعلقة للاعتماد
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-[#090e1a] text-slate-400 uppercase font-black border-b border-slate-800 text-[11px]">
+                <tr>
+                  <th class="p-4">اسم المحاضر</th>
+                  <th class="p-4">الهاتف والبريد</th>
+                  <th class="p-4">المادة المخصصة</th>
+                  <th class="p-4 text-center">الإجراء</th>
+                </tr>
+              </thead>
+              <tbody id="doctorsApprovalTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwZHl9dgIcvmpKklA6a65wRLNQvjWCmXaZ4N97nUihwwHU4W0mgs4NNodhXx80vPiieow/exec";
+    const OWNER_EMAIL = "mohammed01013122880@gmail.com";
+
+    const BUNNY_LIBRARY_ID = "736281";
+    const BUNNY_API_KEY = "191b587a-c366-4447-998cdc8f53cd-78e9-449f";
+
+    const ACADEMY_DATA = {
+      dental_anatomy: { id: 'dental_anatomy', title: 'Dental Anatomy', doctor: 'Dr. Ahmed El-Taher', price: 400, image: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80', desc: 'تضاريس وتشريح الأسنان وفيديوهات الكارفينج.' },
+      anatomy: { id: 'anatomy', title: 'General Anatomy', doctor: 'Dr. Mohamed Fawzy', price: 400, image: 'https://images.unsplash.com/photo-1530497610245-94d3c16cda28?auto=format&fit=crop&w=800&q=80', desc: 'تشريح منطقة الرأس والعنق.' },
+      histology: { id: 'histology', title: 'Histology', doctor: 'Dr. Mohamed El-Gammal', price: 400, image: 'https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80', desc: 'علم أنسجة وخلايا الفم والمينا.' },
+      biochemistry: { id: 'biochemistry', title: 'Biochemistry', doctor: 'Dr. Mohamed Ragab', price: 400, image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=800&q=80', desc: 'الكيمياء الحيوية والإنزيمات.' },
+      microbiology: { id: 'microbiology', title: 'Microbiology', doctor: 'Dr. Mohamed Ragab', price: 400, image: 'https://images.unsplash.com/photo-1583912267670-6575ad472688?auto=format&fit=crop&w=800&q=80', desc: 'بكتيريا تجويف الفم ومكافحة العدوى.' }
+    };
+
+    let currentUser = null;
+    let userUnlockedSubjects = [];
+    let currentSubjectKey = 'dental_anatomy';
+    let currentActiveLecture = null;
+    let currentVideoElement = null;
+    let allPlatformUsers = [];
+    let currentManagingStudent = null;
+    let modalCallback = null;
+
+    let pdfDoc = null;
+    let pdfPageNum = 1;
+    let currentTool = 'pen';
+    let penColor = '#06b6d4';
+    let penWidth = 3;
+    let isDrawing = false;
+    let drawCtx = null;
+    let pageDrawingsCache = {};
+
+    function openVideoDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('DrSuccessOfflineDB', 2);
+        req.onupgradeneeded = (e) => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains('videos')) {
+            db.createObjectStore('videos', { keyPath: 'id' });
           }
-        }).catch(() => {});
-        return cachedResponse;
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    try {
+      const cached = localStorage.getItem('dr_success_cached_user');
+      if (cached) {
+        currentUser = JSON.parse(cached);
+        const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        userUnlockedSubjects = currentUser.unlocked_courses || (isOwner ? ['all'] : []);
+        updateUserUI();
+      }
+    } catch(e) {}
+
+    function checkNetworkStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (!navigator.onLine) {
+        banner.classList.remove('hidden');
+        navigate('downloads-view');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+    window.addEventListener('online', checkNetworkStatus);
+    window.addEventListener('offline', checkNetworkStatus);
+
+    function toggleMobileNav() {
+      const m = document.getElementById('mobileNavMenu');
+      m.classList.toggle('hidden');
+    }
+
+    function showCustomModal(title, msg, type = 'success', callback = null, showCancel = false) {
+      const modal = document.getElementById('customModal');
+      const iconBox = document.getElementById('modalIconBox');
+      const icon = document.getElementById('modalIcon');
+      const titleEl = document.getElementById('modalTitle');
+      const msgEl = document.getElementById('modalMsg');
+      const cancelBtn = document.getElementById('modalBtnCancel');
+      const okBtn = document.getElementById('modalBtnOk');
+
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+      modalCallback = callback;
+
+      cancelBtn.classList.toggle('hidden', !showCancel);
+      okBtn.innerText = showCancel ? 'نعم، متأكد' : 'موافق 🚀';
+
+      if (type === 'success') {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+        icon.className = 'fa-solid fa-circle-check';
+      } else if (type === 'error') {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-rose-500/10 text-rose-400 border border-rose-500/30';
+        icon.className = 'fa-solid fa-circle-xmark';
+      } else if (type === 'warning') {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-amber-500/10 text-amber-400 border border-amber-500/30';
+        icon.className = 'fa-solid fa-triangle-exclamation';
+      } else {
+        iconBox.className = 'w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30';
+        icon.className = 'fa-solid fa-circle-info';
       }
 
-      // إذا لم يكن مخزن، اطلبه من الشبكة وقم بتخزينه
-      return fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
-        }
-        return networkResponse;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
+      modal.classList.remove('hidden');
+    }
+
+    function closeCustomModal(confirmed = true) {
+      document.getElementById('customModal').classList.add('hidden');
+      if (modalCallback) {
+        modalCallback(confirmed);
+        modalCallback = null;
+      }
+    }
+
+    function openPaymentModal(itemTitle) {
+      document.getElementById('paymentModalSubTitle').innerText = itemTitle ? `تفاصيل التحويل لـ (${itemTitle})` : 'تفاصيل التحويل للاشتراك';
+      document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    function closePaymentModal() {
+      document.getElementById('paymentModal').classList.add('hidden');
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text);
+      showCustomModal('تم النسخ', `تم نسخ الرقم (${text}) بنجاح!`, 'success');
+    }
+
+    function promptAddReview() {
+      const name = prompt('اكتب اسمك وسنتك الدراسية:');
+      if (!name) return;
+      const review = prompt('اكتب رأيك وتقييمك في الشرح والمنصة:');
+      if (!review) return;
+
+      const container = document.getElementById('reviewsContainer');
+      const card = document.createElement('div');
+      card.className = "bg-[#111a2e] border border-cyan-500/40 p-5 rounded-3xl space-y-3 shadow-xl";
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-sm">${name.charAt(0)}</div>
+            <div>
+              <h4 class="text-xs font-bold text-white">${name}</h4>
+              <span class="text-[10px] text-cyan-400">طالب مسجل</span>
+            </div>
+          </div>
+          <div class="text-amber-400 text-xs">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">"${review}"</p>
+      `;
+      container.prepend(card);
+      showCustomModal('شكراً لك يا دكتور', 'تمت إضافة رأيك وتقييمك بنجاح!', 'success');
+    }
+
+    async function sendToSheet(payload) {
+      const res = await fetch(SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow'
       });
-    })
-  );
-});
+      return await res.json();
+    }
+
+    async function getFromSheet(action) {
+      const res = await fetch(`${SHEET_API_URL}?action=${action}`, {
+        method: 'GET',
+        redirect: 'follow'
+      });
+      return await res.json();
+    }
+
+    async function loadGlobalStats() {
+      if (!navigator.onLine) return;
+      try {
+        const users = await getFromSheet('getUsers');
+        const lecs = await getFromSheet('getLectures');
+        if (Array.isArray(users)) document.getElementById('statStudents').innerText = users.filter(u => u.role === 'student').length;
+        if (Array.isArray(lecs)) document.getElementById('statLectures').innerText = lecs.length;
+      } catch(e) {}
+    }
+
+    function navigate(view) {
+      const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
+      if (view === 'instructor-dash') {
+        if (!currentUser || (!isOwner && (currentUser.role !== 'doctor' || !currentUser.is_approved))) {
+          showCustomModal('غير مصرح', 'ليس لديك صلاحية الدخول للوحة التحكم.', 'error');
+          return navigate('landing');
+        }
+      }
+
+      ['viewLanding', 'viewStudentAuth', 'viewInstructorAuth', 'viewCoursesGrid', 'viewDownloads', 'viewUserProfile', 'viewStudentPlatform', 'viewInstructorDash'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+
+      if (view === 'landing') document.getElementById('viewLanding')?.classList.remove('hidden');
+      if (view === 'student-auth') document.getElementById('viewStudentAuth')?.classList.remove('hidden');
+      if (view === 'instructor-auth') document.getElementById('viewInstructorAuth')?.classList.remove('hidden');
+      if (view === 'courses-grid') { document.getElementById('viewCoursesGrid')?.classList.remove('hidden'); renderCoursesGrid(); }
+      if (view === 'downloads-view') { document.getElementById('viewDownloads')?.classList.remove('hidden'); renderDownloadsView(); }
+      if (view === 'user-profile') { document.getElementById('viewUserProfile')?.classList.remove('hidden'); renderUserProfileView(); }
+      if (view === 'course-view') { document.getElementById('viewStudentPlatform')?.classList.remove('hidden'); renderCoursePlatform(); }
+      if (view === 'instructor-dash') { document.getElementById('viewInstructorDash')?.classList.remove('hidden'); loadInstructorDashboard(); }
+      updateUserUI();
+    }
+
+    function openStudentTab(mode) {
+      navigate('student-auth');
+      const isLogin = mode === 'login';
+      document.getElementById('formStudentLogin').classList.toggle('hidden', !isLogin);
+      document.getElementById('formStudentRegister').classList.toggle('hidden', isLogin);
+
+      const tabLog = document.getElementById('tabStudentLogin');
+      const tabReg = document.getElementById('tabStudentRegister');
+
+      if (isLogin) {
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-cyan-600 text-white shadow';
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      } else {
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-cyan-600 text-white shadow';
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      }
+    }
+
+    function openDoctorTab(mode) {
+      navigate('instructor-auth');
+      const isLogin = mode === 'login';
+      document.getElementById('formDoctorLogin').classList.toggle('hidden', !isLogin);
+      document.getElementById('formDoctorRegister').classList.toggle('hidden', isLogin);
+
+      const tabLog = document.getElementById('tabDocLogin');
+      const tabReg = document.getElementById('tabDocRegister');
+
+      if (isLogin) {
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-purple-600 text-white shadow';
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      } else {
+        tabReg.className = 'flex-1 py-2.5 rounded-xl transition font-black bg-purple-600 text-white shadow';
+        tabLog.className = 'flex-1 py-2.5 rounded-xl transition text-slate-400 hover:text-white font-bold';
+      }
+    }
+
+    function openProfileOrDashboard() {
+      if (currentUser) {
+        const isOwner = currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        if (isOwner || (currentUser.role === 'doctor' && currentUser.is_approved)) {
+          navigate('instructor-dash');
+        } else {
+          navigate('user-profile');
+        }
+      }
+    }
+
+    function renderUserProfileView() {
+      if (!currentUser) return navigate('landing');
+      document.getElementById('profileAvatar').innerText = (currentUser.full_name || 'د').charAt(0);
+      document.getElementById('profileFullName').innerText = currentUser.full_name || '--';
+      document.getElementById('profileEmail').innerText = currentUser.email || '--';
+      document.getElementById('profilePhone').innerText = currentUser.phone || '--';
+      document.getElementById('profileUniversity').innerText = currentUser.university || '--';
+      document.getElementById('profileFaculty').innerText = currentUser.faculty || '--';
+
+      const box = document.getElementById('profileCoursesList');
+      box.innerHTML = '';
+      const list = currentUser.unlocked_courses || [];
+      if (list.length === 0) {
+        box.innerHTML = '<span class="text-slate-500 text-xs">لا توجد مواد مفعلة حالياً. تواصل مع الإدارة لتفعيل اشتراكك.</span>';
+      } else {
+        list.forEach(c => {
+          const badge = document.createElement('span');
+          badge.className = "bg-cyan-600/20 text-cyan-300 border border-cyan-500/30 px-3 py-1 rounded-xl text-xs font-bold";
+          badge.innerText = ACADEMY_DATA[c]?.title || c;
+          box.appendChild(badge);
+        });
+      }
+    }
+
+    async function handleStudentRegister(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnStudentRegisterSubmit');
+      const originalText = 'إنشاء الحساب وبدء المذاكرة 🚀';
+
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const password = document.getElementById('regPass').value;
+      const fullName = document.getElementById('regName').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const university = document.getElementById('regUniversity').value;
+      const faculty = document.getElementById('regFaculty').value;
+
+      if (!email || !password || !fullName || !phone) {
+        return showCustomModal('بيانات غير مكتملة', 'يرجى ملء جميع الحقول المطلوبة للتسجيل.', 'warning');
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري حفظ البيانات...';
+
+      try {
+        const deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
+        const payload = {
+          action: "registerUser",
+          full_name: fullName,
+          email: email,
+          password: password,
+          phone: phone,
+          university: university,
+          faculty: faculty,
+          role: 'student',
+          is_approved: true,
+          unlocked_courses: [],
+          device_session: deviceId
+        };
+
+        const result = await sendToSheet(payload);
+        currentUser = { id: result.id, ...payload };
+        userUnlockedSubjects = [];
+        localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+        localStorage.setItem('dr_success_device_id', deviceId);
+
+        updateUserUI();
+        showCustomModal('تم إنشاء حسابك بنجاح يا دكتور 🎉', 'مرحباً بك في Dr Success Academy! يمكنك الآن تصفح المواد والمحاضرات.', 'success', () => {
+          navigate('courses-grid');
+        });
+      } catch (err) {
+        showCustomModal('خطأ في التسجيل', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function handleStudentLogin(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnStudentLoginSubmit');
+      const originalText = 'الدخول للمنصة 🚀';
+
+      const email = document.getElementById('loginStudentEmail').value.trim().toLowerCase();
+      const password = document.getElementById('loginStudentPass').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
+
+      try {
+        const users = await getFromSheet('getUsers');
+        const user = users.find(u => (u.email || '').toLowerCase() === email && String(u.password) === String(password));
+
+        if (!user) {
+          showCustomModal('بيانات غير صحيحة', 'تأكد من كتابة البريد الإلكتروني وكلمة المرور بشكل سليم.', 'error');
+          return;
+        }
+
+        const newDeviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now();
+        localStorage.setItem('dr_success_device_id', newDeviceId);
+        currentUser = user;
+        userUnlockedSubjects = user.unlocked_courses || [];
+        localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+
+        updateUserUI();
+        navigate('courses-grid');
+      } catch (err) {
+        showCustomModal('خطأ في الاتصال', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function handleDoctorRegister(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnDoctorRegisterSubmit');
+      const originalText = 'إرسال طلب الانضمام للمالك ⚡';
+
+      const name = document.getElementById('newDocName').value.trim();
+      const subject = document.getElementById('newDocSubject').value;
+      const phone = document.getElementById('newDocPhone').value.trim();
+      const email = document.getElementById('newDocEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('newDocPass').value;
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري الإرسال...';
+
+      try {
+        const payload = {
+          action: "registerUser",
+          full_name: name,
+          email: email,
+          password: pass,
+          phone: phone,
+          assigned_subject: subject,
+          role: 'doctor',
+          is_approved: false,
+          unlocked_courses: [subject]
+        };
+
+        await sendToSheet(payload);
+        showCustomModal('تم إرسال الطلب بنجاح 📋', 'تم تسجيل طلبك بنجاح. حسابك بانتظار مراجعة واعتماد المالك قبل تفعيل الدخول.', 'info', () => {
+          openDoctorTab('login');
+        });
+      } catch (err) {
+        showCustomModal('خطأ', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function handleDoctorLogin(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnDoctorLoginSubmit');
+      const originalText = 'دخول لوحة التحكم والاعتمادات';
+
+      const email = document.getElementById('docLoginEmail').value.trim().toLowerCase();
+      const pass = document.getElementById('docLoginPass').value;
+      const isOwner = email === OWNER_EMAIL.toLowerCase();
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري التحقق...';
+
+      try {
+        if (isOwner) {
+          currentUser = { email: email, role: 'super_admin', full_name: 'د. محمد رجب (المالك)' };
+          userUnlockedSubjects = ['dental_anatomy', 'anatomy', 'histology', 'biochemistry', 'microbiology', 'all'];
+          localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+          updateUserUI();
+          navigate('instructor-dash');
+          return;
+        }
+
+        const users = await getFromSheet('getUsers');
+        const doc = users.find(u => (u.email || '').toLowerCase() === email && String(u.password) === String(pass) && u.role === 'doctor');
+
+        if (!doc) {
+          showCustomModal('خطأ في البيانات', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'error');
+          return;
+        }
+
+        const isApproved = doc.is_approved === true || String(doc.is_approved).toLowerCase() === 'true';
+        if (!isApproved) {
+          showCustomModal('الحساب قيد المراجعة ⏳', 'طلب انضمامك مسجل ولكنه بانتظار موافقة واعتماد المالك أولاً.', 'warning');
+          return;
+        }
+
+        currentUser = doc;
+        userUnlockedSubjects = doc.unlocked_courses || [doc.assigned_subject];
+        localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+        updateUserUI();
+        navigate('instructor-dash');
+      } catch (err) {
+        showCustomModal('خطأ في الاتصال', err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    function renderCoursesGrid() {
+      const container = document.getElementById('cardsGridContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      Object.values(ACADEMY_DATA).forEach(course => {
+        const isUnlocked = userUnlockedSubjects.includes(course.id) || userUnlockedSubjects.includes('all');
+        const card = document.createElement('div');
+        card.className = "course-card bg-[#111a2e] border border-slate-800 rounded-3xl overflow-hidden shadow-xl p-5 flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="h-40 w-full rounded-2xl overflow-hidden mb-3">
+              <img src="${course.image}" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-base font-black text-white">${course.title}</h3>
+            <p class="text-xs text-cyan-400 font-bold mt-0.5">${course.doctor}</p>
+            <p class="text-xs text-slate-400 mt-2 line-clamp-2">${course.desc}</p>
+          </div>
+          <div class="flex items-center justify-between border-t border-slate-800 pt-3 mt-4">
+            <div class="flex flex-col">
+              <span class="text-xs ${isUnlocked ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${isUnlocked ? 'مفعل لك ✅' : 'سعر المادة منفصلة:'}</span>
+              ${!isUnlocked ? '<span class="text-sm font-black text-cyan-400">400 ج.م</span>' : ''}
+            </div>
+            <div class="flex gap-2">
+              ${!isUnlocked ? `<button onclick="openPaymentModal('${course.title} (400 ج.م)')" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs px-3 py-1.5 rounded-xl font-bold transition">دفع 💳</button>` : ''}
+              <button onclick="openCourseView('${course.id}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold transition">دخول 👁️</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openCourseView(key) {
+      currentSubjectKey = key;
+      navigate('course-view');
+    }
+
+    async function renderCoursePlatform() {
+      const data = ACADEMY_DATA[currentSubjectKey];
+      document.getElementById('platformSubjectTitle').innerText = data.title;
+      const isUnlocked = userUnlockedSubjects.includes(currentSubjectKey) || userUnlockedSubjects.includes('all');
+
+      const lecBox = document.getElementById('lectureList');
+      const noteBox = document.getElementById('notesList');
+      lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">جاري التحميل...</p>';
+      noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">جاري التحميل...</p>';
+
+      try {
+        const allLecs = await getFromSheet('getLectures');
+        const lecs = Array.isArray(allLecs) ? allLecs.filter(l => l.subject_id === currentSubjectKey) : [];
+
+        lecBox.innerHTML = '';
+        noteBox.innerHTML = '';
+
+        if (lecs.length === 0) {
+          lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
+          noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد مذكرات مرفوعة حالياً.</p>';
+          return;
+        }
+
+        let hasLec = false;
+        let hasNote = false;
+
+        lecs.forEach(l => {
+          const can = l.is_free || isUnlocked;
+
+          if (l.video_url) {
+            hasLec = true;
+            const d = document.createElement('div');
+            d.className = `p-3 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-cyan-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+            d.onclick = () => { if (can) playLecture(l); else showCustomModal('محتوى مخصص للمشتركين', 'هذه المحاضرة متاحة للطلاب المشتركين في المادة فقط.', 'info'); };
+            d.innerHTML = `<span><i class="fa-solid ${can ? 'fa-play text-cyan-400' : 'fa-lock text-amber-400'} ml-1"></i> ${l.title}</span><span class="text-[10px] text-slate-500">${l.duration || ''}</span>`;
+            lecBox.appendChild(d);
+          }
+          if (l.pdf_url) {
+            hasNote = true;
+            const d = document.createElement('div');
+            d.className = `p-2.5 rounded-xl border text-xs flex justify-between items-center cursor-pointer transition ${can ? 'bg-[#111a2e] border-slate-800 hover:border-rose-500' : 'bg-[#111a2e]/40 border-slate-800 opacity-60'}`;
+            d.onclick = () => { if (can) openPdfStudio(l); else showCustomModal('محتوى مخصص للمشتركين', 'هذه المذكرة متاحة للطلاب المشتركين في المادة فقط.', 'info'); };
+            d.innerHTML = `<span><i class="fa-solid ${can ? 'fa-file-pdf text-rose-400' : 'fa-lock text-amber-400'} ml-1"></i> ${l.title}</span>`;
+            noteBox.appendChild(d);
+          }
+        });
+
+        if (!hasLec) lecBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد محاضرات منشورة حالياً.</p>';
+        if (!hasNote) noteBox.innerHTML = '<p class="text-xs text-slate-500 py-2">لا توجد مذكرات مرفوعة حالياً.</p>';
+      } catch (err) {
+        lecBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المحتوى.</p>';
+        noteBox.innerHTML = '<p class="text-xs text-rose-400 py-2">تعذر جلب المذكرات.</p>';
+      }
+    }
+
+    function playLecture(lec) {
+      currentActiveLecture = lec;
+      document.getElementById('videoContainerWrapper').classList.remove('hidden');
+      document.getElementById('pdfStudioContainer').classList.add('hidden');
+
+      if (currentUser) {
+        document.getElementById('playerWatermark').innerText = `${currentUser.full_name || 'Dr Success'} • ${currentUser.phone || ''}`;
+      }
+
+      const screen = document.getElementById('screenPlayer');
+      let url = (lec.video_url || '').trim();
+
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let vId = url.includes('v=') ? url.split('v=')[1]?.split('&')[0] : url.split('youtu.be/')[1];
+        screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="https://www.youtube-nocookie.com/embed/${vId}?autoplay=1&enablejsapi=1" class="w-full h-full border-0 rounded-3xl" allowfullscreen></iframe>`;
+        currentVideoElement = null;
+      } else if (url.includes('mediadelivery.net') || url.includes('iframe') || url.includes('bunny')) {
+        let embedUrl = url;
+        if (!url.startsWith('http')) embedUrl = `https://${url}`;
+        screen.innerHTML = `<iframe id="mainVideoPlayerFrame" src="${embedUrl}" loading="lazy" class="w-full h-full border-0 rounded-3xl" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;" allowfullscreen="true"></iframe>`;
+        currentVideoElement = null;
+      } else {
+        screen.innerHTML = `<video id="nativeVideo" src="${url}" controls controlsList="nodownload" oncontextmenu="return false;" class="w-full h-full object-contain bg-black rounded-3xl" autoplay playsinline></video>`;
+        currentVideoElement = document.getElementById('nativeVideo');
+      }
+    }
+
+    function togglePlayerFullscreen() {
+      const vid = document.getElementById('nativeVideo');
+      const container = document.getElementById('playerContainer');
+      if (vid && vid.requestFullscreen) vid.requestFullscreen();
+      else if (vid && vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
+      else if (container.requestFullscreen) container.requestFullscreen();
+    }
+
+    function setPlayerSpeed(speed, btn) {
+      if (currentVideoElement) {
+        currentVideoElement.playbackRate = speed;
+      }
+      document.querySelectorAll('.speed-btn').forEach(b => b.className = 'speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white font-bold text-xs');
+      if (btn) btn.className = 'speed-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white font-black text-xs';
+    }
+
+    // تنزيل وحفظ ملف الـ 1080p الفعلي وتخزينه في IndexedDB
+    async function downloadCurrentLectureOffline() {
+      if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
+      let url = (currentActiveLecture.video_url || '').trim();
+
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        return showCustomModal('تنبيه', 'محاضرات YouTube متاحة للمشاهدة أونلاين فقط.', 'info');
+      }
+
+      const btn = document.getElementById('btnDownloadOffline');
+      const progressWrapper = document.getElementById('lectureDownloadProgressWrapper');
+      const progressBar = document.getElementById('lecDownloadBarFill');
+      const percentText = document.getElementById('lecDownloadPercentText');
+
+      btn.disabled = true;
+      progressWrapper.classList.remove('hidden');
+      progressBar.style.width = '0%';
+      percentText.innerText = '0%';
+
+      try {
+        let downloadUrl = url;
+
+        if (url.includes('mediadelivery.net')) {
+          let vidId = '';
+          if (url.includes('/embed/')) vidId = url.split('/embed/')[1].split('?')[0].split('/')[1];
+          else if (url.includes('/play/')) vidId = url.split('/play/')[1].split('?')[0].split('/')[1];
+
+          if (vidId) {
+            const videoDataRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${vidId}`, {
+              headers: { 'AccessKey': BUNNY_API_KEY, 'Accept': 'application/json' }
+            });
+            
+            if (videoDataRes.ok) {
+              const videoData = await videoDataRes.json();
+              if (videoData.directPlayUrl) {
+                downloadUrl = videoData.directPlayUrl;
+              } else {
+                downloadUrl = `https://video.bunnycdn.com/play/${BUNNY_LIBRARY_ID}/${vidId}?quality=1080p`;
+              }
+            }
+          }
+        }
+
+        const response = await fetch(downloadUrl);
+        if (!response.ok) {
+          const fallbackRes = await fetch(downloadUrl.replace('play_720p.mp4', 'play_1080p.mp4'));
+          if (!fallbackRes.ok) throw new Error('فشل جلب ملف الـ 1080p من السيرفر');
+        }
+
+        const contentLength = response.headers.get('content-length');
+        const total = parseInt(contentLength, 10) || 0;
+        let loaded = 0;
+
+        const reader = response.body.getReader();
+        const chunks = [];
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          chunks.push(value);
+          loaded += value.length;
+          if (total > 0) {
+            const percent = Math.round((loaded / total) * 100);
+            progressBar.style.width = `${percent}%`;
+            percentText.innerText = `${percent}%`;
+          } else {
+            const mbLoaded = (loaded / (1024 * 1024)).toFixed(1);
+            percentText.innerText = `${mbLoaded} MB`;
+            progressBar.style.width = '70%';
+          }
+        }
+
+        const videoBlob = new Blob(chunks, { type: 'video/mp4' });
+        const recordId = 'vid_' + (currentActiveLecture.id || Date.now());
+
+        const db = await openVideoDB();
+        const tx = db.transaction('videos', 'readwrite');
+        await new Promise((res, rej) => {
+          const storeReq = tx.objectStore('videos').put({ id: recordId, title: currentActiveLecture.title, blob: videoBlob });
+          storeReq.onsuccess = res;
+          storeReq.onerror = rej;
+        });
+
+        let downloads = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
+        if (!downloads.find(d => d.id === recordId)) {
+          downloads.push({
+            id: recordId,
+            title: currentActiveLecture.title,
+            duration: currentActiveLecture.duration || '',
+            saved_at: new Date().toLocaleDateString('ar-EG')
+          });
+          localStorage.setItem('dr_success_offline_list', JSON.stringify(downloads));
+        }
+
+        progressBar.style.width = '100%';
+        percentText.innerText = '100%';
+        showCustomModal('تم الحفظ بجودة 1080p 💾', 'تم تنزيل المحاضرة كاملة بأعلى جودة وتخزينها على جهازك لتشغيلها بدون إنترنت.', 'success');
+      } catch (e) {
+        showCustomModal('خطأ في التحميل', 'تعذر تنزيل ملف الـ 1080p: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        setTimeout(() => { progressWrapper.classList.add('hidden'); }, 2000);
+      }
+    }
+
+    function renderDownloadsView() {
+      const container = document.getElementById('downloadsListContainer');
+      const list = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
+      container.innerHTML = '';
+
+      if (list.length === 0) {
+        container.innerHTML = '<div class="bg-[#111a2e] border border-slate-800 rounded-2xl p-6 text-center text-slate-400 text-xs">لا توجد محاضرات محفوظة حالياً. اضغط على زر "حفظ بدون نت" عند تشغيل أي محاضرة.</div>';
+        return;
+      }
+
+      list.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-[#111a2e] border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-lg";
+        card.innerHTML = `
+          <div>
+            <h4 class="font-bold text-white text-xs sm:text-sm flex items-center gap-2">
+              <i class="fa-solid fa-circle-play text-cyan-400"></i> ${item.title}
+            </h4>
+            <p class="text-[10px] text-slate-500 mt-1">تاريخ الحفظ: ${item.saved_at} ${item.duration ? '• المدة: ' + item.duration : ''}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="playOfflineSavedVideo('${item.id}', '${item.title}')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs px-3.5 py-1.5 rounded-xl font-bold transition flex items-center gap-1">
+              <i class="fa-solid fa-play"></i> تشغيل أوفلاين
+            </button>
+            <button onclick="deleteOfflineItem(${idx}, '${item.id}')" class="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs px-2.5 py-1.5 rounded-xl transition"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function playOfflineSavedVideo(recordId, title) {
+      try {
+        const db = await openVideoDB();
+        const tx = db.transaction('videos', 'readonly');
+        const req = tx.objectStore('videos').get(recordId);
+
+        req.onsuccess = () => {
+          if (req.result && req.result.blob) {
+            const blobUrl = URL.createObjectURL(req.result.blob);
+            currentActiveLecture = { video_url: blobUrl, title: `${title} (أوفلاين)` };
+            navigate('course-view');
+            playLecture(currentActiveLecture);
+          } else {
+            showCustomModal('خطأ', 'ملف الفيديو غير موجود في الذاكرة.', 'error');
+          }
+        };
+      } catch(e) {
+        showCustomModal('خطأ', 'تعذر تشغيل الفيديو المحفوظ: ' + e.message, 'error');
+      }
+    }
+
+    async function deleteOfflineItem(idx, recordId) {
+      showCustomModal('حذف المحاضرة', 'هل أنت متأكد من حذف هذه المحاضرة المحفوظة من ذاكرة التطبيق؟', 'warning', async (confirmed) => {
+        if (confirmed) {
+          try {
+            const db = await openVideoDB();
+            const tx = db.transaction('videos', 'readwrite');
+            tx.objectStore('videos').delete(recordId);
+          } catch(e) {}
+
+          let list = JSON.parse(localStorage.getItem('dr_success_offline_list') || '[]');
+          list.splice(idx, 1);
+          localStorage.setItem('dr_success_offline_list', JSON.stringify(list));
+          renderDownloadsView();
+        }
+      }, true);
+    }
+
+    async function clearAllOfflineDownloads() {
+      showCustomModal('مسح الكل', 'هل تريد مسح جميع المحاضرات المحفوظة أوفلاين؟', 'warning', async (confirmed) => {
+        if (confirmed) {
+          try {
+            const db = await openVideoDB();
+            const tx = db.transaction('videos', 'readwrite');
+            tx.objectStore('videos').clear();
+          } catch(e) {}
+
+          localStorage.removeItem('dr_success_offline_list');
+          renderDownloadsView();
+          showCustomModal('تم المسح', 'تم تفريغ قائمة التنزيلات المحفوظة بنجاح.', 'success');
+        }
+      }, true);
+    }
+
+    // استوديو PDF
+    async function openPdfStudio(doc) {
+      document.getElementById('videoContainerWrapper').classList.add('hidden');
+      document.getElementById('pdfStudioContainer').classList.remove('hidden');
+      document.getElementById('pdfFileName').innerText = doc.title;
+      pageDrawingsCache = {};
+
+      try {
+        let pdfTargetUrl = doc.pdf_url;
+        if (pdfTargetUrl.startsWith('http') && !pdfTargetUrl.includes(window.location.hostname)) {
+          pdfTargetUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(pdfTargetUrl)}`;
+        }
+
+        const loadingTask = pdfjsLib.getDocument({
+          url: pdfTargetUrl,
+          cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+          cMapPacked: true,
+        });
+
+        pdfDoc = await loadingTask.promise;
+        document.getElementById('pageCount').innerText = pdfDoc.numPages;
+        pdfPageNum = 1;
+        renderPdfPage(pdfPageNum);
+      } catch(e) {
+        try {
+          const directTask = pdfjsLib.getDocument(doc.pdf_url);
+          pdfDoc = await directTask.promise;
+          document.getElementById('pageCount').innerText = pdfDoc.numPages;
+          pdfPageNum = 1;
+          renderPdfPage(pdfPageNum);
+        } catch(err2) {
+          showCustomModal('خطأ في فتح الملف', 'تعذر فتح ملف الـ PDF.', 'error');
+        }
+      }
+    }
+
+    async function renderPdfPage(num) {
+      if (!pdfDoc) return;
+      saveCurrentPageDrawing();
+
+      const page = await pdfDoc.getPage(num);
+      const containerWidth = document.getElementById('pdfCanvasContainer').clientWidth - 40;
+      const unscaledViewport = page.getViewport({ scale: 1.0 });
+      const scale = Math.min(Math.max(containerWidth / unscaledViewport.width, 1.0), 2.0);
+      const viewport = page.getViewport({ scale: scale });
+
+      const pdfCanvas = document.getElementById('pdfCanvas');
+      const pdfCtx = pdfCanvas.getContext('2d');
+      pdfCanvas.height = viewport.height;
+      pdfCanvas.width = viewport.width;
+
+      const drawCanvas = document.getElementById('drawCanvas');
+      drawCanvas.height = viewport.height;
+      drawCanvas.width = viewport.width;
+      drawCtx = drawCanvas.getContext('2d');
+
+      initTabletDrawingLayer(drawCanvas);
+
+      await page.render({ canvasContext: pdfCtx, viewport: viewport }).promise;
+      document.getElementById('pageNum').innerText = num;
+
+      restorePageDrawing(num);
+    }
+
+    function initTabletDrawingLayer(canvas) {
+      canvas.onpointerdown = (e) => {
+        isDrawing = true;
+        canvas.setPointerCapture(e.pointerId);
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        drawCtx.beginPath();
+        drawCtx.moveTo(x, y);
+        applyToolStyle();
+      };
+
+      canvas.onpointermove = (e) => {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        if (currentTool === 'eraser') {
+          drawCtx.clearRect(x - 12, y - 12, 24, 24);
+        } else {
+          drawCtx.lineTo(x, y);
+          drawCtx.stroke();
+        }
+      };
+
+      canvas.onpointerup = (e) => {
+        if (isDrawing) {
+          isDrawing = false;
+          drawCtx.closePath();
+          saveCurrentPageDrawing();
+        }
+      };
+
+      canvas.onpointercancel = () => { isDrawing = false; };
+    }
+
+    function applyToolStyle() {
+      if (!drawCtx) return;
+      drawCtx.lineCap = 'round';
+      drawCtx.lineJoin = 'round';
+
+      if (currentTool === 'pen') {
+        drawCtx.globalCompositeOperation = 'source-over';
+        drawCtx.strokeStyle = penColor;
+        drawCtx.lineWidth = penWidth;
+      } else if (currentTool === 'highlighter') {
+        drawCtx.globalCompositeOperation = 'source-over';
+        drawCtx.strokeStyle = 'rgba(250, 204, 21, 0.4)';
+        drawCtx.lineWidth = 18;
+      }
+    }
+
+    function setToolMode(mode) {
+      currentTool = mode;
+      document.getElementById('toolPenBtn').className = mode === 'pen' ? 'bg-cyan-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1' : 'bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1';
+      document.getElementById('toolHighBtn').className = mode === 'highlighter' ? 'bg-amber-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1' : 'bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1';
+      document.getElementById('toolEraserBtn').className = mode === 'eraser' ? 'bg-rose-600 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1' : 'bg-slate-800 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1';
+    }
+
+    function setPenColor(color) {
+      penColor = color;
+      setToolMode('pen');
+    }
+
+    function clearCurrentPageDrawings() {
+      const drawCanvas = document.getElementById('drawCanvas');
+      if (drawCtx) drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+      delete pageDrawingsCache[pdfPageNum];
+    }
+
+    function saveCurrentPageDrawing() {
+      const drawCanvas = document.getElementById('drawCanvas');
+      if (drawCanvas && drawCanvas.width > 0) {
+        pageDrawingsCache[pdfPageNum] = drawCanvas.toDataURL();
+      }
+    }
+
+    function restorePageDrawing(num) {
+      if (pageDrawingsCache[num]) {
+        const img = new Image();
+        img.src = pageDrawingsCache[num];
+        img.onload = () => {
+          if (drawCtx) drawCtx.drawImage(img, 0, 0);
+        };
+      }
+    }
+
+    function prevPdfPage() { if (pdfPageNum > 1) { pdfPageNum--; renderPdfPage(pdfPageNum); } }
+    function nextPdfPage() { if (pdfPageNum < pdfDoc.numPages) { pdfPageNum++; renderPdfPage(pdfPageNum); } }
+
+    function loadInstructorDashboard() {
+      const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+      
+      document.getElementById('docTag').innerText = isOwner ? 'المالك (Super Admin)' : `محاضر: ${currentUser?.assigned_subject || ''}`;
+      
+      const btnUsers = document.getElementById('btnTabUsers');
+      const btnDoctors = document.getElementById('btnTabDoctors');
+
+      if (isOwner) {
+        btnUsers.classList.remove('hidden');
+        btnDoctors.classList.remove('hidden');
+      } else {
+        btnUsers.classList.add('hidden');
+        btnDoctors.classList.add('hidden');
+      }
+
+      switchDashTab('tab-upload', document.getElementById('btnTabUpload'));
+    }
+
+    function switchDashTab(tab, btn) {
+      const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+
+      if ((tab === 'tab-users' || tab === 'tab-doctors') && !isOwner) {
+        showCustomModal('غير مصرح', 'هذا القسم متاح لمالك المنصة فقط.', 'error');
+        return;
+      }
+
+      ['dashSectionUpload', 'dashSectionUsers', 'dashSectionDoctors'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+
+      ['btnTabUpload', 'btnTabUsers', 'btnTabDoctors'].forEach(id => {
+        document.getElementById(id).className = 'flex-1 py-2.5 px-3 rounded-xl text-slate-400 hover:text-white font-bold whitespace-nowrap';
+      });
+
+      if (btn) btn.className = 'flex-1 py-2.5 px-3 rounded-xl bg-purple-600 text-white font-black whitespace-nowrap';
+
+      if (tab === 'tab-upload') document.getElementById('dashSectionUpload').classList.remove('hidden');
+      if (tab === 'tab-users') { document.getElementById('dashSectionUsers').classList.remove('hidden'); loadAllServerUsers(); }
+      if (tab === 'tab-doctors') { document.getElementById('dashSectionDoctors').classList.remove('hidden'); loadPendingDoctors(); }
+    }
+
+    async function loadAllServerUsers() {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-cyan-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب السجلات من Google Sheets...</td></tr>';
+
+      try {
+        const rawUsers = await getFromSheet('getUsers');
+        allPlatformUsers = Array.isArray(rawUsers) ? rawUsers : [];
+
+        if (allPlatformUsers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">لا يوجد أي حسابات مسجلة حتى الآن.</td></tr>';
+          return;
+        }
+
+        renderUsersTable(allPlatformUsers);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-rose-400 font-bold">تعذر جلب الحسابات: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderUsersTable(list) {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+      list.forEach(u => {
+        const isDoc = u.role === 'doctor';
+        const unlocked = u.unlocked_courses || [];
+        const unlockedText = unlocked.map(id => ACADEMY_DATA[id]?.title || id).join(', ');
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-4 font-bold text-white">${u.full_name || 'طالب مسجل'} ${isDoc ? '<span class="bg-purple-500/20 text-purple-300 text-[10px] px-1.5 py-0.5 rounded mr-1">محاضر</span>' : ''}</td>
+          <td class="p-4 text-slate-300 font-mono">${u.phone || '--'}<br><span class="text-[10px] text-slate-500">${u.email || ''}</span></td>
+          <td class="p-4 text-slate-300">${u.university || 'جامعة كفر الشيخ'} (${u.faculty || 'طب أسنان'})</td>
+          <td class="p-4">
+            <span class="text-cyan-400 font-bold">${unlocked.length > 0 ? unlockedText : '<span class="text-slate-500 text-[11px]">لا يوجد مواد</span>'}</span>
+          </td>
+          <td class="p-4 text-center">
+            ${!isDoc ? `
+              <button onclick="openManageSubsModal('${u.id}')" class="bg-cyan-600/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-600 hover:text-white px-3 py-1.5 rounded-xl font-bold text-xs transition">
+                إدارة المواد والاشتراك 📚
+              </button>
+            ` : '--'}
+          </td>
+          <td class="p-4 text-center">
+            ${!isDoc ? `<button onclick="resetStudentDevice('${u.id}', '${u.full_name}')" class="bg-amber-600/20 text-amber-300 border border-amber-500/30 hover:bg-amber-600 hover:text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-arrows-rotate ml-1"></i> فك قفل الجهاز</button>` : '--'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openManageSubsModal(userId) {
+      const student = allPlatformUsers.find(u => u.id === userId);
+      if (!student) return;
+
+      currentManagingStudent = student;
+      document.getElementById('subStudentNameHeader').innerText = `${student.full_name} (${student.phone})`;
+
+      renderSubsModalCourses();
+      document.getElementById('manageSubsModal').classList.remove('hidden');
+    }
+
+    function closeSubsModal() {
+      document.getElementById('manageSubsModal').classList.add('hidden');
+      currentManagingStudent = null;
+    }
+
+    function renderSubsModalCourses() {
+      const container = document.getElementById('subsCoursesListContainer');
+      container.innerHTML = '';
+      if (!currentManagingStudent) return;
+
+      const userCourses = currentManagingStudent.unlocked_courses || [];
+
+      Object.values(ACADEMY_DATA).forEach(course => {
+        const isEnrolled = userCourses.includes(course.id);
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-3 rounded-2xl bg-[#090e1a] border border-slate-800";
+        item.innerHTML = `
+          <div>
+            <h4 class="text-xs font-bold text-white">${course.title}</h4>
+            <span class="text-[10px] ${isEnrolled ? 'text-emerald-400 font-bold' : 'text-slate-500'}">${isEnrolled ? 'المادة مفعلة للطالب ✅' : 'المادة مقفولة 🔒'}</span>
+          </div>
+          <div>
+            ${isEnrolled ? `
+              <button onclick="toggleSingleCourse('${course.id}', false)" class="bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500 hover:text-white px-3 py-1 rounded-xl text-xs font-bold transition">
+                إلغاء المادة ❌
+              </button>
+            ` : `
+              <button onclick="toggleSingleCourse('${course.id}', true)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1 rounded-xl text-xs font-bold shadow-md shadow-cyan-600/30 transition">
+                تفعيل المادة ✅
+              </button>
+            `}
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    async function toggleSingleCourse(courseId, enable) {
+      if (!currentManagingStudent) return;
+      let courses = currentManagingStudent.unlocked_courses || [];
+
+      if (enable) {
+        if (!courses.includes(courseId)) courses.push(courseId);
+      } else {
+        courses = courses.filter(c => c !== courseId);
+      }
+
+      currentManagingStudent.unlocked_courses = courses;
+      renderSubsModalCourses();
+
+      try {
+        await sendToSheet({
+          action: "updateUserCourses",
+          userId: currentManagingStudent.id,
+          unlocked_courses: courses
+        });
+        loadAllServerUsers();
+      } catch (err) {
+        showCustomModal('خطأ', err.message, 'error');
+      }
+    }
+
+    async function toggleAllCoursesForCurrentStudent() {
+      if (!currentManagingStudent) return;
+      const allKeys = Object.keys(ACADEMY_DATA);
+      currentManagingStudent.unlocked_courses = allKeys;
+      renderSubsModalCourses();
+
+      try {
+        await sendToSheet({
+          action: "updateUserCourses",
+          userId: currentManagingStudent.id,
+          unlocked_courses: allKeys
+        });
+        showCustomModal('تم التفعيل', 'تم تفعيل جميع المواد للطالب بنجاح!', 'success');
+        loadAllServerUsers();
+      } catch (err) {
+        showCustomModal('خطأ', err.message, 'error');
+      }
+    }
+
+    async function resetStudentDevice(userId, studentName) {
+      showCustomModal('فك قفل الجهاز', `هل تريد السماح للطالب (${studentName}) بفتح حسابه من جهاز جديد؟`, 'warning', async (confirmed) => {
+        if (confirmed) {
+          try {
+            await sendToSheet({
+              action: "resetDevice",
+              userId: userId
+            });
+            showCustomModal('تمت الإعادة بنجاح', 'تمت إعادة تعيين الجهاز بنجاح ويمكن للطالب الدخول من أي جهاز الآن.', 'success');
+          } catch (err) { 
+            showCustomModal('خطأ', err.message, 'error'); 
+          }
+        }
+      }, true);
+    }
+
+    function filterUsersTable() {
+      const q = document.getElementById('searchUserInput').value.toLowerCase();
+      const filtered = allPlatformUsers.filter(u => 
+        (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+        (u.phone && u.phone.includes(q)) ||
+        (u.university && u.university.toLowerCase().includes(q))
+      );
+      renderUsersTable(filtered);
+    }
+
+    function exportUsersToCSV() {
+      if (allPlatformUsers.length === 0) return showCustomModal('تنبيه', 'لا توجد بيانات مسجلة للتصدير.', 'info');
+      let csv = "\uFEFFالاسم,النوع,البريد,الهاتف,الجامعة,الفرقة,المواد المفعلة\n";
+      allPlatformUsers.forEach(u => {
+        const courses = (u.unlocked_courses || []).join(' - ');
+        csv += `"${u.full_name || ''}","${u.role || ''}","${u.email || ''}","${u.phone || ''}","${u.university || ''}","${u.faculty || ''}","${courses}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `dr_success_users_${Date.now()}.csv`;
+      link.click();
+    }
+
+    async function loadPendingDoctors() {
+      const tbody = document.getElementById('doctorsApprovalTableBody');
+      tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-purple-400 font-bold"><i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري جلب طلبات المحاضرين...</td></tr>';
+
+      try {
+        const all = await getFromSheet('getUsers');
+        const pending = Array.isArray(all) ? all.filter(u => u.role === 'doctor' && (u.is_approved === false || String(u.is_approved).toLowerCase() === 'false')) : [];
+
+        if (pending.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-500">لا توجد طلبات انضمام دكاترة جديدة</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        pending.forEach(d => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-4 font-bold text-white">${d.full_name || '--'}</td>
+            <td class="p-4">${d.phone || '--'} <span class="block text-slate-500 text-[10px]">${d.email || ''}</span></td>
+            <td class="p-4 font-bold text-purple-300">${d.assigned_subject || 'عام'}</td>
+            <td class="p-4 text-center">
+              <button onclick="approveDoctor('${d.id}')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">اعتماد المحاضر ✅</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-rose-400 font-bold">تعذر تحميل المحاضرين: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function approveDoctor(docId) {
+      try {
+        await sendToSheet({
+          action: "approveDoctor",
+          userId: docId
+        });
+        showCustomModal('تم الاعتماد', 'تم اعتماد المحاضر بنجاح وفتح لوحة التحكم له!', 'success');
+        loadPendingDoctors();
+      } catch (err) { showCustomModal('خطأ في الاعتماد', err.message, 'error'); }
+    }
+
+    async function uploadVideoToBunny(file, title, onProgress) {
+      const createRes = await fetch(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`, {
+        method: 'POST',
+        headers: {
+          'AccessKey': BUNNY_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ title: title })
+      });
+
+      if (!createRes.ok) throw new Error('فشل إنشاء جلسة رفع الفيديو في سيرفر Bunny');
+      const videoObj = await createRes.json();
+      const videoId = videoObj.guid;
+
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`);
+        xhr.setRequestHeader('AccessKey', BUNNY_API_KEY);
+        xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && onProgress) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            onProgress(percent);
+          }
+        };
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const playUrl = `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoId}`;
+            resolve(playUrl);
+          } else {
+            reject(new Error('تعذر رفع ملف الفيديو إلى سيرفرات البث'));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('انقطع الاتصال أثناء الرفع'));
+        xhr.send(file);
+      });
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleUploadLecture(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnUploadLectureSubmit');
+      const originalText = 'نشر المحاضرة الآن 🚀';
+
+      const sub = document.getElementById('uploadSubjectSelect').value;
+      const title = document.getElementById('lectureTitle').value.trim();
+      const duration = document.getElementById('lectureDuration').value.trim();
+      const manualUrl = document.getElementById('lectureVideoUrl').value.trim();
+      const fileInput = document.getElementById('lectureVideoFileInput');
+      const isFree = document.getElementById('lectureType').value === 'true';
+
+      const file = fileInput.files && fileInput.files[0];
+
+      if (!title) return showCustomModal('بيانات ناقصة', 'يرجى كتابة عنوان المحاضرة.', 'warning');
+      if (!file && !manualUrl) return showCustomModal('تنبيه', 'يرجى اختيار ملف فيديو للرفع أو إدخال رابط مباشر.', 'warning');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري النشر...';
+
+      let finalVideoUrl = manualUrl;
+
+      const progressBox = document.getElementById('uploadProgressBarContainer');
+      const progressFill = document.getElementById('uploadProgressBarFill');
+      const progressPercent = document.getElementById('uploadProgressPercentText');
+      const progressStatus = document.getElementById('uploadProgressStatusText');
+
+      try {
+        if (file) {
+          progressBox.classList.remove('hidden');
+          progressStatus.innerText = 'جاري رفع الفيديو لسيرفرات Bunny...';
+
+          finalVideoUrl = await uploadVideoToBunny(file, title, (percent) => {
+            progressFill.style.width = `${percent}%`;
+            progressPercent.innerText = `${percent}%`;
+          });
+
+          progressStatus.innerText = 'تم الرفع! جاري الحفظ في الشيت...';
+        }
+
+        await sendToSheet({
+          action: "addLecture",
+          subject_id: sub,
+          title: title,
+          duration: duration || 'غير محدد',
+          video_url: finalVideoUrl,
+          is_free: isFree
+        });
+
+        showCustomModal('تم نشر المحاضرة بنجاح 🎉', 'تم رفع الفيديو ونشره للطلاب على المنصة وفي السجل.', 'success');
+        
+        document.getElementById('lectureTitle').value = '';
+        document.getElementById('lectureDuration').value = '';
+        document.getElementById('lectureVideoUrl').value = '';
+        fileInput.value = '';
+        progressBox.classList.add('hidden');
+        progressFill.style.width = '0%';
+        loadGlobalStats();
+      } catch (err) {
+        showCustomModal('خطأ في الرفع', err.message, 'error');
+        progressBox.classList.add('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    async function handleUploadPdf(e) {
+      if (e) e.preventDefault();
+      const btn = document.getElementById('btnUploadPdfSubmit');
+      const originalText = 'إضافة المذكرة للمادة ⚡';
+
+      const sub = document.getElementById('pdfSubjectSelect').value;
+      const title = document.getElementById('pdfDocTitle').value.trim();
+      const manualUrl = document.getElementById('pdfDocUrl').value.trim();
+      const fileInput = document.getElementById('pdfFileInput');
+      const isFree = document.getElementById('pdfDocType').value === 'true';
+
+      const file = fileInput.files && fileInput.files[0];
+
+      if (!title) return showCustomModal('بيانات ناقصة', 'يرجى إدخال عنوان المذكرة.', 'warning');
+      if (!file && !manualUrl) return showCustomModal('تنبيه', 'يرجى اختيار ملف PDF أو وضع رابط مباشر.', 'warning');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin ml-1"></i> جاري حفظ المذكرة...';
+
+      let finalPdfUrl = manualUrl;
+
+      const progressBox = document.getElementById('uploadPdfProgressContainer');
+      const progressFill = document.getElementById('uploadPdfBarFill');
+      const progressPercent = document.getElementById('uploadPdfPercentText');
+
+      try {
+        if (file) {
+          progressBox.classList.remove('hidden');
+          progressFill.style.width = '50%';
+          progressPercent.innerText = '50%';
+
+          finalPdfUrl = await readFileAsDataURL(file);
+          progressFill.style.width = '100%';
+          progressPercent.innerText = '100%';
+        }
+
+        await sendToSheet({
+          action: "addLecture",
+          subject_id: sub,
+          title: title,
+          pdf_url: finalPdfUrl,
+          is_free: isFree
+        });
+
+        showCustomModal('تمت الإضافة بنجاح 📑', 'تمت إضافة مذكرة الـ PDF وأصبحت جاهزة للتدوين والشخبطة.', 'success');
+        document.getElementById('pdfDocTitle').value = '';
+        document.getElementById('pdfDocUrl').value = '';
+        fileInput.value = '';
+        progressBox.classList.add('hidden');
+        progressFill.style.width = '0%';
+        loadGlobalStats();
+      } catch (err) {
+        showCustomModal('خطأ في الرفع', err.message, 'error');
+        progressBox.classList.add('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    function updateUserUI() {
+      const authDesktop = document.getElementById('authButtonsDesktop');
+      const authMobile = document.getElementById('authButtonsMobile');
+      const userTagDesktop = document.getElementById('userProfileTagDesktop');
+      const userTagMobile = document.getElementById('userProfileTagMobile');
+      const badgeDesktop = document.getElementById('userNameBadgeDesktop');
+      const badgeMobile = document.getElementById('userNameBadgeMobile');
+      const landingRegBtn = document.getElementById('landingRegisterBtn');
+
+      if (currentUser && currentUser.full_name) {
+        if (authDesktop) authDesktop.classList.add('hidden');
+        if (authMobile) authMobile.classList.add('hidden');
+        if (landingRegBtn) landingRegBtn.classList.add('hidden');
+        
+        if (userTagDesktop) userTagDesktop.classList.remove('hidden');
+        if (userTagMobile) userTagMobile.classList.remove('hidden');
+        
+        const isOwner = currentUser.email && currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase();
+        const label = isOwner ? `${currentUser.full_name} ⚙️` : `👤 ${currentUser.full_name}`;
+        if (badgeDesktop) badgeDesktop.innerText = label;
+        if (badgeMobile) badgeMobile.innerText = label;
+      } else {
+        if (authDesktop) authDesktop.classList.remove('hidden');
+        if (authMobile) authMobile.classList.remove('hidden');
+        if (landingRegBtn) landingRegBtn.classList.remove('hidden');
+        
+        if (userTagDesktop) userTagDesktop.classList.add('hidden');
+        if (userTagMobile) userTagMobile.classList.add('hidden');
+      }
+    }
+
+    function handleLogout() {
+      showCustomModal('تسجيل الخروج', 'هل ترغب بالتأكيد في تسجيل الخروج من حسابك؟', 'warning', (confirmed) => {
+        if (confirmed) {
+          localStorage.removeItem('dr_success_device_id');
+          localStorage.removeItem('dr_success_cached_user');
+          currentUser = null;
+          userUnlockedSubjects = [];
+          updateUserUI();
+          navigate('landing');
+        }
+      }, true);
+    }
+
+    // تسجيل محرك الأوفلاين في المتصفح
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => console.log('Offline Engine Ready:', reg.scope))
+          .catch((err) => console.log('SW Registration Error:', err));
+      });
+    }
+
+    checkNetworkStatus();
+    navigate('landing');
+    loadGlobalStats();
+  </script>
+</body>
+</html>
