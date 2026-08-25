@@ -918,6 +918,31 @@
       }
     } catch(e) {}
 
+    // المزامنة الفورية لحالة الاعتماد عند فتح المنصة
+    async function syncCurrentUserStatus() {
+      if (!currentUser || !currentUser.email) return;
+      if (currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase()) return;
+
+      try {
+        const users = await getFromSheet('getUsers');
+        const serverUser = users.find(u => (u.email || '').toLowerCase() === currentUser.email.toLowerCase());
+
+        if (serverUser) {
+          const wasDoctorApproved = serverUser.is_approved === true || String(serverUser.is_approved).toLowerCase() === 'true';
+          
+          if (serverUser.role === 'doctor' && wasDoctorApproved) {
+            currentUser.role = 'doctor';
+            currentUser.is_approved = true;
+            currentUser.assigned_subject = serverUser.assigned_subject;
+            currentUser.unlocked_courses = serverUser.unlocked_courses || [serverUser.assigned_subject];
+            userUnlockedSubjects = currentUser.unlocked_courses;
+            localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+            updateUserUI();
+          }
+        }
+      } catch(e) {}
+    }
+
     function checkNetworkStatus() {
       const banner = document.getElementById('offlineBanner');
       if (!navigator.onLine) {
@@ -1294,7 +1319,7 @@
         }
 
         const users = await getFromSheet('getUsers');
-        const doc = users.find(u => (u.email || '').toLowerCase() === email && String(u.password) === String(pass) && u.role === 'doctor');
+        const doc = users.find(u => (u.email || '').toLowerCase() === email && String(u.password) === String(pass));
 
         if (!doc) {
           showCustomModal('خطأ في البيانات', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'error');
@@ -1307,9 +1332,11 @@
           return;
         }
 
+        doc.role = 'doctor';
         currentUser = doc;
-        userUnlockedSubjects = doc.unlocked_courses || [doc.assigned_subject];
+        userUnlockedSubjects = doc.unlocked_courses && doc.unlocked_courses.length > 0 ? doc.unlocked_courses : [doc.assigned_subject];
         localStorage.setItem('dr_success_cached_user', JSON.stringify(currentUser));
+        
         updateUserUI();
         navigate('instructor-dash');
       } catch (err) {
@@ -1456,7 +1483,6 @@
       if (btn) btn.className = 'speed-btn px-2.5 py-1 rounded-lg bg-cyan-600 text-white font-black text-xs';
     }
 
-    // تنزيل وحفظ ملف الـ 1080p الفعلي وتخزينه في IndexedDB
     async function downloadCurrentLectureOffline() {
       if (!currentActiveLecture) return showCustomModal('تنبيه', 'يرجى تشغيل محاضرة أولاً لحفظها.', 'info');
       let url = (currentActiveLecture.video_url || '').trim();
@@ -2299,6 +2325,7 @@
       });
     }
 
+    syncCurrentUserStatus();
     checkNetworkStatus();
     navigate('landing');
     loadGlobalStats();
